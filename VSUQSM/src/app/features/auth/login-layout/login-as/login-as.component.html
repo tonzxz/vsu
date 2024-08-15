@@ -1,0 +1,39 @@
+<section class="flex justify-center items-center min-h-screen p-4">
+    <div class="flex gap-8 max-w-[1200px] w-full max-md:flex-col">
+        <div class="flex flex-col w-[35%] rounded-3xl p-8 max-md:w-full">
+            <div class="flex flex-col self-stretch my-auto max-md:max-w-full">
+                <h1 class="text-4xl font-extrabold text-center text-[#22381F] mb-8 max-md:text-3xl">
+                    LOGIN
+                </h1>
+                <form class="flex flex-col w-full text-2xl font-medium text-[#22381F] text-opacity-80 max-md:max-w-full">
+                    <div class="flex flex-col w-full mb-6 max-md:max-w-full">
+                        <label for="username" class="self-start ml-4 mb-2 text-lg">Username</label>
+                        <div class="flex items-center gap-4 px-6 py-4 rounded-full border border-gray-300">
+                            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/8641c981a12cfc700fbe2c82dde8ad2c3918730dc28169c77b1d25db06dc10e9?placeholderIfAbsent=true&apiKey=f35c25b17acb406083beeda46a28c843" alt="" class="w-[24px] h-[24px]" />
+                            <input type="text" id="username" placeholder="Enter username" class="flex-grow bg-transparent text-lg focus:outline-none" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full mb-8 max-md:max-w-full">
+                        <label for="password" class="self-start ml-4 mb-2 text-lg">Password</label>
+                        <div class="flex items-center gap-4 px-6 py-4 rounded-full border border-gray-300">
+                            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/a6579fd00ab977e3fcca30293dee98e1c8aa20befa2a9240f1d0c3c09fe53fbb?placeholderIfAbsent=true&apiKey=f35c25b17acb406083beeda46a28c843" alt="" class="w-[24px] h-[24px]" />
+                            <input type="password" id="password" placeholder="Enter password" class="flex-grow bg-transparent text-lg focus:outline-none" />
+                        </div>
+                    </div>
+                    <button [routerLink]="['/admin/dashboard']" type="submit" class="self-center text-2xl font-bold text-gray-100 whitespace-nowrap rounded-full w-[160px] px-8 py-3 bg-[#22381F] shadow-lg hover:bg-neutral-700 transition-colors duration-300">
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="flex flex-col w-[65%] max-md:w-full">
+            <div class="relative flex flex-col items-center text-4xl font-bold text-gray-100 min-h-[700px] max-md:min-h-[400px] rounded-3xl overflow-hidden">
+                <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/4a5c72fd598e49614aaa41b6e88bd5f08fef538407efee83459a593d2d0e5a55?placeholderIfAbsent=true&apiKey=f35c25b17acb406083beeda46a28c843" alt="Background image" class="ml-5 w-full h-full z-0 opacity-80" />
+                <div class="absolute inset-0 z-10"></div>
+                <div class="z-20 mr-48 bg-[#22381F] px-16 py-8 rounded-[40px_24px_40px_24px] shadow-lg max-md:px-8 max-md:py-4 max-md:text-3xl absolute transform -translate-x-1/2">
+                    ADMIN
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

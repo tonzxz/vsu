@@ -10,6 +10,7 @@ import { DeskAttendantLayoutComponent } from './features/desk-attendant-layout/d
 import { DaDashboardComponent } from './features/desk-attendant-layout/da-dashboard/da-dashboard.component';
 import { DaContentmanagementComponent } from './features/desk-attendant-layout/da-contentmanagement/da-contentmanagement.component';
 import { AContentmgmtComponent } from './features/admin-layout/a-contentmgmt/a-contentmgmt.component';
+import { DaTerminalmgmtComponent } from './features/desk-attendant-layout/da-terminalmgmt/da-terminalmgmt.component';
 
 
 export const routes: Routes = [
@@ -36,6 +37,7 @@ export const routes: Routes = [
         children: [
           { path: 'da-dashboard',component: DaDashboardComponent},
           { path: 'da-contentmgmt',component: DaContentmanagementComponent},
+          { path: 'da-terminalmgmt',component: DaTerminalmgmtComponent}
         ]
       },
   ];

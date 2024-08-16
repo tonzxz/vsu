@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { RouterOutlet } from '@angular/router';
+import { DaSidebarComponent } from '../../shared/da-sidebar/da-sidebar.component';
 
 @Component({
   selector: 'app-desk-attendant-layout',
   standalone: true,
-  imports: [SidebarComponent,RouterOutlet],
+  imports: [DaSidebarComponent,RouterOutlet],
   templateUrl: './desk-attendant-layout.component.html',
   styleUrl: './desk-attendant-layout.component.css'
 })

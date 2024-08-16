@@ -1,0 +1,36 @@
+<div class="flex h-screen bg-[#22381F]">
+    <!-- Sidebar -->
+    <div class="fixed top-0 left-0 bottom-0 w-[300px] border-l-[5px] border-[#22381F] bg-[#22381F] transition-all duration-500 overflow-x-hidden flex flex-col">
+      <!-- Logo and Title -->
+      <div class="p-4 flex items-center space-x-4 border-b border-white/10">
+        <div class="w-20 h-20 bg-white rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden">
+          <img src="assets/logo/vsu.png" alt="Logo" class="w-full h-full object-contain">
+        </div>
+        <h1 class="text-white text-lg font-bold flex-1">{{ appTitle }}</h1>
+      </div>
+  
+      <!-- Navigation Items -->
+      <ul class="w-full pl-[5px] mt-6 pt-5 flex-grow overflow-y-auto">
+        <li *ngFor="let item of menuItems; let i = index" 
+            class="relative list-none w-full rounded-tl-[20px] rounded-bl-[20px] mb-2" 
+            [class.bg-white]="item.active">
+          <b class="absolute top-[-20px] h-5 w-full bg-white" [class.hidden]="!item.active">
+            <span class="absolute top-0 left-0 w-full h-full rounded-br-[20px] bg-[#22381F]"></span>
+          </b>
+          <b class="absolute bottom-[-20px] h-5 w-full bg-white" [class.hidden]="!item.active">
+            <span class="absolute bottom-0 left-0 w-full h-full rounded-tr-[20px] bg-[#22381F]"></span>
+          </b>
+          <a class="relative w-full flex items-center no-underline cursor-pointer py-3 px-4 font-bold" 
+             [class.text-[#22381F]]="item.active" 
+             [class.text-[#2F4A2C]]="item.active" 
+             (click)="setActiveItem(i)">
+            <span class="flex items-center justify-center min-w-[40px] h-[40px] mr-3" [innerHTML]="item.svgIcon"></span>
+            <span [class.text-[#2F4A2C]]="item.active" class="whitespace-nowrap">
+              {{ item.title }}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  

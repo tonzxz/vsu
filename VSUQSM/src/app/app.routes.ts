@@ -6,6 +6,8 @@ import { LoginLayoutComponent } from './features/auth/login-layout/login-layout.
 import { LoginAsComponent } from './features/auth/login-layout/login-as/login-as.component';
 import { AdminLayoutComponent } from './features/admin-layout/admin-layout.component';
 import { ADashboardComponent } from './features/admin-layout/a-dashboard/a-dashboard.component';
+import { DeskAttendantLayoutComponent } from './features/desk-attendant-layout/desk-attendant-layout.component';
+import { DaDashboardComponent } from './features/desk-attendant-layout/da-dashboard/da-dashboard.component';
 
 
 export const routes: Routes = [
@@ -24,6 +26,12 @@ export const routes: Routes = [
         path: 'admin', component: AdminLayoutComponent,
         children: [
           { path: 'dashboard',component: ADashboardComponent},
+        ]
+      },
+      {
+        path: 'desk-attendant', component: DeskAttendantLayoutComponent,
+        children: [
+          { path: 'da-dashboard',component: DaDashboardComponent},
         ]
       },
   ];

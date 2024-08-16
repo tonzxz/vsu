@@ -1,0 +1,155 @@
+<section class="p-4 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+      <header class="mb-10 flex justify-between items-center">
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+          <h2 class="text-lg text-gray-500">Queue Management System</h2>
+        </div>
+        <div class="flex space-x-4">
+          <button class="bg-[#22381F] hover:bg-opacity-90 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">Add User</button>
+          <button class="bg-[#22381F] hover:bg-opacity-90 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">Create Content</button>
+          <button class="bg-[#22381F] hover:bg-opacity-90 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">Manage Kiosks</button>
+        </div>
+      </header>
+      
+      <!-- Overall Metrics -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <article *ngFor="let metric of overallMetrics" class="bg-white p-6 rounded-lg shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-gray-600">{{ metric.title }}</h3>
+            <i class="text-[#22381F] text-xl" [ngClass]="metric.icon"></i>
+          </div>
+          <p class="text-3xl font-bold text-gray-800 mb-2">{{ metric.value }}</p>
+          <div class="h-16">
+            <!-- Line Graph Placeholder -->
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <polyline fill="none" stroke="#22381F" stroke-width="3" [attr.points]="getTrendPoints(metric.trend)" />
+            </svg>
+          </div>
+          <p class="text-sm mt-2" [ngClass]="metric.change.includes('+') ? 'text-green-500' : 'text-red-500'">
+            {{ metric.change }}
+          </p>
+        </article>
+      </div>
+  
+      <!-- Queue Status -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Queue Status</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div *ngFor="let queue of queueAnalytics" class="bg-white p-6 rounded-lg shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">{{ queue.office }}</h3>
+            <p class="text-sm text-gray-600 mb-2">Current Ticket: <span class="font-bold text-blue-600">{{ queue.currentTicket }}</span></p>
+            <p class="text-sm text-gray-600 mb-2">Waiting: <span class="font-bold">{{ queue.waitingCount }}</span></p>
+            <p class="text-sm text-gray-600 mb-2">Avg Wait Time: <span class="font-bold">{{ queue.avgWaitTime }}</span></p>
+            <div class="h-24 mt-4">
+              <!-- Single Bar with Color Gradient -->
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <rect x="10" [attr.y]="100 - queue.waitingCount" width="80" [attr.height]="queue.waitingCount" 
+                      [attr.fill]="queue.status === 'Busy' ? '#DC2626' : queue.status === 'Moderate' ? '#F59E0B' : '#10B981'">
+                </rect>
+              </svg>              
+            </div>
+            <p class="text-sm text-gray-600 mt-4">Status: 
+              <span class="font-bold" [ngClass]="{'text-green-500': queue.status === 'Normal', 'text-yellow-500': queue.status === 'Moderate', 'text-red-500': queue.status === 'Busy'}">
+                {{ queue.status }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </section>
+  
+<!-- Staff Performance -->
+<section class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Staff Performance</h2>
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-gray-700">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-6 py-3 text-left font-semibold text-gray-600">Name</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600">Office</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600">Tickets Served</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600">Avg. Service Time</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (staff of paginatedStaffPerformance; track staff.name) {
+              <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-150 ease-in-out">
+                <td class="px-6 py-4 whitespace-nowrap">{{ staff.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ staff.office }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ staff.ticketsServed }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ staff.avgServiceTime }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [ngClass]="{
+                    'bg-green-100 text-green-800': staff.status === 'Active',
+                    'bg-yellow-100 text-yellow-800': staff.status === 'On Break',
+                    'bg-red-100 text-red-800': staff.status === 'Offline'
+                  }" class="px-2 py-1 rounded-full text-xs font-medium">
+                    {{ staff.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Pagination Controls -->
+      <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <button (click)="goToPreviousPage()" [disabled]="currentPage === 1"
+          class="flex items-center text-[#22381F] disabled:text-gray-300 hover:text-opacity-90 transition duration-150 ease-in-out">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+        <div class="text-sm text-gray-700">
+          Page {{ currentPage }} of {{ totalPages }}
+        </div>
+        <button (click)="goToNextPage()" [disabled]="currentPage === totalPages"
+          class="flex items-center text-[#22381F] disabled:text-gray-300 hover:text-opacity-90 transition duration-150 ease-in-out">
+          Next
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+  
+  
+  
+      <!-- Kiosk Status -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Kiosk Status</h2>
+        <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+          <table class="w-full text-sm text-gray-700">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="p-4 text-left">ID</th>
+                <th class="p-4 text-left">Location</th>
+                <th class="p-4 text-left">Status</th>
+                <th class="p-4 text-left">Tickets Issued</th>
+                <th class="p-4 text-left">Last Maintenance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let kiosk of kioskStatus" class="hover:bg-gray-50">
+                <td class="p-4">{{ kiosk.id }}</td>
+                <td class="p-4">{{ kiosk.location }}</td>
+                <td class="p-4">
+                  <span [ngClass]="{'text-green-500': kiosk.status === 'Operational', 'text-yellow-500': kiosk.status === 'Low Paper', 'text-red-500': kiosk.status === 'Out of Service'}">
+                    {{ kiosk.status }}
+                  </span>
+                </td>
+                <td class="p-4">{{ kiosk.ticketsIssued }}</td>
+                <td class="p-4">{{ kiosk.lastMaintenance }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+  

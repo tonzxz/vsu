@@ -36,18 +36,22 @@
               <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-lime-900"></div>
             </label>
           </div>
-          <div class="relative flex items-center">
-            <input type="text" id="upload-picture" class="pl-4 pr-8 mt-3 w-full text-xl bg-white rounded-xl border border-gray-600 h-[50px] max-w-[330px] text-zinc-400" placeholder="Upload Picture" required />
-            <button class="absolute right-3 top-9 transform -translate-y-1/2 " onclick="alert('Button is clicked!')">
-            <img
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-            class="object-contain shrink-0 self-stretch my-auto aspect-square w-[52px]"
-          />
+          <div class="flex items-center mt-3 max-w-full text-xl rounded-xl text-zinc-400 w-[330px] bg-white border border-gray-600 border-solid">
+            <input
+              type="text"
+              placeholder="Upload picture"
+              class="flex-grow pr-0 pl-3 py-2.5 bg-white rounded-xl focus:outline-none"
+            />
+            <button class="ml-2 " onclick="alert('Button is clicked!')">
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+                class="object-contain shrink-0 aspect-square w-[50px]"
+              />
             </button>
           </div>
          
-          <div class="flex gap-1.5 items-center max-w-full w-[330px]">
+          <div class="flex gap-1.5 items-center max-w-full w-[330px] mt-3">
             <div class="self-stretch my-auto text-2xl text-black w-[249px]">
               Video
             </div>
@@ -56,45 +60,53 @@
               <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-lime-900"></div>
             </label>
           </div>
-          <div class="relative flex items-center">
-            <input type="text" id="upload-video" class="flex gap-2.5 justify-center items-center px-4 mt-3 w-full text-[18px] bg-white rounded-xl border border-gray-600 h-[50px] max-w-[330px] text-zinc-400" placeholder="Video File or YouTube Playlist" required />
-            <button class="absolute right-3 top-9 transform -translate-y-1/2 " onclick="alert('Button is clicked!')">
-            <img
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-            class="object-contain shrink-0 self-stretch my-auto aspect-square w-[52px]"
-          />
-            </button>
-          </div>
 
-          
-          
+<div class="flex items-center mt-3 max-w-full text-xl rounded-xl text-zinc-400 w-[330px] bg-white border border-gray-600 border-solid">
+  <input
+    type="text"
+    placeholder="Video File or YouTube Playlist"
+    class="flex-grow pr-0 pl-3 py-2.5 bg-white rounded-xl focus:outline-none"
+  />
+  <button class="ml-2 " onclick="alert('Button is clicked!')">
+    <img
+      loading="lazy"
+      src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+      class="object-contain shrink-0 aspect-square w-[50px]"
+    />
+  </button>
+</div>
+
           <div
             class="gap-1.5 self-stretch mt-3 max-w-full text-2xl text-black whitespace-nowrap w-[330px]"
           >
             Background
           </div>
-          <div
-            class="flex gap-2.5 justify-center items-center px-4 mt-3 w-full bg-white rounded-xl border border-gray-600 border-solid h-[50px] max-w-[330px]"
-          >
-            <div
-              class="gap-2.5 self-stretch my-auto text-xl text-zinc-400 w-[178px]"
-            >
-              Video, Image, Color
-            </div>
-            <div class="flex gap-2.5 items-center self-stretch p-2.5 my-auto">
+          
+          <div class="flex items-center mt-3 max-w-full text-xl rounded-xl text-zinc-400 w-[330px] bg-white border border-gray-600 border-solid">
+            <input
+              type="text"
+              placeholder="Video, Image, Color"
+              class="flex-grow  pl-3 py-2.5 bg-white rounded-xl focus:outline-none"
+            />
+            <button class=" ml-[-36px] mr-1" onclick="alert('Button is clicked!')">
               <img
                 loading="lazy"
-                srcset="https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-                class="object-contain shrink-0 self-stretch my-auto w-12 aspect-[1.07]"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+                class="object-contain shrink-0 aspect-square w-[50px]"
               />
+            </button>
+            <div class="ml-3">
+              
+            </div>
+            <button class="ml-[-18px]" onclick="alert('Button is clicked!')">
               <img
                 loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6253ab3997bb3c9648bc07867cefb9883335a180c246aa0b583dd850a7722197?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-                class="object-contain shrink-0 self-stretch my-auto w-8 aspect-square shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+                class="object-contain shrink-0 aspect-square w-[50px]"
               />
-            </div>
+            </button>
           </div>
+
           <div class="flex gap-1.5 items-center mt-3 max-w-full w-[330px]">
             <div class="self-stretch my-auto text-2xl text-black w-[249px]">
               Announcement
@@ -125,18 +137,22 @@
               </label>
             </div>
           </div>
-          <div
-            class="flex gap-2.5 justify-center items-center px-4 mt-3 w-full text-xl bg-white rounded-xl border border-gray-600 border-solid h-[50px] max-w-[330px] text-zinc-400"
-          >
-            <div class="gap-2.5 self-stretch my-auto w-[236px]">
-              Select Timezone
-            </div>
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/680337eff14011904ea3f00fe947267581914a260f3124a5fee9b93ba1887aaa?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-              class="object-contain shrink-0 self-stretch my-auto aspect-square w-[52px]"
+
+          <div class="flex items-center mt-3 max-w-full text-xl rounded-xl text-zinc-400 w-[330px] bg-white border border-gray-600 border-solid">
+            <input
+              type="text"
+              placeholder="Select Timezone"
+              class="flex-grow pr-0 pl-3 py-2.5 bg-white rounded-xl focus:outline-none"
             />
+            <button class="ml-2 " onclick="alert('Button is clicked!')">
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/680337eff14011904ea3f00fe947267581914a260f3124a5fee9b93ba1887aaa?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+                class="object-contain shrink-0 aspect-square w-[50px]"
+              />
+            </button>
           </div>
+
           <div class="flex gap-1.5 items-center mt-3 max-w-full w-[330px]">
             <div class="self-stretch my-auto text-2xl text-black w-[249px]">
               Weather
@@ -148,18 +164,22 @@
             </label>
            </div>
           </div>
-          <div
-            class="flex gap-2.5 justify-center items-center px-4 mt-3 w-full text-xl bg-white rounded-xl border border-gray-600 border-solid h-[50px] max-w-[330px] text-zinc-400"
-          >
-            <div class="gap-2.5 self-stretch my-auto w-[236px]">
-              Video File or YouTube Playlist
-            </div>
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/59015e22914258b4fa51fd56f6c49e783da7c5b0621431759fad19be2d9490ec?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-              class="object-contain shrink-0 self-stretch my-auto aspect-square w-[52px]"
+
+          <div class="flex items-center mt-3 max-w-full text-xl rounded-xl text-zinc-400 w-[330px] bg-white border border-gray-600 border-solid">
+            <input
+              type="text"
+              placeholder="Video File or YouTube Playlist"
+              class="flex-grow pr-0 pl-3 py-2.5 bg-white rounded-xl focus:outline-none"
             />
+            <button class="ml-2 " onclick="alert('Button is clicked!')">
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/59015e22914258b4fa51fd56f6c49e783da7c5b0621431759fad19be2d9490ec?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+                class="object-contain shrink-0 aspect-square w-[50px]"
+              />
+            </button>
           </div>
+
           <div class="flex gap-1.5 items-center mt-3 max-w-full w-[330px]">
             <div class="self-stretch my-auto text-2xl text-black w-[249px]">
               Currency Converter
@@ -171,44 +191,61 @@
               </label>
             </div>
           </div>
-          <div
-            class="flex gap-2.5 justify-center items-center mt-3 max-w-full min-h-[55px] w-[330px]"
-          >
-            <div
-              class="flex flex-col justify-center self-stretch px-4 py-2.5 my-auto text-xl font-medium text-white whitespace-nowrap bg-lime-900 rounded-2xl min-h-[50px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[95px]"
-            >
-              <div class="flex gap-2 items-center">
-                <div class="self-stretch my-auto">PHP</div>
-                <img
-                  loading="lazy"
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/c999a800d5fff5ea10ee3f898df95f260577ca84d38ed627f34beba37b9dfb1e?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-                  class="object-contain shrink-0 self-stretch my-auto w-5 aspect-[2]"
-                />
-              </div>
-            </div>
-            <div
-              class="flex flex-col justify-center self-stretch p-2.5 my-auto w-16"
-            >
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/496be863cfe779f64a6ca3211c0ad7e20cd50a28d1057d337582e23f40d1fef9?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-                class="object-contain w-11 aspect-[1.26]"
-              />
-            </div>
-            <div
-              class="flex flex-col justify-center self-stretch py-2.5 pr-3.5 pl-4 my-auto text-xl font-medium text-white whitespace-nowrap bg-lime-900 rounded-2xl min-h-[50px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[95px]"
-            >
-              <div class="flex gap-2 items-center">
-                <div class="self-stretch my-auto">USD</div>
-                <img
-                  loading="lazy"
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/ee6e4b3051e53b263d0b77f9c099bc274b57d34bcfdebfb00a3d94de69d46533?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
-                  class="object-contain shrink-0 self-stretch my-auto w-5 aspect-[2]"
-                />
-              </div>
-            </div>
-          </div>
+          
+  <div class="flex space-x-2 mt-3 relative">
+      <!-- Dropdown 1 -->
+    <details class="relative">
+      <summary class="flex flex-col justify-center self-stretch px-4 py-2.5 my-auto text-xl font-medium text-white whitespace-nowrap bg-lime-900 rounded-2xl min-h-[50px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[95px] inline-flex items-center gap-2 cursor-pointer">
+        <div class="flex items-center gap-2">
+          <div class="self-stretch my-auto">PHP</div>
+          <img
+            loading="lazy"
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/c999a800d5fff5ea10ee3f898df95f260577ca84d38ed627f34beba37b9dfb1e?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+            class="object-contain shrink-0 self-stretch my-auto w-5 aspect-[2]"
+          />
         </div>
+        
+      </summary>
+      <ul class=" absolute menu dropdown-content bg-base-100 rounded-box z-[1] w-30 p-2 shadow">
+        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 1</a></li>
+        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 2</a></li>
+      </ul>
+    </details>
+
+    <!-- Exchange Button -->
+
+    <button class="flex flex-col justify-center self-stretch p-2.5 my-auto w-16 relative " onclick="alert('Button is clicked!')">
+      <img
+      loading="lazy"
+      src="https://cdn.builder.io/api/v1/image/assets/TEMP/496be863cfe779f64a6ca3211c0ad7e20cd50a28d1057d337582e23f40d1fef9?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+      class="object-contain w-11 aspect-[1.26]"
+      />
+    </button>
+
+     <!-- Dropdown 2 -->
+    <details class="relative">
+      <summary class="flex flex-col justify-center self-stretch px-4 py-2.5 my-auto text-xl font-medium text-white whitespace-nowrap bg-lime-900 rounded-2xl min-h-[50px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[95px] inline-flex items-center gap-2 cursor-pointer">
+        <div class="flex items-center gap-2">
+          <div class="self-stretch my-auto">USD</div>
+          <img
+            loading="lazy"
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/c999a800d5fff5ea10ee3f898df95f260577ca84d38ed627f34beba37b9dfb1e?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7"
+            class="object-contain shrink-0 self-stretch my-auto w-5 aspect-[2]"
+          />
+        </div>
+              </summary>
+      <ul class="absolute menu dropdown-content bg-base-100 rounded-box z-[1] w-30 p-2 shadow">
+        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 1</a></li>
+        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 2</a></li>
+      </ul>
+    </details>
+  </div>
+  
+
+        </div>
+
+        
+
       </div>
       <img
       loading="lazy"

@@ -9,6 +9,7 @@ import { ADashboardComponent } from './features/admin-layout/a-dashboard/a-dashb
 import { DeskAttendantLayoutComponent } from './features/desk-attendant-layout/desk-attendant-layout.component';
 import { DaDashboardComponent } from './features/desk-attendant-layout/da-dashboard/da-dashboard.component';
 import { DaContentmanagementComponent } from './features/desk-attendant-layout/da-contentmanagement/da-contentmanagement.component';
+import { AContentmgmtComponent } from './features/admin-layout/a-contentmgmt/a-contentmgmt.component';
 
 
 export const routes: Routes = [
@@ -27,7 +28,7 @@ export const routes: Routes = [
         path: 'admin', component: AdminLayoutComponent,
         children: [
           { path: 'dashboard',component: ADashboardComponent},
-          { path: 'contentmgmt',component: DaContentmanagementComponent},
+          { path: 'contentmgmt',component: AContentmgmtComponent},
         ]
       },
       {

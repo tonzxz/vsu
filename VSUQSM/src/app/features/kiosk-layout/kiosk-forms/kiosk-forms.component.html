@@ -1,1 +1,60 @@
-<p>kiosk-forms works!</p>
+<div class="flex flex-col items-center justify-center h-full space-y-6">
+    <!-- Header Section -->
+    <div class="text-center">
+      <img src="assets/img/visayas-logo.svg" alt="University Logo" class="h-32 mb-4 rounded-lg shadow-lg">
+      <h1 class="text-3xl font-bold">{{ departmentName }}</h1>
+      <p class="text-gray-600">{{ currentTime | date: 'hh:mm a' }} | {{ currentDate | date: 'EEEE, MMMM d, y' }}</p>
+    </div>
+  
+    <!-- Line Selection (Hidden when Checklist is visible) -->
+    <div class="flex flex-col space-y-4 mt-8" *ngIf="!isChecklistVisible && !isFormVisible">
+      <button (click)="handleButtonClick('regular')" class="flex flex-col items-center btn-custom p-6 bg-green-700 text-white rounded-lg shadow-lg">
+        <img src="assets/img/regular.svg" alt="Regular Line" class="h-24 mb-4">
+        <span class="text-lg">Regular</span>
+      </button>
+      <button (click)="handleButtonClick('priority')" class="flex flex-col items-center btn-custom p-6 bg-green-700 text-white rounded-lg shadow-lg">
+        <img src="assets/img/priority.svg" alt="Priority Line" class="h-24 mb-4">
+        <span class="text-lg">Priority</span>
+      </button>
+    </div>
+  
+    <!-- Checklist Section (Visible when selected) -->
+    <div *ngIf="isChecklistVisible" class="mt-6">
+      <h2 class="text-xl font-bold">How can we serve you?</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div *ngFor="let item of checklist">
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" [(ngModel)]="item.selected">
+            <span>{{ item.name }}</span>
+          </label>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-between w-full">
+        <button class="bg-gray-700 text-white p-2 rounded-lg" (click)="goBack()">Back</button>
+        <button class="bg-green-700 text-white p-2 rounded-lg" (click)="confirmChecklist()">Confirm</button>
+      </div>
+    </div>
+  
+    <!-- Form Section (Visible after confirmation) -->
+    <div *ngIf="isFormVisible" class="mt-6">
+      <h2 class="text-xl font-bold">Input additional info for the service?</h2>
+      <div class="grid grid-cols-3 gap-4">
+        <button class="btn-custom p-4 bg-green-700 text-white rounded-lg shadow-lg" *ngFor="let service of selectedServices">
+          {{ service }}
+        </button>
+      </div>
+      <textarea class="border border-gray-400 rounded p-2 w-full mt-4" placeholder="Available documents for Request"></textarea>
+      <div class="mt-6 flex justify-between w-full">
+        <button class="bg-gray-700 text-white p-2 rounded-lg" (click)="goBack()">Back</button>
+        <button class="bg-green-700 text-white p-2 rounded-lg" (click)="printPDF()">Print Number</button>
+      </div>
+    </div>
+  
+    <!-- Assistance Icon -->
+    <div class="fixed bottom-4 right-4">
+      <button class="btn-assistance">
+        <img src="assets/img/assistance-icon.svg" alt="Assistance" class="h-10">
+      </button>
+    </div>
+  </div>
+  

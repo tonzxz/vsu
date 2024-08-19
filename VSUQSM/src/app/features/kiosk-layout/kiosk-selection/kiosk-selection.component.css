@@ -1,0 +1,12 @@
+.btn-custom {
+    @apply bg-[#22381F] text-white py-3 px-6 font-bold rounded-lg text-lg transition-all duration-300 ease-in-out;
+  }
+  
+  .btn-custom:hover {
+    @apply bg-[#1f2c1a] scale-105;
+  }
+  
+  .btn-custom:active {
+    @apply bg-[#1a2114];
+  }
+  

@@ -1,1 +1,16 @@
-<p>kiosk-selection works!</p>
+<div class="flex flex-col items-center justify-center h-full space-y-6" *ngIf="showButtons">
+    <h1 class="text-2xl font-bold">Login as:</h1>
+    
+    <!-- Conditionally display the buttons -->
+    <div class="flex flex-col space-y-4">
+      <button (click)="navigateToForms('registrar')" class="btn-custom">Registrar</button>
+      <button (click)="navigateToForms('cash-division')" class="btn-custom">Cash Division</button>
+      <button (click)="navigateToForms('accounting-office')" class="btn-custom">Accounting Office</button>
+    </div>
+    
+  </div>
+
+  <div class="flex flex-col items-center justify-center h-full space-y-6" >
+
+      <router-outlet></router-outlet>
+</div>

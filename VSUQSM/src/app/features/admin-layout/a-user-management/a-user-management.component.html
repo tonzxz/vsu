@@ -1,1 +1,146 @@
-<p>a-user-management works!</p>
+<section class="user-management">
+    <header>
+      <h1>User Management</h1>
+      <div class="user-icon"></div>
+    </header>
+  
+    <section class="banner-section">
+      <img
+        loading="lazy"
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/d1ce056d50bb1e33e849fc83b744e41b9d8ffc72756abedebe816599ac5a0dbe?placeholderIfAbsent=true&apiKey=e487b4145b77410bbe58d9cf94c02ff4"
+        class="banner-image"
+        alt="Decorative image"
+      />
+    </section>
+  
+    <button (click)="openModal()" class="create-account-btn">+ Create New Account</button>
+  
+    <div class="content-wrapper">
+      <section class="performance-metrics">
+        <h2>Performance Metrics</h2>
+        <div class="user-info">
+          <div class="avatar"></div>
+          <div class="user-details">
+            <div>{{ selectedUser }}</div>
+            <div>Location: Registrar</div>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <h3>Total Check-ins</h3>
+            <p>{{ performanceMetrics.totalCheckIns }}</p>
+          </div>
+          <div class="metric-box">
+            <h3>Average Check-in Time</h3>
+            <p>{{ performanceMetrics.averageCheckInTime }}</p>
+          </div>
+          <div class="metric-box">
+            <h3>Total Check-ins Today</h3>
+            <p>{{ performanceMetrics.totalCheckInsToday }}</p>
+          </div>
+          <div class="metric-box">
+            <h3>Total Check-ins This Week</h3>
+            <p>{{ performanceMetrics.totalCheckInsThisWeek }}</p>
+          </div>
+          <div class="metric-box">
+            <h3>Average Time Service</h3>
+            <p>{{ performanceMetrics.averageTimeService }}</p>
+          </div>
+          <div class="metric-box">
+            <h3>Rating</h3>
+            <div class="rating">
+              <span
+                *ngFor="let star of [1, 2, 3, 4, 5]"
+                [class.filled]="star <= performanceMetrics.rating"
+                >★</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <section class="user-list">
+        <div class="search-bar">
+          <input [(ngModel)]="searchQuery" (input)="searchUsers()" placeholder="Search assessments" />
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Location</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers">
+              <td>{{ user.username }}</td>
+              <td>{{ user.location }}</td>
+              <td>{{ user.type }}</td>
+              <td>
+                <span class="status-badge" [class.active]="user.status === 'Active'">
+                  {{ user.status }}
+                </span>
+              </td>
+              <td>
+                <button (click)="editUser(user)" class="action-btn edit-btn"></button>
+                <button (click)="deleteUser(user)" class="action-btn delete-btn"></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  
+    <div *ngIf="showModal" class="modal-overlay">
+      <section class="flex flex-col">
+        <div class="flex gap-2.5 justify-center items-center py-32 bg-neutral-700 bg-opacity-50 px-[673px] max-md:px-5 max-md:py-24">
+          <div class="flex gap-2.5 justify-center items-center self-stretch px-16 py-32 my-auto bg-white rounded-3xl min-h-[830px] min-w-[240px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[522px] max-md:px-5 max-md:py-24">
+            <div class="flex flex-col justify-center self-stretch my-auto h-[584px] min-w-[240px] w-[400px]">
+              <form class="flex flex-col w-full text-xl font-medium text-neutral-800 text-opacity-80" (ngSubmit)="createNewAccount()">
+                <h2 class="gap-2.5 self-center max-w-full text-3xl font-bold text-neutral-800 w-[228px]">Create Account</h2>
+                <div class="flex flex-col mt-2.5 w-full">
+                  <label for="fullName">Full Name</label>
+                  <input id="fullName" type="text" placeholder="Enter Full Name" class="gap-2.5 self-stretch px-8 py-4 w-full bg-violet-50 min-h-[60px] rounded-[40px] max-md:px-5" [(ngModel)]="newAccount.fullName" name="fullName" required>
+                </div>
+                <div class="flex flex-col mt-2.5 w-full">
+                  <label for="username">Username</label>
+                  <input id="username" type="text" placeholder="Enter username" class="gap-2.5 self-stretch px-8 py-4 w-full bg-violet-50 min-h-[60px] rounded-[40px] max-md:px-5" [(ngModel)]="newAccount.username" name="username" required>
+                </div>
+                <div class="flex flex-col mt-2.5 w-full">
+                  <label for="password">Password</label>
+                  <input id="password" type="password" placeholder="Enter password" class="gap-2.5 self-stretch px-8 py-4 w-full bg-violet-50 min-h-[60px] rounded-[40px] max-md:px-5" [(ngModel)]="newAccount.password" name="password" required>
+                </div>
+                <div class="flex flex-col mt-2.5 w-full">
+                  <label for="location">Location</label>
+                  <div class="flex gap-10 justify-between items-center px-8 py-4 w-full bg-violet-50 min-h-[60px] rounded-[40px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:px-5">
+                    <select id="location" class="self-stretch my-auto bg-transparent w-full" [(ngModel)]="newAccount.location" name="location" required>
+                      <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+                    </select>
+                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/e07d5c1b0a744fb4e2e8842a88e577b52e7bceaa625aabd986dd088ae5cefc96?placeholderIfAbsent=true&apiKey=e487b4145b77410bbe58d9cf94c02ff4" class="object-contain shrink-0 self-stretch my-auto w-5 aspect-[2]" alt="">
+                  </div>
+                </div>
+                <div class="flex flex-col mt-2.5 w-full">
+                  <label for="accountType">Type</label>
+                  <div class="flex gap-10 justify-between items-center px-8 py-4 w-full bg-violet-50 min-h-[60px] rounded-[40px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:px-5">
+                    <select id="accountType" class="self-stretch my-auto bg-transparent w-full" [(ngModel)]="newAccount.type" name="type" required>
+                      <option *ngFor="let type of accountTypes" [value]="type">{{ type }}</option>
+                    </select>
+                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/e07d5c1b0a744fb4e2e8842a88e577b52e7bceaa625aabd986dd088ae5cefc96?placeholderIfAbsent=true&apiKey=e487b4145b77410bbe58d9cf94c02ff4" class="object-contain shrink-0 self-stretch my-auto w-5 aspect-[2]" alt="">
+                  </div>
+                </div>
+                <div class="flex gap-8 items-start self-center mt-8 text-2xl font-bold text-white whitespace-nowrap">
+                  <button type="submit" class="flex gap-2 justify-center items-center px-3 py-4 bg-lime-900 rounded-lg min-h-[60px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[131px]">
+                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6b6b3e64eb8d7a583bcca0d72549ebe21006d79f0def214bc67ba3e330d1c91c?placeholderIfAbsent=true&apiKey=e487b4145b77410bbe58d9cf94c02ff4" class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square" alt="">
+                    <span>Create</span>
+                  </button>
+                  <button type="button" (click)="closeModal()" class="gap-2 self-stretch px-3 py-4 bg-red-800 rounded-lg min-h-[60px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[131px]">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+</section>

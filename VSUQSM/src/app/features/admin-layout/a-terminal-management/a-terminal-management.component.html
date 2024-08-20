@@ -1,1 +1,35 @@
-<p>a-terminal-management works!</p>
+<main class="content">
+    <header class="header-container">
+      <h1 class="page-title">Terminal Management</h1>
+      <div class="user-icon-container">
+        <img src="user_icon.png" alt="User Icon" class="user-icon">
+      </div>
+    </header>
+  
+    <section class="banner-section">
+        <img
+          loading="lazy"
+          src="https://cdn.builder.io/api/v1/image/assets/TEMP/d1ce056d50bb1e33e849fc83b744e41b9d8ffc72756abedebe816599ac5a0dbe?placeholderIfAbsent=true&apiKey=e487b4145b77410bbe58d9cf94c02ff4"
+          class="banner-image"
+          alt="Decorative image"
+        />
+      </section>
+  
+    <div class="main-content">
+      <div class="tab-container">
+        <button class="tab" [class.tab-active]="activeTab === 'Registrar'" (click)="changeTab('Registrar')">Registrar</button>
+        <button class="tab" [class.tab-active]="activeTab === 'Cash Division'" (click)="changeTab('Cash Division')">Cash Division</button>
+        <button class="tab" [class.tab-active]="activeTab === 'Accounting Office'" (click)="changeTab('Accounting Office')">Accounting Office</button>
+      </div>
+  
+      <div class="content-area">
+        <div class="counter-container">
+          <div *ngFor="let counter of counters" class="counter-box" [class.active]="counter.isActive" (click)="toggleCounterStatus(counter)">
+            <div class="counter-text">{{ counter.name }}</div>
+          </div>
+          <button class="add-counter-button" (click)="addCounter()">+</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  

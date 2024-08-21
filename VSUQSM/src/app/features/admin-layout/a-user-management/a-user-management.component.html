@@ -1,161 +1,137 @@
-<main class="flex flex-col items-start">
-  <header>
-    <h1 class="text-4xl font-bold text-neutral-800">User Management</h1>
-  </header>
-  <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/3ba9cd9dc6b71854e4bc5a14ca4f1f13316681dda683052b7593df3890599fd5?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="User Management Dashboard" class="object-contain gap-2.5 mt-6 w-full rounded-3xl aspect-[10.1] min-h-[150px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full" />
-  <section class="flex flex-col self-stretch mt-12 w-full max-md:mt-10 max-md:max-w-full">
-    <button class="flex gap-2 justify-center items-center py-4 pr-3 pl-3 max-w-full text-2xl font-bold text-white bg-lime-900 rounded-lg min-h-[60px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[306px]">
-      <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6b6b3e64eb8d7a583bcca0d72549ebe21006d79f0def214bc67ba3e330d1c91c?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="" class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square" />
-      <span class="self-stretch my-auto">Create New Account</span>
-    </button>
-    <div class="flex flex-col p-4 mt-3.5 w-full rounded-xl bg-zinc-300 max-md:max-w-full">
-      <form class="flex overflow-hidden flex-wrap items-center py-3 pr-4 pl-2 w-full text-base rounded-xl bg-slate-200 min-h-[46px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] text-slate-500 max-md:max-w-full">
-        <label for="searchUser" class="sr-only">Search for a user</label>
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/abcce288b62850587fcef2101d04aaab93bdb6ee8c8a7cb35c98304be4659506?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="" class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square" />
-        <input type="text" id="searchUser" placeholder="Search for a user" class="bg-transparent border-none flex-grow" />
-      </form>
-      <div class="flex overflow-hidden gap-0 justify-center items-start px-2.5 mt-5 w-full rounded-xl bg-slate-50 min-h-[623px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full">
-        <div class="flex flex-col py-4 min-w-[240px] w-[1446px]">
-          <div class="flex flex-col w-full max-md:max-w-full">
-            <div class="flex flex-wrap gap-0 w-full text-2xl font-bold text-center text-white whitespace-nowrap bg-white min-h-[69px] max-md:max-w-full">
-              <div class="grow shrink px-4 py-3 rounded-xl border border-black border-solid bg-neutral-800 min-w-[240px] w-[232px]">Name</div>
-              <div class="grow shrink px-4 py-3 border border-black border-solid bg-neutral-800 min-w-[240px] w-[232px]">Username</div>
-              <div class="grow shrink px-4 py-3 border border-black border-solid bg-neutral-800 min-w-[240px] w-[232px]">Location</div>
-              <div class="grow shrink px-4 py-3 border border-black border-solid bg-neutral-800 min-w-[240px] w-[232px]">Type</div>
-              <div class="grow shrink px-4 py-3 rounded-none border border-black border-solid bg-neutral-800 min-w-[240px] w-[232px]">Actions</div>
-            </div>
-            <div class="flex gap-2.5 items-start w-full max-md:max-w-full">
-              <div class="flex flex-col min-w-[240px] w-[1446px] max-md:max-w-full">
-                <div class="flex flex-wrap gap-0 w-full bg-white max-md:max-w-full">
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black border border-black border-solid min-w-[240px] w-[232px]">Lorem Ipsum</div>
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black border border-black border-solid min-w-[240px] w-[232px]">Lorem Ipsum</div>
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black whitespace-nowrap border border-black border-solid min-w-[240px] w-[232px]">Registrar</div>
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black border border-black border-solid min-w-[240px] w-[232px]">Desk attendant</div>
-                  <div class="flex flex-col grow shrink justify-center items-center px-4 py-3 border border-black border-solid min-w-[240px] w-[232px]">
-                    <div class="flex gap-2.5 justify-center items-center">
-                      <div class="flex overflow-hidden justify-center items-center self-stretch px-4 my-auto text-base font-medium leading-none text-center text-green-500 whitespace-nowrap bg-emerald-50 rounded-xl max-w-[480px] min-h-[30px] min-w-[84px] w-[117px]">
-                        <div class="overflow-hidden self-stretch my-auto w-[57px]">Enabled</div>
-                      </div>
-                      <div class="flex gap-2.5 items-center self-stretch my-auto w-[18px]">
-                        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/241e871721c5362ccecaf0acd745b4c1983f1c17ffbdea7ddd4868cc1514a5bc?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="Edit user" class="object-contain self-stretch my-auto aspect-[0.9] w-[18px]" />
-                      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-4 flex flex-col items-start">
+        <header>
+            <h1 class="text-4xl font-bold text-neutral-800">User Management</h1>
+        </header>
+        <img src="/api/placeholder/1010/150" alt="User Management Dashboard" class="w-full h-auto rounded-3xl mt-6 shadow-lg" />
+        <section class="w-full mt-12">
+            <button class="flex items-center justify-center px-6 py-3 bg-lime-700 text-white font-bold text-xl rounded-lg shadow-md hover:bg-lime-800 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Create New Account
+            </button>
+            <div class="bg-white rounded-xl shadow-md p-6 mt-6">
+                <form class="mb-6">
+                    <div class="relative">
+                        <input type="text" id="searchUser" placeholder="Search for a user" class="w-full py-3 pl-10 pr-4 text-gray-700 bg-white border rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-3 left-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
-                  </div>
+                </form>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">Lorem Ipsum</td>
+                                <td class="px-6 py-4 whitespace-nowrap">lorem_ipsum</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Registrar</td>
+                                <td class="px-6 py-4 whitespace-nowrap">Desk attendant</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Enabled</span>
+                                    <button class="ml-2 text-indigo-600 hover:text-indigo-900">Edit</button>
+                                </td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="flex flex-wrap gap-0 w-full bg-neutral-200 max-md:max-w-full">
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black border border-black border-solid min-w-[240px] w-[232px]">Lorem Ipsum</div>
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black border border-black border-solid min-w-[240px] w-[232px]">Lorem Ipsum</div>
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black whitespace-nowrap border border-black border-solid min-w-[240px] w-[232px]">Registrar</div>
-                  <div class="grow shrink px-4 py-3 text-xl font-medium text-center text-black border border-black border-solid min-w-[240px] w-[232px]">Desk attendant</div>
-                  <div class="flex flex-col grow shrink justify-center items-center px-4 py-3 border border-black border-solid min-w-[240px] w-[232px]">
-                    <div class="flex gap-2.5 justify-center items-center">
-                      <div class="flex overflow-hidden justify-center items-center self-stretch px-4 my-auto text-base font-medium leading-none text-center text-black whitespace-nowrap bg-red-600 rounded-xl max-w-[480px] min-h-[30px] min-w-[84px] w-[117px]">
-                        <div class="overflow-hidden self-stretch my-auto w-[61px]">Disabled</div>
-                      </div>
-                      <div class="flex gap-2.5 items-center self-stretch my-auto w-[18px]">
-                        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/241e871721c5362ccecaf0acd745b4c1983f1c17ffbdea7ddd4868cc1514a5bc?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="Edit user" class="object-contain self-stretch my-auto aspect-[0.9] w-[18px]" />
-                      </div>
+                <nav class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6" aria-label="Pagination">
+                    <div class="hidden sm:block">
+                        <p class="text-sm text-gray-700">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">20</span> results
+                        </p>
                     </div>
-                  </div>
-                </div>
-              </div>
+                    <div class="flex-1 flex justify-between sm:justify-end">
+                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Previous
+                        </button>
+                        <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                </nav>
             </div>
-          </div>
-          <nav class="flex gap-1.5 self-center mt-96 max-w-full text-sm font-semibold whitespace-nowrap text-zinc-800 w-[265px] max-md:mt-10" aria-label="Pagination">
-            <button class="px-1 py-2 bg-white rounded-lg min-h-[32px] text-stone-300" disabled>Prev</button>
-            <button class="px-2.5 w-8 h-8 text-white bg-blue-500 rounded-lg min-h-[32px]" aria-current="page">1</button>
-            <button class="px-2.5 w-8 h-8 bg-white rounded-lg border border-solid border-zinc-100 min-h-[32px]">2</button>
-            <button class="px-2.5 w-8 h-8 bg-white rounded-lg border border-solid border-zinc-100 min-h-[32px]">3</button>
-            <span class="px-2.5 w-8 h-8 bg-white rounded-lg min-h-[32px]">...</span>
-            <button class="pr-2.5 pl-2 w-8 h-8 bg-white rounded-lg border border-solid border-zinc-100 min-h-[32px]">10</button>
-            <button class="px-1 py-2 bg-white rounded-lg min-h-[32px]">Next</button>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="flex flex-col justify-center p-4 mt-3.5 w-full rounded-xl bg-zinc-300 max-md:max-w-full">
-    <div class="flex flex-col p-4 w-full bg-white rounded-xl max-md:max-w-full">
-      <div class="flex flex-wrap gap-10 justify-center items-center max-w-full w-[1450px]">
-        <h2 class="gap-2.5 self-stretch my-auto text-3xl font-bold leading-none text-black min-w-[240px]">User Performance Metrics</h2>
-        <div class="flex flex-col grow shrink self-stretch my-auto w-[141px]">
-          <div class="flex items-center pl-2.5 w-full rounded-lg border border-solid border-stone-400">
-            <label for="monthSelect" class="sr-only">Select Month</label>
-            <select id="monthSelect" class="flex-1 shrink self-stretch my-auto text-lg text-black basis-0 bg-transparent border-none">
-              <option>Month</option>
-            </select>
-            <div class="flex justify-center items-center self-stretch my-auto rounded-lg border border-solid bg-zinc-300 bg-opacity-70 border-stone-400 h-[39px] min-h-[39px] w-[39px]">
-              <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/779e39879f6fbffc2156e79e2759ac292e85d8d0bf4e3926153e958c3f780c18?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="" class="object-contain self-stretch my-auto aspect-square w-[26px]" />
+        </section>
+        <section class="w-full mt-8">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-4">User Performance Metrics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-2">Daily Customers Served</h3>
+                        <!-- Placeholder for chart -->
+                        <div class="bg-gray-200 h-64 rounded flex items-center justify-center">Chart Placeholder</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow text-center">
+                            <h3 class="text-2xl font-bold">3.4K</h3>
+                            <p class="text-gray-600">Total Clients Served</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center">
+                            <h3 class="text-2xl font-bold">5</h3>
+                            <p class="text-gray-600">Total No-Show Clients</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center col-span-2">
+                            <h3 class="text-2xl font-bold">8 min 30 sec</h3>
+                            <p class="text-gray-600">Average Service Time</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold mb-4">Service Time Distribution</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <span class="w-24 text-sm text-gray-600">5-10 mins</span>
+                            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+                                <div class="h-4 bg-blue-500 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-24 text-sm text-gray-600">10-15 mins</span>
+                            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+                                <div class="h-4 bg-blue-500 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-24 text-sm text-gray-600">15-20 mins</span>
+                            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+                                <div class="h-4 bg-blue-500 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-24 text-sm text-gray-600">20-25 mins</span>
+                            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+                                <div class="h-4 bg-blue-500 rounded-full" style="width: 30%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-24 text-sm text-gray-600">25+ mins</span>
+                            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+                                <div class="h-4 bg-blue-500 rounded-full" style="width: 15%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-col mt-5 w-full max-md:max-w-full">
-        <div class="flex flex-wrap gap-10 items-start max-w-full w-[1450px]">
-          <article class="flex flex-col px-6 pt-6 pb-32 rounded-xl border border-solid border-slate-300 min-h-[363px] min-w-[240px] w-[456px] max-md:px-5 max-md:pb-24 max-md:max-w-full">
-            <div class="flex flex-col w-full max-w-[406px]">
-              <h3 class="text-base font-medium text-neutral-900">Daily Customer Served</h3>
-              <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/039ea94769f60ee1a114103c20d87aef1b2ce9e6f6913fccbca8e95b08d7c7ab?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce" alt="Graph showing daily customers served" class="object-contain mt-3 w-full aspect-[2.74]" />
-              <div class="flex gap-8 items-center mt-3 w-full text-sm font-bold leading-loose text-slate-500">
-                <time datetime="2023-07-01">Jul 1</time>
-                <time datetime="2023-07-02">Jul 2</time>
-                <time datetime="2023-07-03">Jul 3</time>
-                <time datetime="2023-07-04">Jul 4</time>
-                <time datetime="2023-07-05">Jul 5</time>
-                <time datetime="2023-07-06">Jul 6</time>
-                <time datetime="2023-07-07">Jul 7</time>
-              </div>
-            </div>
-          </article>
-          <div class="flex flex-col min-w-[240px] w-[818px] max-md:max-w-full">
-            <div class="flex flex-wrap gap-6 items-center text-center max-md:max-w-full">
-              <article class="flex flex-col justify-center items-center self-stretch py-20 pr-12 pl-12 my-auto w-64 rounded-lg border border-solid border-slate-300 min-h-[211px] min-w-[240px] max-md:px-5">
-                <div class="flex flex-col max-w-full w-[159px]">
-                  <h3 class="text-2xl font-bold leading-none text-neutral-900">3.4K</h3>
-                  <p class="mt-2 text-sm text-slate-500">Total Client Served</p>
-                </div>
-              </article>
-              <article class="flex flex-col justify-center items-center self-stretch py-20 pr-12 pl-12 my-auto w-64 rounded-lg border border-solid border-slate-300 min-h-[211px] min-w-[240px] max-md:px-5">
-                <div class="flex flex-col max-w-full w-[159px]">
-                  <h3 class="text-2xl font-bold leading-none text-neutral-900">5</h3>
-                  <p class="mt-2 text-sm text-slate-500">Total No Show Clients</p>
-                </div>
-              </article>
-              <article class="flex flex-col justify-center items-center self-stretch py-16 pr-12 pl-12 my-auto w-64 rounded-lg border border-solid border-slate-300 min-h-[211px] min-w-[240px] max-md:px-5">
-                <div class="flex flex-col max-w-full w-[159px]">
-                  <h3 class="text-2xl font-bold leading-none text-neutral-900">8 min 30 sec</h3>
-                  <p class="mt-2 text-sm leading-5 text-slate-500">Average Service Time (mins)</p>
-                </div>
-              </article>
-            </div>
-            <div class="flex flex-col justify-center items-start p-4 mt-6 w-full rounded-xl border border-solid border-slate-300 max-w-[818px] max-md:max-w-full">
-              <h3 class="gap-2.5 self-stretch text-base font-medium text-neutral-900">Service Time Distribution</h3>
-              <div class="flex flex-col mt-2.5 max-w-full text-sm font-bold leading-loose text-slate-500 w-[676px]">
-                <div class="flex flex-wrap gap-3 justify-between items-center w-full max-md:max-w-full">
-                  <span class="self-stretch my-auto w-[75px]">5-10 mins</span>
-                  <div class="flex shrink-0 self-stretch my-auto h-8 border-r-2 bg-slate-200 border-neutral-500 min-w-[240px] w-[590px]" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <div class="flex flex-wrap gap-3 justify-between items-center mt-1.5 w-full max-md:max-w-full">
-                  <span class="self-stretch my-auto w-[75px]">10-15 mins</span>
-                  <div class="flex shrink-0 self-stretch my-auto h-8 border-r-2 bg-slate-200 border-neutral-500 min-w-[240px] w-[590px]" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <div class="flex flex-wrap gap-3 justify-between items-center mt-1.5 w-full max-md:max-w-full">
-                  <span class="self-stretch my-auto w-[75px]">15-20 mins</span>
-                  <div class="flex shrink-0 self-stretch my-auto h-8 border-r-2 bg-slate-200 border-neutral-500 min-w-[240px] w-[590px]" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <div class="flex flex-wrap gap-3 justify-between items-center mt-1.5 w-full max-md:max-w-full">
-                  <span class="self-stretch my-auto w-[75px]">20-25 mins</span>
-                  <div class="flex shrink-0 self-stretch my-auto border-r-2 bg-slate-200 border-neutral-500 h-[33px] min-w-[240px] w-[590px]" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <div class="flex flex-wrap gap-3 justify-between items-center mt-1.5 w-full max-md:max-w-full">
-                  <span class="self-stretch my-auto w-[75px]">25+ mins</span>
-                  <div class="flex shrink-0 self-stretch my-auto h-8 border-r-2 bg-slate-200 border-neutral-500 min-w-[240px] w-[590px]" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+        </section>
+    </main>
+</body>
+</html>

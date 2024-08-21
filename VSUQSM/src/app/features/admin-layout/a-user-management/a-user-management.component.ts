@@ -20,20 +20,20 @@ interface User {
 })
 export class AUserManagementComponent implements OnInit {
   users: User[] = [
-    { username: 'Test User', fullName: 'Test Name', location: 'Registrar', type: 'Desk attendant', status: 'Active', password: '' },
-    // Add more users as needed
+    { username: 'TestUser', fullName: 'Test Name', location: 'Registrar', type: 'Desk attendant', status: 'Active', password: '' },
+    // Add more users here for testing
   ];
 
   performanceMetrics = {
     totalCheckIns: 43212,
     averageCheckInTime: '7:30 mins',
     totalCheckInsToday: 1345,
-    totalCheckInsThisWeek: 12124,
+    totalCheckInsThisWeek: 13124,
     averageTimeService: '7:30 mins',
     rating: 4
   };
 
-  selectedUser = 'Jhielo Gonzales';
+  selectedUser: string = '';
   showModal = false;
   newAccount: User = {
     username: '',
@@ -49,8 +49,15 @@ export class AUserManagementComponent implements OnInit {
   locations = ['Accounting Office', 'Registrar', 'Admin Office'];
   accountTypes = ['Desk attendant', 'Manager', 'Admin'];
 
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+
+  Math = Math; // Make Math available in the template
+
   ngOnInit() {
     this.filteredUsers = this.users;
+    this.updatePagination();
   }
 
   openModal() {
@@ -63,16 +70,38 @@ export class AUserManagementComponent implements OnInit {
   }
 
   createNewAccount() {
-    console.log('Creating new account with:', this.newAccount);
-    if (this.newAccount.username && this.newAccount.fullName && this.newAccount.location && this.newAccount.type && this.newAccount.password) {
-      this.users.push({ ...this.newAccount });
-      this.filteredUsers = [...this.users];
-      this.closeModal();
+    if (this.isFormValid()) {
+      if (this.selectedUser) {
+        this.updateUser();
+      } else {
+        this.users.push({ ...this.newAccount });
+        this.filteredUsers = [...this.users];
+        this.closeModal();
+        this.updatePagination();
+      }
     } else {
       console.log('Please fill in all fields');
     }
   }
-  
+
+  private updateUser() {
+    const index = this.users.findIndex(user => user.username === this.selectedUser);
+    if (index > -1) {
+      this.users[index] = { ...this.newAccount };
+      this.filteredUsers = [...this.users];
+      this.closeModal();
+      this.updatePagination();
+      this.selectedUser = '';
+    }
+  }
+
+  isFormValid(): boolean {
+    return this.newAccount.username.trim() !== '' &&
+           this.newAccount.fullName.trim() !== '' &&
+           this.newAccount.location !== '' &&
+           this.newAccount.type !== '' &&
+           this.newAccount.password.trim() !== '';
+  }
 
   private resetNewAccount() {
     this.newAccount = {
@@ -86,8 +115,10 @@ export class AUserManagementComponent implements OnInit {
   }
 
   editUser(user: User) {
-    console.log('Editing user:', user);
-    // Implement edit functionality
+    this.selectedUser = user.username;
+    this.newAccount = { ...user };
+    this.showModal = true;
+    // Implement additional logic if needed
   }
 
   deleteUser(user: User) {
@@ -95,14 +126,39 @@ export class AUserManagementComponent implements OnInit {
     if (index > -1) {
       this.users.splice(index, 1);
       this.filteredUsers = [...this.users];
+      this.updatePagination();
     }
   }
 
   searchUsers() {
     this.filteredUsers = this.users.filter(user =>
       user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      user.fullName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
       user.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
       user.type.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  get paginatedUsers() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.filteredUsers.slice(startIndex, startIndex + this.pageSize);
   }
 }

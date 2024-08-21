@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 interface Counter {
   id: number;
@@ -13,26 +12,59 @@ interface Counter {
   styleUrls: ['./a-terminal-management.component.css']
 })
 export class ATerminalManagementComponent implements OnInit {
-  counters: Counter[] = [];
+  counters: { [key: string]: Counter[] } = {
+    'Registrar': [],
+    'Cash Division': [],
+    'Accounting Office': []
+  };
   activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Cash Division';
 
-  constructor() { }
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    // Initialize with two counters
-    this.counters = [
-      { id: 1, name: 'Counter 1', isActive: false },
-      { id: 2, name: 'Counter 2', isActive: false }
+    this.counters['Cash Division'] = [
+      { id: 1, name: 'C1', isActive: false },
+      { id: 2, name: 'C2', isActive: false }
     ];
+    // Initialize other tabs with empty counters
+    this.counters['Registrar'] = [];
+    this.counters['Accounting Office'] = [];
   }
 
   addCounter(): void {
-    const newId = this.counters.length + 1;
-    this.counters.push({
+    console.log('Add Counter clicked');
+    console.log('Active Tab:', this.activeTab);
+    const prefix = this.getPrefixForActiveTab();
+    console.log('Prefix:', prefix);
+
+    const countersForTab = this.counters[this.activeTab];
+    const newId = countersForTab.length + 1;
+    console.log('New Counter ID:', newId);
+    const newCounterName = `${prefix}${newId}`;
+    console.log('New Counter Name:', newCounterName);
+
+    countersForTab.push({
       id: newId,
-      name: `Counter ${newId}`,
+      name: newCounterName,
       isActive: false
     });
+
+    // Force change detection
+    this.cdr.detectChanges();
+    console.log('Counters:', this.counters[this.activeTab]);
+  }
+
+  getPrefixForActiveTab(): string {
+    switch (this.activeTab) {
+      case 'Registrar':
+        return 'R';
+      case 'Cash Division':
+        return 'C';
+      case 'Accounting Office':
+        return 'A';
+      default:
+        return '';
+    }
   }
 
   toggleCounterStatus(counter: Counter): void {
@@ -44,12 +76,10 @@ export class ATerminalManagementComponent implements OnInit {
   }
 
   logout(): void {
-    // Implement logout logic here
     console.log('Logout clicked');
   }
 
   navigateTo(route: string): void {
-    // Implement navigation logic here
     console.log(`Navigating to ${route}`);
   }
 }

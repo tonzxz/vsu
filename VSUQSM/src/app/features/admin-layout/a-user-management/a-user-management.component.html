@@ -5,15 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@angular/core@latest/bundles/core.umd.js"></script>
+    <script src="https://unpkg.com/@angular/forms@latest/bundles/forms.umd.js"></script>
+    <script src="https://unpkg.com/@angular/common@latest/bundles/common.umd.js"></script>
 </head>
 <body class="bg-gray-100">
     <main class="container mx-auto p-4 flex flex-col items-start">
         <header>
             <h1 class="text-4xl font-bold text-neutral-800">User Management</h1>
         </header>
-        <img src="/api/placeholder/1010/150" alt="User Management Dashboard" class="w-full h-auto rounded-3xl mt-6 shadow-lg" />
+        <section class="banner-section">
+            <img
+              loading="lazy"
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/d1ce056d50bb1e33e849fc83b744e41b9d8ffc72756abedebe816599ac5a0dbe?placeholderIfAbsent=true&apiKey=e487b4145b77410bbe58d9cf94c02ff4"
+              class="banner-image"
+              alt="Decorative image"
+            />
+        </section>
+
         <section class="w-full mt-12">
-            <button class="flex items-center justify-center px-6 py-3 bg-lime-700 text-white font-bold text-xl rounded-lg shadow-md hover:bg-lime-800 transition duration-300">
+            <button (click)="openModal()" class="flex items-center justify-center px-6 py-3 bg-lime-700 text-white font-bold text-xl rounded-lg shadow-md hover:bg-lime-800 transition duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -22,7 +33,7 @@
             <div class="bg-white rounded-xl shadow-md p-6 mt-6">
                 <form class="mb-6">
                     <div class="relative">
-                        <input type="text" id="searchUser" placeholder="Search for a user" class="w-full py-3 pl-10 pr-4 text-gray-700 bg-white border rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
+                        <input [(ngModel)]="searchQuery" (input)="searchUsers()" [ngModelOptions]="{standalone: true}" type="text" id="searchUser" placeholder="Search for a user" class="w-full py-3 pl-10 pr-4 text-gray-700 bg-white border rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" />
                         <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-3 left-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -40,14 +51,15 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">Lorem Ipsum</td>
-                                <td class="px-6 py-4 whitespace-nowrap">lorem_ipsum</td>
-                                <td class="px-6 py-4 whitespace-nowrap">Registrar</td>
-                                <td class="px-6 py-4 whitespace-nowrap">Desk attendant</td>
+                            <tr *ngFor="let user of filteredUsers">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ user.fullName }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ user.username }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ user.location }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ user.type }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Enabled</span>
-                                    <button class="ml-2 text-indigo-600 hover:text-indigo-900">Edit</button>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="{'bg-green-100 text-green-800': user.status === 'Active', 'bg-red-100 text-red-800': user.status === 'Inactive'}">{{ user.status }}</span>
+                                    <button (click)="editUser(user)" class="ml-2 text-indigo-600 hover:text-indigo-900">Edit</button>
+                                    <button (click)="deleteUser(user)" class="ml-2 text-red-600 hover:text-red-900">Delete</button>
                                 </td>
                             </tr>
                             <!-- Add more rows as needed -->
@@ -71,6 +83,44 @@
                 </nav>
             </div>
         </section>
+
+        <!-- Modal for creating new account -->
+        <div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
+            <div class="bg-white rounded-lg p-6 w-96">
+                <h2 class="text-2xl font-bold mb-4">Create New Account</h2>
+                <form (ngSubmit)="createNewAccount()">
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                        <input [(ngModel)]="newAccount.username" [ngModelOptions]="{standalone: true}" type="text" id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                    </div>
+                    <div class="mb-4">
+                        <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input [(ngModel)]="newAccount.fullName" [ngModelOptions]="{standalone: true}" type="text" id="fullName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                    </div>
+                    <div class="mb-4">
+                        <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                        <select [(ngModel)]="newAccount.location" [ngModelOptions]="{standalone: true}" id="location" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                            <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                        <select [(ngModel)]="newAccount.type" [ngModelOptions]="{standalone: true}" id="type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                            <option *ngFor="let type of accountTypes" [value]="type">{{ type }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input [(ngModel)]="newAccount.password" [ngModelOptions]="{standalone: true}" type="password" id="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-500 text-white font-bold rounded-md mr-2">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-lime-700 text-white font-bold rounded-md">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+<!-- changes -->
         <section class="w-full mt-8">
             <div class="bg-white rounded-xl shadow-md p-6">
                 <h2 class="text-2xl font-bold mb-4">User Performance Metrics</h2>
@@ -82,15 +132,15 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-white p-4 rounded-lg shadow text-center">
-                            <h3 class="text-2xl font-bold">3.4K</h3>
+                            <h3 class="text-2xl font-bold">{{ performanceMetrics.totalCheckIns }}</h3>
                             <p class="text-gray-600">Total Clients Served</p>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow text-center">
-                            <h3 class="text-2xl font-bold">5</h3>
+                            <h3 class="text-2xl font-bold">{{ performanceMetrics.totalCheckInsToday }}</h3>
                             <p class="text-gray-600">Total No-Show Clients</p>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow text-center col-span-2">
-                            <h3 class="text-2xl font-bold">8 min 30 sec</h3>
+                            <h3 class="text-2xl font-bold">{{ performanceMetrics.averageTimeService }}</h3>
                             <p class="text-gray-600">Average Service Time</p>
                         </div>
                     </div>
@@ -117,15 +167,9 @@
                             </div>
                         </div>
                         <div class="flex items-center">
-                            <span class="w-24 text-sm text-gray-600">20-25 mins</span>
+                            <span class="w-24 text-sm text-gray-600">20+ mins</span>
                             <div class="flex-1 h-4 bg-blue-200 rounded-full">
                                 <div class="h-4 bg-blue-500 rounded-full" style="width: 30%"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-24 text-sm text-gray-600">25+ mins</span>
-                            <div class="flex-1 h-4 bg-blue-200 rounded-full">
-                                <div class="h-4 bg-blue-500 rounded-full" style="width: 15%"></div>
                             </div>
                         </div>
                     </div>

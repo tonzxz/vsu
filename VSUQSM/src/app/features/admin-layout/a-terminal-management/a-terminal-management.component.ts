@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 interface Counter {
   id: number;
@@ -9,7 +10,9 @@ interface Counter {
 @Component({
   selector: 'app-terminal-management',
   templateUrl: './a-terminal-management.component.html',
-  styleUrls: ['./a-terminal-management.component.css']
+  styleUrls: ['./a-terminal-management.component.css'],
+  standalone: true,
+  imports: [CommonModule]  // <-- Import CommonModule here
 })
 export class ATerminalManagementComponent implements OnInit {
   counters: { [key: string]: Counter[] } = {
@@ -17,41 +20,45 @@ export class ATerminalManagementComponent implements OnInit {
     'Cash Division': [],
     'Accounting Office': []
   };
-  activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Cash Division';
+  activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Registrar';
+  maxCounters: number = 10; // Maximum number of counters per tab
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    // Initialize some default values for each tab
+    this.counters['Registrar'] = [
+      { id: 1, name: 'R1', isActive: false },
+      { id: 2, name: 'R2', isActive: false }
+    ];
     this.counters['Cash Division'] = [
       { id: 1, name: 'C1', isActive: false },
       { id: 2, name: 'C2', isActive: false }
     ];
-    // Initialize other tabs with empty counters
-    this.counters['Registrar'] = [];
-    this.counters['Accounting Office'] = [];
+    this.counters['Accounting Office'] = [
+      { id: 1, name: 'A1', isActive: false },
+      { id: 2, name: 'A2', isActive: false }
+    ];
   }
 
   addCounter(): void {
-    console.log('Add Counter clicked');
-    console.log('Active Tab:', this.activeTab);
-    const prefix = this.getPrefixForActiveTab();
-    console.log('Prefix:', prefix);
-
     const countersForTab = this.counters[this.activeTab];
-    const newId = countersForTab.length + 1;
-    console.log('New Counter ID:', newId);
-    const newCounterName = `${prefix}${newId}`;
-    console.log('New Counter Name:', newCounterName);
+    if (countersForTab.length < this.maxCounters) { // Check if the limit is reached
+      const prefix = this.getPrefixForActiveTab();
+      const newId = countersForTab.length + 1;
+      const newCounterName = `${prefix}${newId}`;
 
-    countersForTab.push({
-      id: newId,
-      name: newCounterName,
-      isActive: false
-    });
+      countersForTab.push({
+        id: newId,
+        name: newCounterName,
+        isActive: false
+      });
 
-    // Force change detection
-    this.cdr.detectChanges();
-    console.log('Counters:', this.counters[this.activeTab]);
+      // Force change detection
+      this.cdr.detectChanges();
+    } else {
+      console.log(`Maximum of ${this.maxCounters} counters reached for ${this.activeTab}`);
+    }
   }
 
   getPrefixForActiveTab(): string {
@@ -75,11 +82,14 @@ export class ATerminalManagementComponent implements OnInit {
     this.activeTab = tab;
   }
 
-  logout(): void {
-    console.log('Logout clicked');
+  deleteCounter(counterId: number): void {
+    this.counters[this.activeTab] = this.counters[this.activeTab].filter(counter => counter.id !== counterId);
+
+    // Force change detection
+    this.cdr.detectChanges();
   }
 
-  navigateTo(route: string): void {
-    console.log(`Navigating to ${route}`);
+  shouldShowAddButton(): boolean {
+    return this.counters[this.activeTab].length < this.maxCounters;
   }
 }

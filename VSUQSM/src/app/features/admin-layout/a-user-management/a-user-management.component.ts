@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CreateAccountModalComponent } from './create-account-modal/create-account-modal.component'; // Import the modal component
 
 interface User {
   username: string;
@@ -11,12 +12,13 @@ interface User {
   password: string;
 }
 
+
 @Component({
   selector: 'a-user-management',
   templateUrl: './a-user-management.component.html',
   styleUrls: ['./a-user-management.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, CreateAccountModalComponent] // Import the modal component here
 })
 export class AUserManagementComponent implements OnInit {
   users: User[] = [
@@ -69,20 +71,13 @@ export class AUserManagementComponent implements OnInit {
     this.resetNewAccount();
   }
 
-  createNewAccount() {
-    if (this.isFormValid()) {
-      if (this.selectedUser) {
-        this.updateUser();
-      } else {
-        this.users.push({ ...this.newAccount });
-        this.filteredUsers = [...this.users];
-        this.closeModal();
-        this.updatePagination();
-      }
-    } else {
-      console.log('Please fill in all fields');
-    }
+  createNewAccount(updatedUsers: User[]) {
+    this.users = updatedUsers;
+    this.filteredUsers = [...this.users];
+    this.closeModal();
+    this.updatePagination();
   }
+
 
   private updateUser() {
     const index = this.users.findIndex(user => user.username === this.selectedUser);

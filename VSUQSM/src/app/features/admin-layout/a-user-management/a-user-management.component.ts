@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CreateAccountModalComponent } from './create-account-modal/create-account-modal.component'; // Import the modal component
+import { CreateAccountModalComponent } from './create-account-modal/create-account-modal.component';
 
 interface User {
   username: string;
@@ -9,135 +9,103 @@ interface User {
   location: string;
   type: string;
   status: 'Active' | 'Inactive';
-  password: string;
+  password?: string;
 }
 
-
 @Component({
-  selector: 'a-user-management',
+  selector: 'app-user-management',
   templateUrl: './a-user-management.component.html',
   styleUrls: ['./a-user-management.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, CreateAccountModalComponent] // Import the modal component here
+  imports: [CommonModule, FormsModule, CreateAccountModalComponent]
 })
 export class AUserManagementComponent implements OnInit {
-  users: User[] = [
-    { username: 'TestUser', fullName: 'Test Name', location: 'Registrar', type: 'Desk attendant', status: 'Active', password: '' },
-    // Add more users here for testing
-  ];
-
-  performanceMetrics = {
-    totalCheckIns: 43212,
-    averageCheckInTime: '7:30 mins',
-    totalCheckInsToday: 1345,
-    totalCheckInsThisWeek: 13124,
-    averageTimeService: '7:30 mins',
-    rating: 4
-  };
-
-  selectedUser: string = '';
-  showModal = false;
-  newAccount: User = {
-    username: '',
-    fullName: '',
-    location: '',
-    type: '',
-    status: 'Active',
-    password: ''
-  };
-
-  searchQuery = '';
+  Math = Math;
+  users: User[] = [];
   filteredUsers: User[] = [];
+  searchQuery = '';
+  showModal = false;
+  selectedUser: User | null = null;
   locations = ['Accounting Office', 'Registrar', 'Admin Office'];
   accountTypes = ['Desk attendant', 'Manager', 'Admin'];
-
   currentPage = 1;
   pageSize = 10;
   totalPages = 1;
+  isEditing = false;
 
-  Math = Math; // Make Math available in the template
+  performanceMetrics = {
+    totalCheckIns: 43212,
+    totalCheckInsToday: 1345,
+    averageTimeService: '7:30 mins'
+  };
 
   ngOnInit() {
-    this.filteredUsers = this.users;
+    // Initialize with test data
+    this.users = [
+      { username: 'testuser', fullName: 'Test User', location: 'Accounting Office', type: 'Desk attendant', status: 'Active' },
+      { username: 'jhielo', fullName: 'jhielo gonzales', location: 'Accounting Office', type: 'Manager', status: 'Active' },
+      // Add more test users here if needed
+    ];
+    this.filteredUsers = [...this.users];
+    this.updatePagination();
+  }
+
+  searchUsers() {
+    this.filteredUsers = this.users.filter(user =>
+      user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      user.fullName.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
     this.updatePagination();
   }
 
   openModal() {
     this.showModal = true;
+    this.isEditing = false;
+    this.selectedUser = null;
   }
 
   closeModal() {
     this.showModal = false;
-    this.resetNewAccount();
+    this.selectedUser = null;
   }
 
-  createNewAccount(updatedUsers: User[]) {
-    this.users = updatedUsers;
-    this.filteredUsers = [...this.users];
-    this.closeModal();
-    this.updatePagination();
-  }
-
-
-  private updateUser() {
-    const index = this.users.findIndex(user => user.username === this.selectedUser);
-    if (index > -1) {
-      this.users[index] = { ...this.newAccount };
-      this.filteredUsers = [...this.users];
-      this.closeModal();
-      this.updatePagination();
-      this.selectedUser = '';
+  onAccountCreated(newAccount: User) {
+    if (this.isEditing) {
+      const index = this.users.findIndex(u => u.username === this.selectedUser!.username);
+      if (index !== -1) {
+        this.users[index] = newAccount;
+      }
+    } else {
+      this.users.push(newAccount);
     }
-  }
-
-  isFormValid(): boolean {
-    return this.newAccount.username.trim() !== '' &&
-           this.newAccount.fullName.trim() !== '' &&
-           this.newAccount.location !== '' &&
-           this.newAccount.type !== '' &&
-           this.newAccount.password.trim() !== '';
-  }
-
-  private resetNewAccount() {
-    this.newAccount = {
-      username: '',
-      fullName: '',
-      location: '',
-      type: '',
-      status: 'Active',
-      password: ''
-    };
+    this.filteredUsers = [...this.users];
+    this.updatePagination();
+    this.closeModal();
   }
 
   editUser(user: User) {
-    this.selectedUser = user.username;
-    this.newAccount = { ...user };
+    this.selectedUser = { ...user };
+    this.isEditing = true;
     this.showModal = true;
-    // Implement additional logic if needed
   }
 
   deleteUser(user: User) {
     const index = this.users.indexOf(user);
     if (index > -1) {
       this.users.splice(index, 1);
-      this.filteredUsers = [...this.users];
+      this.filteredUsers = this.filteredUsers.filter(u => u !== user);
       this.updatePagination();
     }
   }
 
-  searchUsers() {
-    this.filteredUsers = this.users.filter(user =>
-      user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      user.fullName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      user.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      user.type.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-    this.currentPage = 1;
-    this.updatePagination();
-  }
-
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
+    this.currentPage = 1;
+  }
+
+  get paginatedUsers() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.filteredUsers.slice(startIndex, startIndex + this.pageSize);
   }
 
   previousPage() {
@@ -150,10 +118,5 @@ export class AUserManagementComponent implements OnInit {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }
-  }
-
-  get paginatedUsers() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return this.filteredUsers.slice(startIndex, startIndex + this.pageSize);
   }
 }

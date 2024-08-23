@@ -1,6 +1,15 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+interface User {
+  username: string;
+  fullName: string;
+  location: string;
+  type: string;
+  status: 'Active' | 'Inactive';
+  password?: string;
+}
 
 @Component({
   selector: 'app-create-account-modal',
@@ -9,28 +18,39 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class CreateAccountModalComponent {
+export class CreateAccountModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
+  @Output() accountCreated = new EventEmitter<User>();
+  @Input() editingUser: User | null = null;
 
-  newAccount: any = {
+  newAccount: User = {
     fullName: '',
     username: '',
     password: '',
     location: '',
-    type: ''
+    type: '',
+    status: 'Active'
   };
+
   locations = ['Accounting Office', 'Registrar', 'Admin Office'];
   accountTypes = ['Desk attendant', 'Manager', 'Admin'];
-  
+
   showModal = true;
 
+  ngOnInit() {
+    if (this.editingUser) {
+      this.newAccount = { ...this.editingUser };
+    }
+  }
+
   createNewAccount() {
-    // Implement the logic to create a new account
-    console.log('Creating new account:', this.newAccount);
+    console.log('Creating/Updating account:', this.newAccount);
+    this.accountCreated.emit(this.newAccount);
+    this.closeModal();
   }
 
   closeModal() {
     this.showModal = false;
-    this.close.emit();  // Emit event to notify the parent component to close the modal
+    this.close.emit();
   }
 }

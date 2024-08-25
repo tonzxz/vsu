@@ -12,11 +12,14 @@ import jsPDF from 'jspdf';
   styleUrls: ['./kiosk-forms.component.css']
 })
 export class KioskFormsComponent implements OnInit {
+  
   departmentName: string = '';
+  currentPeriod: string = 'AM';
   currentTime: Date = new Date();
   currentDate: Date = new Date();
-  isChecklistVisible: boolean = false;
+  isChecklistVisible: boolean = false;    
   isFormVisible: boolean = false;
+  showModal: boolean = false;  // Modal visibility
   checklist: { name: string, selected: boolean }[] = [
     { name: 'Request Documents', selected: false },
     { name: 'File Documents', selected: false },
@@ -24,8 +27,9 @@ export class KioskFormsComponent implements OnInit {
     { name: 'Set an Appointment', selected: false },
     { name: 'Other', selected: false }
   ];
-  queueNumber: number | null = null;
+  queueNumber: string | null = null;
   selectedServices: string[] = [];
+  selectedType: string = '';
 
   constructor(private route: ActivatedRoute) {}
 
@@ -39,15 +43,23 @@ export class KioskFormsComponent implements OnInit {
 
   handleButtonClick(type: string): void {
     this.isChecklistVisible = true;
+    this.selectedType = type;
+  }
+
+  toggleSelection(serviceName: string): void {
+    const service = this.checklist.find(item => item.name === serviceName);
+    if (service) {
+      service.selected = !service.selected;
+    }
   }
 
   confirmChecklist(): void {
-    this.isChecklistVisible = false;
-    this.isFormVisible = true;
+    this.isChecklistVisible = true;
     this.queueNumber = this.generateQueueNumber();
     this.selectedServices = this.checklist
       .filter(item => item.selected)
       .map(item => item.name);
+    this.showModal = true;  // Show the modal
   }
 
   goBack(): void {
@@ -57,28 +69,40 @@ export class KioskFormsComponent implements OnInit {
     } else if (this.isChecklistVisible) {
       this.isChecklistVisible = false;
     }
+    this.showModal = false;  // Close the modal
   }
 
-  generateQueueNumber(): number {
-    const today = new Date().toDateString();
-    let lastQueueData = JSON.parse(localStorage.getItem('lastQueueData') || '{}');
+  closeModal(): void {
+    this.showModal = false;  // Hide the modal
+  }
 
-    if (lastQueueData.date !== today) {
-      lastQueueData = { date: today, lastQueueNumber: 0 };
+  generateQueueNumber(): string {
+    const today = new Date().toDateString();
+    const queueKey = `${this.departmentName}_${today}`;
+    let departmentQueueData = JSON.parse(localStorage.getItem(queueKey) || '{}');
+
+    if (!departmentQueueData.date) {
+      departmentQueueData = { date: today, lastRegularQueueNumber: 0, lastPriorityQueueNumber: 0 };
     }
 
-    lastQueueData.lastQueueNumber += 1;
-    localStorage.setItem('lastQueueData', JSON.stringify(lastQueueData));
-
-    return lastQueueData.lastQueueNumber;
+    if (this.selectedType === 'regular') {
+      departmentQueueData.lastRegularQueueNumber += 1;
+      localStorage.setItem(queueKey, JSON.stringify(departmentQueueData));
+      return `R-${departmentQueueData.lastRegularQueueNumber}`;
+    } else {
+      departmentQueueData.lastPriorityQueueNumber += 1;
+      localStorage.setItem(queueKey, JSON.stringify(departmentQueueData));
+      return `P-${departmentQueueData.lastPriorityQueueNumber}`;
+    }
   }
 
   resetQueueNumberIfNewDay(): void {
     const today = new Date().toDateString();
-    let lastQueueData = JSON.parse(localStorage.getItem('lastQueueData') || '{}');
+    const queueKey = `${this.departmentName}_${today}`;
+    let departmentQueueData = JSON.parse(localStorage.getItem(queueKey) || '{}');
 
-    if (lastQueueData.date !== today) {
-      localStorage.setItem('lastQueueData', JSON.stringify({ date: today, lastQueueNumber: 0 }));
+    if (departmentQueueData.date !== today) {
+      localStorage.setItem(queueKey, JSON.stringify({ date: today, lastRegularQueueNumber: 0, lastPriorityQueueNumber: 0 }));
     }
   }
 
@@ -93,13 +117,11 @@ export class KioskFormsComponent implements OnInit {
     doc.text(this.departmentName.toUpperCase(), 40, 10, { align: 'center' });
   
     doc.setFontSize(50);
-    doc.text(this.queueNumber!.toString(), 40, 30, { align: 'center' });
+    doc.text(this.queueNumber!, 40, 30, { align: 'center' });
   
     doc.setFontSize(12);
     doc.text(new Date().toLocaleDateString() + ' - ' + new Date().toLocaleTimeString(), 40, 40, { align: 'center' });
   
     doc.save(`queue_ticket_${this.queueNumber}.pdf`);
   }
-  
-
 }

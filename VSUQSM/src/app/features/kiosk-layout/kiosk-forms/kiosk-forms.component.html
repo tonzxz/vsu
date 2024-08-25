@@ -1,60 +1,191 @@
-<div class="flex flex-col items-center justify-center h-full space-y-6">
-    <!-- Header Section -->
-    <div class="text-center">
-      <img src="assets/img/visayas-logo.svg" alt="University Logo" class="h-32 mb-4 rounded-lg shadow-lg">
-      <h1 class="text-3xl font-bold">{{ departmentName }}</h1>
-      <p class="text-gray-600">{{ currentTime | date: 'hh:mm a' }} | {{ currentDate | date: 'EEEE, MMMM d, y' }}</p>
+<div class="flex flex-col h-full overflow-hidden bg-white">
+  <!-- Header Section -->
+  <header class="flex relative flex-col items-start self-center px-14 py-7 w-full max-w-[1007px] min-h-[206px] max-md:px-5 max-md:max-w-full">
+    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/0bb46d07dcd9c58bd7a9c1937ff0e66cfc9d2606a6a382780bf054442af5a63f?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="" class="object-contain absolute right-0 bottom-0 z-0 rounded-3xl aspect-[4.88] h-[206px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[1007px]" />
+    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/ccfd839ba53087efc00e872150152cfd96c0e66a81732cbe707bca93735455ca?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Registrar logo" class="object-contain z-0 max-w-full aspect-[1.01] w-[150px]" />
+  </header>
+
+  <!-- Department Info -->
+  <section class="flex flex-col self-center mt-8 w-full max-w-[948px] max-md:max-w-full">
+    <div class="flex flex-col justify-center w-full text-neutral-800 max-md:max-w-full">
+      <div class="flex flex-col w-full max-md:max-w-full">
+        <div class="flex flex-wrap gap-10 justify-between items-start pt-1.5 pb-9 w-full min-h-[154px] max-md:max-w-full">
+          <span class="gap-2.5 self-stretch text-6xl font-extrabold whitespace-nowrap min-w-[240px] w-[408px] max-md:text-4xl">
+            {{ departmentName | titlecase }}
+          </span>
+          <div class="flex gap-3 items-center font-bold min-w-[240px] w-[361px]">
+            <div class="self-stretch my-auto text-right max-md:text-4xl max-md:leading-[66px]">
+              <span class="block text-6xl">{{ currentTime | date: 'hh:mm' }}</span>
+              <span class="block text-2xl">{{ currentTime | date: 'a' }}</span>
+            </div>
+            <div class="flex shrink-0 self-stretch my-auto w-1.5 bg-neutral-800 h-[114px]"></div>
+            <div class="self-stretch my-auto text-3xl leading-[40px] w-[349px] max-md:text-2xl max-md:leading-[35px]">
+              <span class="block">{{ currentDate | date: 'EEEE,' }}</span>
+              <span class="block">{{ currentDate | date: 'MMMM d, yyyy' }}</span>
+            </div>
+          </div>
+          
+        </div>
+        <span class="gap-2.5 self-center text-6xl font-bold text-center max-md:text-4xl">
+        @if(isChecklistVisible) { 
+          How Can We Serve you?
+        } @else if(!isChecklistVisible && !isFormVisible) {
+          Select a Line
+        } 
+        </span>
+        <span class="gap-2.5 self-center text-6xl font-bold text-center max-md:text-4xl">
+         @if (isFormVisible) {
+            Queue Ticket
+          }
+          </span>
+      </div>
     </div>
-  
-    <!-- Line Selection (Hidden when Checklist is visible) -->
-    <div class="flex flex-col space-y-4 mt-8" *ngIf="!isChecklistVisible && !isFormVisible">
-      <button (click)="handleButtonClick('regular')" class="flex flex-col items-center btn-custom p-6 bg-green-700 text-white rounded-lg shadow-lg">
-        <img src="assets/img/regular.svg" alt="Regular Line" class="h-24 mb-4">
-        <span class="text-lg">Regular</span>
+  </section>
+
+  <!-- Line Selection -->
+  <nav class="flex flex-col mt-12 w-full text-4xl font-bold text-white whitespace-nowrap max-md:mt-10 max-md:max-w-full" *ngIf="!isChecklistVisible && !isFormVisible">
+    <div class="flex flex-col w-full max-md:max-w-full">
+      <button (click)="handleButtonClick('regular')" class="flex flex-col items-center px-80 py-11 w-full text-center bg-lime-900 rounded-3xl min-h-[357px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] max-md:px-5 max-md:max-w-full" tabindex="0">
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/e3e3a3bb80a2a94db339a0a0d63ec71f16b72dd570029f86967b71921aadee84?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Regular line icon" class="object-contain max-w-full aspect-[1.36] w-[304px]" />
+        <span>Regular</span>
       </button>
-      <button (click)="handleButtonClick('priority')" class="flex flex-col items-center btn-custom p-6 bg-green-700 text-white rounded-lg shadow-lg">
-        <img src="assets/img/priority.svg" alt="Priority Line" class="h-24 mb-4">
-        <span class="text-lg">Priority</span>
+      <button (click)="handleButtonClick('priority')" class="flex flex-col items-center px-80 py-11 mt-12 w-full text-center bg-lime-900 rounded-3xl min-h-[357px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] max-md:px-5 max-md:mt-10 max-md:max-w-full" tabindex="0">
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/bc1c56fc95781996a43feba161857f52ae1b606fb428adeaaaa2b6fc80be0949?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Priority line icon" class="object-contain max-w-full aspect-[1.07] w-[235px]" />
+        <span>Priority</span>
       </button>
     </div>
-  
-    <!-- Checklist Section (Visible when selected) -->
-    <div *ngIf="isChecklistVisible" class="mt-6">
-      <h2 class="text-xl font-bold">How can we serve you?</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <div *ngFor="let item of checklist">
-          <label class="flex items-center space-x-2">
-            <input type="checkbox" [(ngModel)]="item.selected">
-            <span>{{ item.name }}</span>
-          </label>
+  </nav>
+
+  <!-- Checklist Section -->
+  <nav *ngIf="isChecklistVisible" class="flex flex-col justify-center items-center mt-12 w-full max-md:mt-10 max-md:max-w-full">
+    <div class="flex flex-wrap gap-4 justify-center items-start self-stretch w-full max-md:max-w-full">
+      <div class="flex flex-col grow shrink min-w-[240px] w-[903px] max-md:max-w-full">
+        <div class="flex flex-wrap gap-10 items-center w-full max-md:max-w-full">
+          <button (click)="toggleSelection('Request Documents')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
+            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
+              <div [ngClass]="{'bg-white': !checklist[0].selected, 'bg-green-600': checklist[0].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
+            </div>
+            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
+              Request Documents
+            </div>
+          </button>
+          <button (click)="toggleSelection('File Documents')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
+            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
+              <div [ngClass]="{'bg-white': !checklist[1].selected, 'bg-green-600': checklist[1].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
+            </div>
+            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
+              File Documents
+            </div>
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-10 items-center mt-8 w-full max-md:max-w-full">
+          <button (click)="toggleSelection('Make Payment')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
+            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
+              <div [ngClass]="{'bg-white': !checklist[2].selected, 'bg-green-600': checklist[2].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
+            </div>
+            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
+              Make Payment
+            </div>
+          </button>
+          <button (click)="toggleSelection('Set an Appointment')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
+            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
+              <div [ngClass]="{'bg-white': !checklist[3].selected, 'bg-green-600': checklist[3].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
+            </div>
+            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
+              Set an Appointment
+            </div>
+          </button>
+        </div>
+        <div class="flex gap-10 items-center mt-8 w-full max-md:max-w-full">
+          <button (click)="toggleSelection('Other')" class="flex flex-col justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[434px]">
+            <div class="flex gap-2.5 items-center self-center w-full">
+              <div [ngClass]="{'bg-white': !checklist[4].selected, 'bg-green-600': checklist[4].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
+            </div>
+            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 whitespace-nowrap leading-[60px]">
+              Other
+            </div>
+          </button>
         </div>
       </div>
-      <div class="mt-6 flex justify-between w-full">
-        <button class="bg-gray-700 text-white p-2 rounded-lg" (click)="goBack()">Back</button>
-        <button class="bg-green-700 text-white p-2 rounded-lg" (click)="confirmChecklist()">Confirm</button>
+      <div class="flex gap-2 items-start max-md:hidden">
+        <div class="flex shrink-0 rounded-xl bg-zinc-300 h-[924px] w-[3px]"></div>
+        <div class="flex shrink-0 rounded-xl bg-zinc-300 h-[238px] w-[15px] max-md:hidden"></div>
       </div>
     </div>
-  
-    <!-- Form Section (Visible after confirmation) -->
-    <div *ngIf="isFormVisible" class="mt-6">
-      <h2 class="text-xl font-bold">Input additional info for the service?</h2>
-      <div class="grid grid-cols-3 gap-4">
-        <button class="btn-custom p-4 bg-green-700 text-white rounded-lg shadow-lg" *ngFor="let service of selectedServices">
-          {{ service }}
-        </button>
-      </div>
-      <textarea class="border border-gray-400 rounded p-2 w-full mt-4" placeholder="Available documents for Request"></textarea>
-      <div class="mt-6 flex justify-between w-full">
-        <button class="bg-gray-700 text-white p-2 rounded-lg" (click)="goBack()">Back</button>
-        <button class="bg-green-700 text-white p-2 rounded-lg" (click)="printPDF()">Print Number</button>
-      </div>
+
+    <div class="flex flex-wrap gap-7 items-center mt-12 text-4xl font-bold text-white whitespace-nowrap max-md:mt-10 max-md:max-w-full">
+      <button (click)="goBack()" class="gap-2.5 self-stretch px-28 py-1.5 my-auto rounded-3xl bg-slate-800 min-h-[70px] min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[325px] max-md:px-5">
+        Back
+      </button>
+      <button (click)="confirmChecklist()" class="gap-2.5 self-stretch px-24 py-1.5 my-auto bg-green-700 rounded-3xl min-h-[70px] min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[325px] max-md:px-5">
+        Confirm
+      </button>
     </div>
-  
-    <!-- Assistance Icon -->
-    <div class="fixed bottom-4 right-4">
-      <button class="btn-assistance">
-        <img src="assets/img/assistance-icon.svg" alt="Assistance" class="h-10">
+
+  </nav>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+  <div class="bg-white rounded-3xl shadow-lg p-16 max-w-xl w-full">
+    
+    <span class="text-6xl font-bold mb-6 block text-center">
+      {{ departmentName | titlecase }}
+    </span>
+
+    <span class="text-9xl font-bold mb-6 block text-center">{{ queueNumber }}</span>
+    
+    <span class="text-4xl font-bold text-green-700 mb-6 block text-center">
+      Chosen Services:
+    </span>
+    
+    <div *ngFor="let service of selectedServices" class="text-4xl mb-6 text-center">
+      {{ service }}
+    </div>
+    
+    <div class="flex justify-center gap-6 mt-10">
+      <button (click)="goBack()" class="w-48 px-8 py-4 bg-slate-800 text-white rounded-3xl text-2xl shadow-lg">
+        Back
+      </button>
+      <button (click)="printPDF()" class="w-48 px-8 py-4 bg-green-700 text-white rounded-3xl text-2xl shadow-lg">
+        Print PDF
       </button>
     </div>
   </div>
+</div>
+
   
+
+  <!-- Assistance Icon -->
+  <div class="fixed bottom-4 right-4">
+    <button class="btn-assistance flex gap-2.5 items-center">
+      <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/2b4c984902bddbe5ebdc305860c57d65fa9ddf87a57d8a89f6dd4e22c49cdf27?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="" class="object-contain shrink-0 self-stretch my-auto aspect-square shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[60px]" />
+      <span class="self-stretch my-auto text-xl font-bold">Assistance</span>
+    </button>
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="flex flex-wrap gap-5 justify-between items-center mt-64 max-md:mr-2">
+    <address class="flex gap-2 self-stretch my-auto not-italic">
+      <div class="flex relative flex-col self-start aspect-[0.75] w-[15px]">
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/ac3b42470d5ba2c77c8c58a11741d6205ab32287f16e2e302ad99b858fbb9740?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Location icon" class="object-cover absolute inset-0 size-full" />
+      </div>
+      <p class="flex-auto text-base font-semibold text-neutral-800">
+        Visca, Baybay City, Leyte Philippines 6521
+      </p>
+    </address>
+    <div class="flex gap-2.5 self-stretch my-auto max-md:max-w-full">
+      <div class="flex relative flex-col my-auto w-5 aspect-square">
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/fe6fde7f88fb36959ef360c6217f92a69c9dacbbf201146ea3d08a963da18ec2?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Phone icon" class="object-cover absolute inset-0 size-full" />
+      </div>
+      <p class="flex-auto text-base font-semibold text-neutral-800">
+        Trunkline: +63 (53) 565 0600 Fax No: +63 53 563 7067
+      </p>
+    </div>
+    <div class="flex gap-3 self-stretch whitespace-nowrap text-neutral-800">
+      <span class="text-xl font-bold"></span>
+      <a href="mailto:information@vsu.edu.ph" class="my-auto text-base font-semibold basis-auto">
+        informationvsu.edu.ph
+      </a>
+    </div>
+  </footer>
+</div>

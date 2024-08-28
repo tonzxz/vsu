@@ -7,7 +7,7 @@ interface User {
   fullName: string;
   location: string;
   type: string;
-  status: 'Enable' | 'Disable';
+  status: 'Enabled' | 'Disabled';
   password?: string;
 }
 
@@ -27,7 +27,7 @@ export class CreateAccountModalComponent {
   fullName = '';
   location = 'Accounting Office';
   type = 'Desk attendant';
-  status: 'Enable' | 'Disable' = 'Enable';
+  status: 'Enabled' | 'Disabled' = 'Enabled';
   password = '';
   passwordVisible = false; // Added property
 
@@ -70,7 +70,7 @@ export class CreateAccountModalComponent {
   generateRandomPassword() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
     let result = '';
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 6; i++) {
       result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     this.password = result;

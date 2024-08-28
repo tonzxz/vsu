@@ -10,7 +10,7 @@ interface User {
   fullName: string;
   location: string;
   type: string;
-  status: 'Enable' | 'Disable';
+  status: 'Enabled' | 'Disabled';
   password?: string;
 }
 
@@ -48,10 +48,10 @@ export class AUserManagementComponent implements OnInit {
 
   ngOnInit() {
     this.users = [
-      { username: 'Carlo', fullName: 'Carlo Batumbakal', location: 'Accounting Office', type: 'Desk Attendant', status: 'Enable' },
-      { username: 'Jhielo', fullName: 'Jhielo Gonzales', location: 'Accounting Office', type: 'Kiosk', status: 'Enable', password: 'O^P!DApB@Rr#'},
-      { username: 'Orlan', fullName: 'Jan Orlan Cardona', location: 'Registrar', type: 'Kiosk', status: 'Disable', password: 'lg4PZz5O8$Sg'},
-      { username: 'Sean', fullName: 'Sean Palacay', location: 'Cash Division', type: 'Kiosk', status: 'Enable', password: 'AJG8&726tr5s'},
+      { username: 'Carlo', fullName: 'Carlo Batumbakal', location: 'Cash Division', type: 'Desk Attendant', status: 'Enabled' },
+      { username: 'Jhielo', fullName: 'Jhielo Gonzales', location: 'Accounting Office', type: 'Kiosk', status: 'Enabled', password: '111111'},
+      { username: 'Orlan', fullName: 'Jan Orlan Cardona', location: 'Registrar', type: 'Kiosk', status: 'Disabled', password: '222222'},
+      { username: 'Sean', fullName: 'Sean Palacay', location: 'Cash Division', type: 'Kiosk', status: 'Enabled', password: '333333'},
     ];
 
     this.filteredUsers = [...this.users];

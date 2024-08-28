@@ -45,7 +45,7 @@
               <td class="px-6 py-4 whitespace-nowrap">{{ user.location }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ user.type }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="{'bg-green-100 text-green-800': user.status === 'Enable', 'bg-red-100 text-red-800': user.status === 'Disable'}">{{ user.status }}</span>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="{'bg-green-100 text-green-800': user.status === 'Enabled', 'bg-red-100 text-red-800': user.status === 'Disabled'}">{{ user.status }}</span>
                 <button (click)="editUser(user)" class="ml-2 text-indigo-600 hover:text-indigo-900">Edit</button>
                 <button (click)="deleteUser(user)" class="ml-2 text-red-600 hover:text-red-900">Delete</button>
               </td>

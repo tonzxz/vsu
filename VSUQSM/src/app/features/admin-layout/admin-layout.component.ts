@@ -5,10 +5,8 @@ import { SidebarComponent } from "../../shared/sidebar/sidebar.component";
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [SidebarComponent,RouterModule],
+  imports: [SidebarComponent, RouterModule],
   templateUrl: './admin-layout.component.html',
-  styleUrl: './admin-layout.component.css'
+  styleUrls: ['./admin-layout.component.css']
 })
-export class AdminLayoutComponent {
-
-}
+export class AdminLayoutComponent {}

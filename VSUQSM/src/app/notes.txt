@@ -1,0 +1,12 @@
+User Management:
+- generate upon account creation
+
+pin binded in Location:
+- cash division
+- registrar
+- Accounting office
+
+Types:
+- Desk Attendant
+- Kiosk
+- Queue Display (randomly generated or manual input) pin

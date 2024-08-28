@@ -1,38 +1,120 @@
-<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
-    <section class="bg-white rounded-3xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)] p-6 w-[350px] max-w-[90%] max-h-[90vh] overflow-y-auto">
-      <div class="flex flex-col justify-center">
-        <h2 class="text-2xl font-bold text-neutral-800 text-center mb-4">Create Account</h2>
-        <form (ngSubmit)="createNewAccount()" class="flex flex-col gap-3 text-base font-medium text-neutral-800 text-opacity-80">
-          <div class="flex flex-col">
-            <label for="fullName" class="mb-1">Full Name</label>
-            <input [(ngModel)]="newAccount.fullName" [ngModelOptions]="{standalone: true}" type="text" id="fullName" placeholder="Enter Full Name" class="px-4 py-2 bg-violet-50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-lime-700">
-          </div>
-          <div class="flex flex-col">
-            <label for="username" class="mb-1">Username</label>
-            <input [(ngModel)]="newAccount.username" [ngModelOptions]="{standalone: true}" type="text" id="username" placeholder="Enter username" class="px-4 py-2 bg-violet-50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-lime-700">
-          </div>
-          <div class="flex flex-col">
-            <label for="password" class="mb-1">Password</label>
-            <input [(ngModel)]="newAccount.password" [ngModelOptions]="{standalone: true}" type="password" id="password" placeholder="Enter password" class="px-4 py-2 bg-violet-50 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-lime-700">
-          </div>
-          <div class="flex flex-col">
-            <label for="location" class="mb-1">Location</label>
-            <select [(ngModel)]="newAccount.location" [ngModelOptions]="{standalone: true}" id="location" class="w-full px-4 py-2 bg-violet-50 rounded-[20px] appearance-none focus:outline-none focus:ring-2 focus:ring-lime-700">
-              <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
-            </select>
-          </div>
-          <div class="flex flex-col">
-            <label for="type" class="mb-1">Type</label>
-            <select [(ngModel)]="newAccount.type" [ngModelOptions]="{standalone: true}" id="type" class="w-full px-4 py-2 bg-violet-50 rounded-[20px] appearance-none focus:outline-none focus:ring-2 focus:ring-lime-700">
-              <option *ngFor="let type of accountTypes" [value]="type">{{ type }}</option>
-            </select>
-          </div>
-          <div class="flex justify-end gap-2 mt-4">
-            <button type="button" (click)="closeModal()" class="px-4 py-2 bg-red-400 text-white rounded-md hover:bg-red-500">Cancel</button>
-            <button type="submit" class="px-4 py-2 bg-lime-700 text-white rounded-md hover:bg-lime-800">Create Account</button>
-          </div>
-        </form>
+<div class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
+    <h2 class="text-2xl font-bold mb-4">
+      {{ editingUser ? 'Edit Account' : 'Create New Account' }}
+    </h2>
+    <form (ngSubmit)="submitForm()" class="space-y-4">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Username:</label>
+        <input
+          [(ngModel)]="username"
+          type="text"
+          id="username"
+          name="username"
+          class="mt-1 block w-full p-2 border rounded-md"
+          required
+        />
       </div>
-    </section>
+      <div>
+        <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name:</label>
+        <input
+          [(ngModel)]="fullName"
+          type="text"
+          id="fullName"
+          name="fullName"
+          class="mt-1 block w-full p-2 border rounded-md"
+          required
+        />
+      </div>
+      <div>
+        <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
+        <select
+          [(ngModel)]="location"
+          id="location"
+          name="location"
+          class="mt-1 block w-full p-2 border rounded-md"
+        >
+          <option>Accounting Office</option>
+          <option>Registrar</option>
+          <option>Cash Division</option>
+        </select>
+      </div>
+      <div>
+        <label for="type" class="block text-sm font-medium text-gray-700">Type:</label>
+        <select
+          [(ngModel)]="type"
+          id="type"
+          name="type"
+          class="mt-1 block w-full p-2 border rounded-md"
+        >
+          <option>Desk attendant</option>
+          <option>Kiosk</option>
+          <option>Queue Display</option>
+        </select>
+      </div>
+      <div>
+        <label for="status" class="block text-sm font-medium text-gray-700">Status:</label>
+        <select
+          [(ngModel)]="status"
+          id="status"
+          name="status"
+          class="mt-1 block w-full p-2 border rounded-md"
+        >
+          <option value="Enable">Enable</option>
+          <option value="Disable">Disable</option>
+        </select>
+      </div>
+      <div *ngIf="isKiosk()">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password:</label>
+        <div class="flex items-center space-x-2">
+          <input
+            [(ngModel)]="password"
+            [type]="passwordVisible ? 'text' : 'password'"
+            id="password"
+            name="password"
+            class="mt-1 block w-full p-2 border rounded-md"
+            required
+          />
+          <button
+            type="button"
+            (click)="generateRandomPassword()"
+            class="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200"
+            title="Randomize Password"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3.093l6.693 3.846a1 1 0 01.564.905v7.692a1 1 0 01-.564.905L12 20.907a1 1 0 01-1.087 0L4.22 15.537a1 1 0 01-.564-.905V7.94a1 1 0 01.564-.905L11 3.093a1 1 0 011.087 0zM12 5.827l-5.519 3.192v6.162l5.519 3.191 5.519-3.191V9.019L12 5.827z" />
+              <circle cx="8" cy="8" r="1" />
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="16" cy="16" r="1" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200"
+            title="Show/Hide Password"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 4.5c-5.37 0-9.86 4.485-10.458 5.414a1 1 0 000 1.172C2.14 10.015 6.63 14.5 12 14.5c5.37 0 9.86-4.485 10.458-5.414a1 1 0 000-1.172C21.86 8.985 17.37 4.5 12 4.5zM12 12a2 2 0 110-4 2 2 0 010 4z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 bg-lime-700 text-white rounded-lg hover:bg-lime-800 transition duration-200"
+        >
+          {{ editingUser ? 'Update Account' : 'Create Account' }}
+        </button>
+      </div>
+    </form>
   </div>
-  
+</div>

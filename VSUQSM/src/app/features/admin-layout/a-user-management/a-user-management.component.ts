@@ -50,6 +50,8 @@ export class AUserManagementComponent implements OnInit {
     this.users = [
       { username: 'Carlo', fullName: 'Carlo Batumbakal', location: 'Accounting Office', type: 'Desk Attendant', status: 'Enable' },
       { username: 'Jhielo', fullName: 'Jhielo Gonzales', location: 'Accounting Office', type: 'Kiosk', status: 'Enable', password: 'O^P!DApB@Rr#'},
+      { username: 'Orlan', fullName: 'Jan Orlan Cardona', location: 'Registrar', type: 'Kiosk', status: 'Disable', password: 'lg4PZz5O8$Sg'},
+      { username: 'Sean', fullName: 'Sean Palacay', location: 'Cash Division', type: 'Kiosk', status: 'Enable', password: 'AJG8&726tr5s'},
     ];
 
     this.filteredUsers = [...this.users];

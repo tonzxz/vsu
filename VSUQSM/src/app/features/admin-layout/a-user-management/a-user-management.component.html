@@ -130,8 +130,8 @@
                 <span
                   class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                   [ngClass]="{
-                    'bg-green-100 text-green-800': user.status === 'Enabled',
-                    'bg-red-100 text-red-800': user.status === 'Disabled'
+                    'bg-green-100 text-green-800': user.status === 'Online',
+                    'bg-red-100 text-red-800': user.status === 'Offline'
                   }"
                 >
                   {{ user.status }}

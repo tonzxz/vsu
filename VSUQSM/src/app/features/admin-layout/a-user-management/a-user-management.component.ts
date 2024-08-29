@@ -9,7 +9,7 @@ interface User {
   fullName: string;
   location: string;
   type: string;
-  status: 'Enabled' | 'Disabled';
+  status: 'Online' | 'Offline';
   password?: string;
   selected?: boolean; // Property to manage row selection
 }
@@ -52,14 +52,14 @@ export class AUserManagementComponent implements OnInit {
         fullName: 'Carlo Batumbakal',
         location: 'Cash Division',
         type: 'Desk Attendant',
-        status: 'Enabled',
+        status: 'Online',
       },
       {
         username: 'Jhielo',
         fullName: 'Jhielo Gonzales',
         location: 'Accounting Office',
         type: 'Kiosk',
-        status: 'Enabled',
+        status: 'Online',
         password: '111111',
       },
       {
@@ -67,7 +67,7 @@ export class AUserManagementComponent implements OnInit {
         fullName: 'Jan Orlan Cardona',
         location: 'Registrar',
         type: 'Kiosk',
-        status: 'Disabled',
+        status: 'Offline',
         password: '222222',
       },
       {
@@ -75,7 +75,7 @@ export class AUserManagementComponent implements OnInit {
         fullName: 'Sean Palacay',
         location: 'Cash Division',
         type: 'Kiosk',
-        status: 'Enabled',
+        status: 'Online',
         password: '333333',
       },
     ];

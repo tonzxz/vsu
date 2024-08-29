@@ -7,7 +7,7 @@ interface User {
   fullName: string;
   location: string;
   type: string;
-  status: 'Enabled' | 'Disabled';
+  status: 'Online' | 'Offline';
   password?: string;
 }
 
@@ -27,7 +27,7 @@ export class CreateAccountModalComponent {
   fullName = '';
   location = 'Accounting Office';
   type = 'Desk attendant';
-  status: 'Enabled' | 'Disabled' = 'Enabled';
+  status: 'Online' | 'Offline' = 'Online';
   password = '';
   passwordVisible = false; // Added property
 

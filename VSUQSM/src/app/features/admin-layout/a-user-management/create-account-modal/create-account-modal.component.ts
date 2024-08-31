@@ -1,3 +1,4 @@
+//create-account-modal.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 interface User {
   username: string;
   fullName: string;
-  location: string;
+  department: string;
   type: string;
   status: 'Online' | 'Offline';
   password?: string;
@@ -25,17 +26,20 @@ export class CreateAccountModalComponent {
 
   username = '';
   fullName = '';
-  location = 'Accounting Office';
+  department = 'Accounting Office';
   type = 'Desk attendant';
   status: 'Online' | 'Offline' = 'Online';
   password = '';
-  passwordVisible = false; // Added property
+  passwordVisible = false; // Retain the password visibility toggle feature
+
+  departments = ['Accounting Office', 'Registrar', 'Cash Division'];
+  accountTypes = ['Desk attendant', 'Kiosk', 'Queue Display'];
 
   ngOnInit() {
     if (this.editingUser) {
       this.username = this.editingUser.username;
       this.fullName = this.editingUser.fullName;
-      this.location = this.editingUser.location;
+      this.department = this.editingUser.department;
       this.type = this.editingUser.type;
       this.status = this.editingUser.status;
       this.password = this.editingUser.password || '';
@@ -50,13 +54,13 @@ export class CreateAccountModalComponent {
     const newUser: User = {
       username: this.username,
       fullName: this.fullName,
-      location: this.location,
+      department: this.department,
       type: this.type,
       status: this.status,
     };
 
     if (this.type === 'Kiosk') {
-      newUser.password = this.password;
+      newUser.password = this.password || this.generateDepartmentPassword(this.department);
     }
 
     this.accountCreated.emit(newUser);
@@ -78,5 +82,10 @@ export class CreateAccountModalComponent {
 
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
+  }
+
+  generateDepartmentPassword(department: string): string {
+    const base = department.toLowerCase().replace(/\s+/g, '-');
+    return `${base}-${Math.random().toString(36).substring(2, 8)}`;
   }
 }

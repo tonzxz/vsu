@@ -1,3 +1,4 @@
+//a-user-management.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { CreateAccountModalComponent } from './create-account-modal/create-accou
 interface User {
   username: string;
   fullName: string;
-  location: string;
+  department: string;
   type: string;
   status: 'Online' | 'Offline';
   password?: string;
@@ -30,7 +31,7 @@ export class AUserManagementComponent implements OnInit {
   showModal = false;
   selectedUser: User | null = null;
 
-  locations = ['Accounting Office', 'Registrar', 'Cash Division'];
+  departments = ['Accounting Office', 'Registrar', 'Cash Division'];
   accountTypes = ['Desk attendant', 'Kiosk', 'Queue Display'];
 
   currentPage = 1;
@@ -50,14 +51,14 @@ export class AUserManagementComponent implements OnInit {
       {
         username: 'Carlo',
         fullName: 'Carlo Batumbakal',
-        location: 'Cash Division',
+        department: 'Cash Division',
         type: 'Desk Attendant',
         status: 'Online',
       },
       {
         username: 'Jhielo',
         fullName: 'Jhielo Gonzales',
-        location: 'Accounting Office',
+        department: 'Accounting Office',
         type: 'Kiosk',
         status: 'Online',
         password: '111111',
@@ -65,7 +66,7 @@ export class AUserManagementComponent implements OnInit {
       {
         username: 'Orlan',
         fullName: 'Jan Orlan Cardona',
-        location: 'Registrar',
+        department: 'Registrar',
         type: 'Kiosk',
         status: 'Offline',
         password: '222222',
@@ -73,7 +74,7 @@ export class AUserManagementComponent implements OnInit {
       {
         username: 'Sean',
         fullName: 'Sean Palacay',
-        location: 'Cash Division',
+        department: 'Cash Division',
         type: 'Kiosk',
         status: 'Online',
         password: '333333',

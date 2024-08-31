@@ -1,3 +1,4 @@
+//app.routes.ts
 import { RouterModule, Routes } from '@angular/router';
 
 import { NgModule } from '@angular/core';
@@ -13,7 +14,6 @@ import { AContentmgmtComponent } from './features/admin-layout/a-contentmgmt/a-c
 import { DaTerminalmgmtComponent } from './features/desk-attendant-layout/da-terminalmgmt/da-terminalmgmt.component';
 import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection/kiosk-selection.component';
 import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
-// import { KioskCodeComponent } from './features/kiosk-layout/kiosk-code/kiosk-code.component';
 
 import { QueueingLayoutComponent } from './features/queueing-layout/queueing-layout.component';
 import { QueueSelectionComponent } from './features/queueing-layout/queue-selection/queue-selection.component';
@@ -56,7 +56,7 @@ export const routes: Routes = [
     {
       path: 'kiosk-selection', component: KioskSelectionComponent,
       children: [
-        { path: 'forms',component: KioskFormsComponent},
+        { path: 'kiosk-forms',component: KioskFormsComponent},
       ]
     },
     

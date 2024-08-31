@@ -6,6 +6,9 @@ import { AUserManagementComponent } from './features/admin-layout/a-user-managem
 import { ATerminalManagementComponent } from './features/admin-layout/a-terminal-management/a-terminal-management.component';
 import { CommonModule } from '@angular/common';
 import { CreateAccountModalComponent } from './features/admin-layout/a-user-management/create-account-modal/create-account-modal.component';
+import { UserService } from './services/user.service'; 
+import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection/kiosk-selection.component';
+import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
 
 @NgModule({
   declarations: [
@@ -13,6 +16,10 @@ import { CreateAccountModalComponent } from './features/admin-layout/a-user-mana
     AUserManagementComponent,
     ATerminalManagementComponent,
     CreateAccountModalComponent,
+    UserService,
+    KioskSelectionComponent,
+    KioskFormsComponent
+
   ],
   imports: [
     BrowserModule,

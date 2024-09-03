@@ -11,9 +11,11 @@ interface User {
   department: string;
   type: string;
   status: 'Online' | 'Offline';
+  location?: string;  // Add this line
   password?: string;
   selected?: boolean; // Property to manage row selection
 }
+
 
 @Component({
   selector: 'app-user-management',

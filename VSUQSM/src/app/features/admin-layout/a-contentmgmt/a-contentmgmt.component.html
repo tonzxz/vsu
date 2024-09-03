@@ -1,102 +1,88 @@
-<section class="flex flex-row justify-between h-screen">
-    <!-- Left Column (Controls) -->
-    <div class="flex flex-col gap-5 p-5 overflow-auto w-1/3 max-h-full">
-        <div class="text-4xl font-bold text-neutral-800">
-            Content Management
+<main class="container mx-auto p-4 max-w-full">
+    <header class="mb-4">
+      <h1 class="text-3xl font-bold text-neutral-800">Content Management</h1>
+    </header>
+  
+    <div class="bg-white rounded-lg shadow-lg p-4">
+      <nav class="flex flex-wrap gap-2 items-center justify-start w-full mb-4">
+        <a href="#" class="px-4 py-1 text-sm text-white bg-neutral-800 rounded-t-lg shadow-sm transition duration-300 ease-in-out hover:bg-neutral-700">Registrar</a>
+        <a href="#" class="px-4 py-1 text-sm bg-zinc-200 rounded-t-lg shadow-sm transition duration-300 ease-in-out hover:bg-zinc-300">Cash Division</a>
+        <a href="#" class="px-4 py-1 text-sm bg-zinc-200 rounded-t-lg shadow-sm transition duration-300 ease-in-out hover:bg-zinc-300">Accounting Office</a>
+      </nav>
+  
+      <!-- Layout for Preview and Settings -->
+      <div class="flex flex-col">
+        <!-- Preview Section -->
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-3">Preview</h2>
+          <app-content-mod class="block w-full aspect-video bg-gray-100 rounded-lg"></app-content-mod>
         </div>
-        
-        <!-- Controls -->
-        <div class="flex flex-col gap-4">
-            <!-- Upload Logo -->
-            <div class="text-2xl text-black">Upload Logo</div>
-            <div class="flex items-center text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Drag picture" class="flex-grow pl-3 py-2.5 bg-white rounded-xl focus:outline-none" />
-                <button class="ml-2" onclick="alert('Button is clicked!')">
-                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain aspect-square w-[50px]" />
-                </button>
+  
+        <!-- Content Settings -->
+        <div class="bg-zinc-100 rounded-lg p-6 w-full">
+          <h2 class="text-2xl font-semibold mb-6">Content Settings</h2>
+  
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Visual Elements -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Visual Elements</h3>
+              <div class="space-y-4">
+                <!-- Logo Upload -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Upload Logo</label>
+                  <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" (change)="onFileUpload($event, 'Logo')">
+                </div>
+                <!-- Background Photo Upload -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Upload Background Photo</label>
+                  <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" (change)="onFileUpload($event, 'Background Photo')">
+                </div>
+                <!-- Background Color -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Select Background Color</label>
+                  <input type="color" class="h-10 w-full rounded-md border border-gray-300 p-1">
+                </div>
+                <!-- Video Upload -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Upload Video</label>
+                  <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" (change)="onFileUpload($event, 'Video')">
+                </div>
+              </div>
             </div>
-
-            <!-- Upload Video -->
-            <div class="text-2xl text-black mt-5">Upload Video</div>
-            <div class="flex items-center text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Drag Video" class="flex-grow pl-3 py-2.5 bg-white rounded-xl focus:outline-none" />
-                <button class="ml-2" onclick="alert('Button is clicked!')">
-                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain aspect-square w-[50px]" />
-                </button>
+  
+            <!-- Content and Widgets -->
+            <div>
+              <h3 class="text-lg font-semibold mb-4">Content and Widgets</h3>
+              <div class="space-y-4">
+                <!-- Announcements -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Add Announcements</label>
+                  <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" rows="3" (input)="onAnnouncementChange($event)" placeholder="Enter announcement text"></textarea>
+                </div>
+                <!-- Notes -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Add Notes</label>
+                  <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" rows="3" (input)="onNotesChange($event)" placeholder="Enter notes"></textarea>
+                </div>
+                <!-- Widgets -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Add Widgets</label>
+                  <div class="flex flex-wrap gap-2">
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" (click)="addWidget('Weather Widget')">Weather</button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" (click)="addWidget('Time and Date Widget')">Time and Date</button>
+                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" (click)="addWidget('Currency Converter Widget')">Currency Converter</button>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <!-- Upload Background -->
-            <div class="text-2xl text-black mt-5">Upload Background</div>
-            <div class="flex items-center text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Drag Picture or Video" class="flex-grow pl-3 py-2.5 bg-white rounded-xl focus:outline-none" />
-                <button class="ml-2" onclick="alert('Button is clicked!')">
-                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c07f1684b5044883e1c2439f2fb2544de5434b97baa1a2b0c5d844e480520b4?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain aspect-square w-[50px]" />
-                </button>
-            </div>
-
-            <!-- Change Background Color -->
-            <div class="text-2xl text-black mt-5">Change Background Color</div>
-            <div class="flex items-center text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Select a Color" class="flex-grow pl-3 py-2.5 bg-white rounded-xl focus:outline-none" />
-                <button class="ml-2" onclick="alert('Button is clicked!')">
-                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/5be73b26905bc9de3d72b3b3b9e9e9430914f84b589de588abded2cb72fcc1d3?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain aspect-square w-[50px]" />
-                </button>
-            </div>
-
-            <!-- Font Style & Color -->
-            <div class="text-2xl text-black mt-5">Font Style & Color</div>
-            <div class="relative flex gap-4 items-center mt-3">
-                <!-- Font Dropdown -->
-                <details class="relative flex flex-col self-stretch my-auto text-lg rounded-none text-gray-950 w-[178px]">
-                    <summary class="flex gap-2.5 px-3.5 py-2.5 bg-white rounded-xl border border-gray-600 border-solid cursor-pointer">
-                        <div class="grow">SF Pro Display</div>
-                        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/ee3125abfad601ebe666758831b59a4144d5e80de67e1785348a82ec28118eff?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain shrink-0 self-center mt-2 w-5 aspect-[1.82]" />
-                    </summary>
-                    <ul class="absolute dropdown-content bg-white rounded-xl border border-gray-600 border-solid mt-2 p-2 shadow-lg z-50">
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Option 1</a></li>
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Option 2</a></li>
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Option 3</a></li>
-                    </ul>
-                </details>
-                <!-- Italic Button -->
-                <button onclick="alert('Italic is clicked!')">
-                    <div class="flex gap-2.5 items-center self-stretch px-4 py-2.5 my-auto bg-white rounded-xl border border-gray-600 border-solid min-h-[50px] w-[60px]">
-                        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6fd72d16fc7a047b6d2a713314b6f29f45c26d1fe711ad683cdc0e34a5a9ac0f?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain self-stretch my-auto aspect-square w-[30px]" />
-                    </div>
-                </button>
-                <!-- Color Button -->
-                <button onclick="alert('Color is clicked!')">
-                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/89b9fb67910bd3deed8f637279f36c5990de0506b454d960b6b4dcec6474f853?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain shrink-0 self-stretch my-auto rounded-none aspect-[1.2] w-[60px]" />
-                </button>
-            </div>
-
-            <!-- Header Text -->
-            <div class="text-2xl text-black mt-5">Header Text</div>
-            <div class="relative flex flex-col mt-3 text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Add header text" class="px-5 py-2.5 bg-white rounded-xl border border-gray-600 border-solid" />
-            </div>
-
-            <!-- Announcement -->
-            <div class="text-2xl text-black mt-5">Announcement</div>
-            <div class="relative flex flex-col mt-3 text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Add announcement" class="px-5 py-2.5 bg-white rounded-xl border border-gray-600 border-solid" />
-            </div>
-
-            <!-- Select Timezone -->
-            <div class="text-2xl text-black mt-5">Select Timezone</div>
-            <div class="flex items-center text-xl rounded-xl text-zinc-400 bg-white border border-gray-600">
-                <input type="text" placeholder="Select a Timezone" class="flex-grow pl-3 py-2.5 bg-white rounded-xl focus:outline-none" />
-                <button class="ml-2" onclick="alert('Button is clicked!')">
-                    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/680337eff14011904ea3f00fe947267581914a260f3124a5fee9b93ba1887aaa?placeholderIfAbsent=true&apiKey=b3b926d8f2ae4a31b45984938d21b4b7" class="object-contain shrink-0 aspect-square w-[50px]" />
-                </button>
-            </div>
+          </div>
+  
+          <!-- Save Changes Button -->
+          <div class="mt-6 flex justify-end">
+            <button class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-300 ease-in-out" (click)="saveChanges()">Save Changes</button>
+          </div>
         </div>
+      </div>
     </div>
-    
-    <!-- Right Column (Preview Container) -->
-    <div class="preview-container relative p-4 bg-gray-100 shadow-lg rounded-lg w-2/3 max-h-full">
-        <app-content-mod></app-content-mod>
-        <!-- Transparent overlay to block interactions -->
-        <div class="absolute inset-0 bg-transparent cursor-not-allowed"></div>
-    </div>
-</section>
+  </main>
+  

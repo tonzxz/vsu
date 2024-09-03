@@ -1,74 +1,102 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ContentModComponent } from './content-mod/content-mod.component';
 
 @Component({
   selector: 'app-a-contentmgmt',
   standalone: true,
-  imports: [ContentModComponent, CommonModule],
+  imports: [ContentModComponent, CommonModule, FormsModule],
   templateUrl: './a-contentmgmt.component.html',
-  styleUrls: ['./a-contentmgmt.component.css'] // Changed styleUrl to styleUrls (array)
+  styleUrls: ['./a-contentmgmt.component.css']
 })
 export class AContentmgmtComponent {
   showModal: boolean = false;
-  announcementText: string = ''; // State to store announcement text
-  notesText: string = ''; // State to store notes text
+  announcementText: string = '';
+  notesText: string = '';
+  backgroundType: 'photo' | 'color' = 'photo';
+  backgroundColor: string = '#FFFFFF';
   selectedFiles: { [key: string]: File | null } = {
     Logo: null,
     'Background Photo': null,
     Video: null,
-  }; // State to store uploaded files
+  };
+  maxCharCount: number = 200;
 
-  // Event handler for file upload (e.g., Logo, Background Photo, Video)
   onFileUpload(event: Event, type: string): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.selectedFiles[type] = input.files[0];
       console.log(`${type} uploaded:`, input.files[0].name);
-      // Additional logic to handle file uploads (e.g., save to a server or update state) can be added here
     }
   }
 
-  // Method to add a widget dynamically
   addWidget(widgetType: string): void {
     console.log(`${widgetType} added`);
-    // Additional logic to handle widget addition can be added here
+    // Implement widget addition logic here
   }
 
-  // Method to handle changes in announcement text
   onAnnouncementChange(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    this.announcementText = textarea.value;
-    console.log('Announcement Text:', this.announcementText);
-    // Additional logic to handle announcement text change can be added here
+    this.announcementText = textarea.value.slice(0, this.maxCharCount);
   }
 
-  // Method to handle changes in notes text
   onNotesChange(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    this.notesText = textarea.value;
-    console.log('Notes Text:', this.notesText);
-    // Additional logic to handle notes text change can be added here
+    this.notesText = textarea.value.slice(0, this.maxCharCount);
   }
 
-  // Method to close the preview modal
+  onBackgroundTypeChange(type: 'photo' | 'color'): void {
+    this.backgroundType = type;
+    if (type === 'photo') {
+      this.selectedFiles['Background Photo'] = null;
+    }
+  }
+
+  onBackgroundColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.backgroundColor = input.value;
+  }
+
+  getFileName(fileType: string): string {
+    return this.selectedFiles[fileType]?.name || 'No file chosen';
+  }
+
+  isFilePicked(fileType: string): boolean {
+    return !!this.selectedFiles[fileType];
+  }
+
+  getRemainingChars(text: string): number {
+    return this.maxCharCount - text.length;
+  }
+
   closePreviewModal(): void {
     this.showModal = false;
   }
 
-  // Method to open the preview modal
   openPreviewModal(): void {
     this.showModal = true;
   }
 
-  // Method to save changes in Content Settings
   saveChanges(): void {
     console.log('Saving changes...');
     console.log('Announcement Text:', this.announcementText);
     console.log('Notes Text:', this.notesText);
     console.log('Selected Files:', this.selectedFiles);
-    // Implement save logic, such as saving data to a backend or updating state
+    console.log('Background Type:', this.backgroundType);
+    if (this.backgroundType === 'color') {
+      console.log('Background Color:', this.backgroundColor);
+    }
+    
+    // Implement actual save logic here (e.g., API call)
+    
+    // Show success message
+    this.showSuccessMessage('Changes have been saved successfully!');
+  }
 
-    alert('Changes have been saved successfully!'); // Feedback to user
+  private showSuccessMessage(message: string): void {
+    // Implement a more user-friendly success message (e.g., toast notification)
+    // For now, we'll use a simple alert
+    alert(message);
   }
 }

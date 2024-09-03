@@ -1,82 +1,147 @@
-<main class="container mx-auto max-w-full">
-  <header class="mb-4">
+<main class="container mx-auto max-w-full p-4">
+  <header class="mb-6">
     <h1 class="text-3xl font-bold text-neutral-800">Content Management</h1>
   </header>
 
-  <div class="px-8">
-  <h2 class="text-xl font-semibold mb-3">Preview</h2>
-</div>
-
-  
-  <div class="bg-white rounded-lg shadow-lg px-8 pb-8">
-    <nav class="flex flex-wrap gap-2 items-center justify-start w-full">
-      <a href="#" class="px-4 py-1 text-sm text-white bg-neutral-800 rounded-t-lg shadow-sm transition duration-300 ease-in-out hover:bg-neutral-700">Registrar</a>
-      <a href="#" class="px-4 py-1 text-sm bg-zinc-200 rounded-t-lg shadow-sm transition duration-300 ease-in-out hover:bg-zinc-300">Cash Division</a>
-      <a href="#" class="px-4 py-1 text-sm bg-zinc-200 rounded-t-lg shadow-sm transition duration-300 ease-in-out hover:bg-zinc-300">Accounting Office</a>
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <!-- Tabs -->
+    <nav class="flex border-b border-gray-200">
+      <!-- Registrar Tab -->
+      <a
+        href="#"
+        class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm text-white bg-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-700"
+        aria-current="page"
+      >
+        Registrar
+      </a>
+      <!-- Cash Division Tab -->
+      <a
+        href="#"
+        class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm bg-zinc-200 text-neutral-800 transition duration-300 ease-in-out hover:bg-zinc-300"
+      >
+        Cash Division
+      </a>
+      <!-- Accounting Office Tab -->
+      <a
+        href="#"
+        class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm bg-zinc-200 text-neutral-800 transition duration-300 ease-in-out hover:bg-zinc-300"
+      >
+        Accounting Office
+      </a>
     </nav>
 
-    <!-- Layout for Preview and Settings -->
-    <div class="flex flex-col">
-      
+    <div class="p-6">
       <!-- Preview Section -->
-      <div class="mb-6">
-        
-        <app-content-mod class="block w-full aspect-video bg-gray-100 rounded-lg"></app-content-mod>
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Preview</h2>
+        <div class="bg-gray-100 rounded-lg p-4 aspect-video flex items-center justify-center">
+          <!-- Replace this with your actual preview component -->
+          <app-content-mod class="w-full h-full"></app-content-mod>
+        </div>
       </div>
 
       <!-- Content Settings -->
-      <div class="bg-white-800 rounded-lg p-6 w-full">
+      <div class="bg-white rounded-lg p-6 w-full">
         <h2 class="text-2xl font-semibold mb-6">Content Settings</h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Visual Elements -->
-          <div>
+          <div class="bg-gray-50 p-6 rounded-lg">
             <h3 class="text-lg font-semibold mb-4">Visual Elements</h3>
-            <div class="space-y-4">
+            <div class="space-y-6">
               <!-- Logo Upload -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Logo</label>
-                <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" (change)="onFileUpload($event, 'Logo')">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Upload Logo</label>
+                <input type="file" id="logo-upload" class="hidden" (change)="onFileUpload($event, 'Logo')">
+                <label for="logo-upload" class="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Choose file
+                </label>
+                <span class="ml-3 text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Logo'), 'text-green-600': isFilePicked('Logo')}">
+                  {{ getFileName('Logo') }}
+                </span>
               </div>
-              <!-- Background Photo Upload -->
+
+              <!-- Background Selection -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Background Photo</label>
-                <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" (change)="onFileUpload($event, 'Background Photo')">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Background Selection</label>
+                <div class="flex items-center space-x-4">
+                  <label class="inline-flex items-center">
+                    <input type="radio" class="form-radio text-indigo-600" name="backgroundType" value="photo" (change)="onBackgroundTypeChange('photo')" [checked]="backgroundType === 'photo'">
+                    <span class="ml-2">Upload Photo</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="radio" class="form-radio text-indigo-600" name="backgroundType" value="color" (change)="onBackgroundTypeChange('color')" [checked]="backgroundType === 'color'">
+                    <span class="ml-2">Choose Color</span>
+                  </label>
+                </div>
               </div>
-              <!-- Background Color -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Select Background Color</label>
-                <input type="color" class="h-10 w-full rounded-md border border-gray-300 p-1">
+
+              <!-- Background Photo Upload (conditionally displayed) -->
+              <div *ngIf="backgroundType === 'photo'" class="transition-all duration-300 ease-in-out">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Upload Background Photo</label>
+                <input type="file" id="bg-photo-upload" class="hidden" (change)="onFileUpload($event, 'Background Photo')">
+                <label for="bg-photo-upload" class="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Choose file
+                </label>
+                <span class="ml-3 text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Background Photo'), 'text-green-600': isFilePicked('Background Photo')}">
+                  {{ getFileName('Background Photo') }}
+                </span>
               </div>
+
+              <!-- Background Color (conditionally displayed) -->
+              <div *ngIf="backgroundType === 'color'" class="transition-all duration-300 ease-in-out">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Background Color</label>
+                <div class="flex items-center">
+                  <input type="color" class="h-10 w-20 rounded-md border border-gray-300 p-1" [(ngModel)]="backgroundColor" (change)="onBackgroundColorChange($event)">
+                  <span class="ml-3 text-sm">{{ backgroundColor }}</span>
+                </div>
+              </div>
+
               <!-- Video Upload -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Video</label>
-                <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" (change)="onFileUpload($event, 'Video')">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Upload Video</label>
+                <input type="file" id="video-upload" class="hidden" (change)="onFileUpload($event, 'Video')">
+                <label for="video-upload" class="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Choose file
+                </label>
+                <span class="ml-3 text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Video'), 'text-green-600': isFilePicked('Video')}">
+                  {{ getFileName('Video') }}
+                </span>
               </div>
             </div>
           </div>
 
           <!-- Content and Widgets -->
-          <div>
+          <div class="bg-gray-50 p-6 rounded-lg">
             <h3 class="text-lg font-semibold mb-4">Content and Widgets</h3>
-            <div class="space-y-4">
+            <div class="space-y-6">
               <!-- Announcements -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Add Announcements</label>
-                <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" rows="3" (input)="onAnnouncementChange($event)" placeholder="Enter announcement text"></textarea>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Add Announcements</label>
+                <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3" [(ngModel)]="announcementText" (input)="onAnnouncementChange($event)" placeholder="Enter announcement text"></textarea>
+                <p class="mt-1 text-sm text-gray-500">{{ getRemainingChars(announcementText) }} characters remaining</p>
               </div>
+
               <!-- Notes -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Add Notes</label>
-                <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none" rows="3" (input)="onNotesChange($event)" placeholder="Enter notes"></textarea>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Add Notes</label>
+                <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3" [(ngModel)]="notesText" (input)="onNotesChange($event)" placeholder="Enter notes"></textarea>
+                <p class="mt-1 text-sm text-gray-500">{{ getRemainingChars(notesText) }} characters remaining</p>
               </div>
+
               <!-- Widgets -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Add Widgets</label>
                 <div class="flex flex-wrap gap-2">
-                  <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" (click)="addWidget('Weather Widget')">Weather</button>
-                  <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" (click)="addWidget('Time and Date Widget')">Time and Date</button>
-                  <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out" (click)="addWidget('Currency Converter Widget')">Currency Converter</button>
+                  <button class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" (click)="addWidget('Weather Widget')">
+                    <i class="fas fa-cloud mr-2"></i> Weather
+                  </button>
+                  <button class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" (click)="addWidget('Time and Date Widget')">
+                    <i class="fas fa-clock mr-2"></i> Time and Date
+                  </button>
+                  <button class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" (click)="addWidget('Currency Converter Widget')">
+                    <i class="fas fa-exchange-alt mr-2"></i> Currency Converter
+                  </button>
                 </div>
               </div>
             </div>
@@ -84,8 +149,10 @@
         </div>
 
         <!-- Save Changes Button -->
-        <div class="mt-6 flex justify-end">
-          <button class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-300 ease-in-out" (click)="saveChanges()">Save Changes</button>
+        <div class="mt-8 flex justify-end">
+          <button class="px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" (click)="saveChanges()">
+            <i class="fas fa-save mr-2"></i> Save Changes
+          </button>
         </div>
       </div>
     </div>

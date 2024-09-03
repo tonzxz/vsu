@@ -53,11 +53,18 @@ export const routes: Routes = [
 
     // kiosk
     
+    // {
+    //   path: 'kiosk-selection', component: KioskSelectionComponent,
+    //   children: [
+    //     { path: 'kiosk-forms',component: KioskFormsComponent},
+    //   ]
+    // },
+      
     {
       path: 'kiosk-selection', component: KioskSelectionComponent,
-      children: [
-        { path: 'kiosk-forms',component: KioskFormsComponent},
-      ]
+    },
+    {
+      path: 'kiosk-forms', component: KioskFormsComponent,
     },
     
 

@@ -1,1 +1,106 @@
-<p>a-kiosk-management works!</p>
+<main class="flex flex-col">
+    <h1 class="text-4xl font-bold text-neutral-800 max-md:max-w-full">
+      Terminal Management
+    </h1>
+    <img
+      loading="lazy"
+      src="https://cdn.builder.io/api/v1/image/assets/TEMP/3ba9cd9dc6b71854e4bc5a14ca4f1f13316681dda683052b7593df3890599fd5?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce"
+      alt="Terminal Management Overview"
+      class="object-contain gap-2.5 mt-7 w-full rounded-3xl aspect-[10.1] min-h-[150px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full"
+    />
+    <section class="flex flex-col mt-7 w-full max-w-[1499px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full">
+      <nav class="flex flex-wrap items-start self-start text-2xl font-bold text-center text-neutral-800 max-md:max-w-full">
+        <button
+          class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] shadow-[0px_8px_8px_rgba(0,0,0,0.25)] max-md:px-5"
+          [ngClass]="{'bg-neutral-800 text-white': activeTab === 'Registrar', 'bg-zinc-400 text-neutral-800': activeTab !== 'Registrar'}"
+          (click)="changeTab('Registrar')"
+        >
+          Registrar
+        </button>
+        <button
+          class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] shadow-[0px_8px_8px_rgba(0,0,0,0.25)] max-md:px-5"
+          [ngClass]="{'bg-neutral-800 text-white': activeTab === 'Cash Division', 'bg-zinc-400 text-neutral-800': activeTab !== 'Cash Division'}"
+          (click)="changeTab('Cash Division')"
+        >
+          Cash Division
+        </button>
+        <button
+          class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] shadow-[0px_8px_8px_rgba(0,0,0,0.25)] max-md:px-5"
+          [ngClass]="{'bg-neutral-800 text-white': activeTab === 'Accounting Office', 'bg-zinc-400 text-neutral-800': activeTab !== 'Accounting Office'}"
+          (click)="changeTab('Accounting Office')"
+        >
+          Accounting Office
+        </button>
+      </nav>
+      <div class="flex flex-col justify-center p-2.5 w-full bg-white rounded-none shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full">
+        <div class="flex flex-wrap gap-5 justify-center items-start w-full max-md:max-w-full">
+          <div class="flex flex-col justify-center w-full max-md:max-w-full">
+            <div class="flex gap-4 justify-center items-center max-md:max-w-full">
+              <div class="flex flex-wrap gap-10 items-center justify-center w-full max-md:max-w-full">
+                <div
+                  *ngFor="let counter of counters[activeTab]"
+                  class="relative flex flex-col justify-center px-4 py-2.5 bg-lime-900 rounded-3xl shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[300px] h-[150px] max-md:max-w-full"
+                  [class.active]="counter.isActive"
+                  (click)="toggleCounterStatus(counter)"
+                >
+                  <h2 class="mt-2.5 w-full text-4xl font-bold text-center text-gray-100 whitespace-nowrap leading-[60px]">
+                    {{ counter.name }}
+                  </h2>
+                  <button
+                    class="absolute top-2 right-2 text-white bg-red-600 rounded-full p-1 shadow-md hover:bg-red-700"
+                    (click)="deleteCounter(counter.id); $event.stopPropagation()"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      class="w-5 h-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <article
+                  *ngIf="shouldShowAddButton()"
+                  class="relative flex flex-col justify-center px-4 py-2.5 bg-lime-900 rounded-3xl shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[300px] h-[150px] max-md:max-w-full"
+                >
+                  <div class="flex justify-center items-center w-full max-w-full">
+                    <button
+                      class="text-white bg-green-600 rounded-full p-3 shadow-md hover:bg-green-700"
+                      (click)="addCounter()"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        class="w-8 h-8"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+          <div class="hidden max-md:flex flex-col items-center">
+            <div class="rounded-xl bg-zinc-300 h-[600px] w-[3px]"></div>
+            <div class="rounded-xl bg-zinc-300 h-[238px] w-[15px]"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  

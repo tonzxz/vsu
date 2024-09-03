@@ -160,7 +160,7 @@ export class DaTerminalmgmtComponent implements OnInit {
 
   private updateCurrentDate(): void {
     const now = new Date();
-    this.currentDate = now.toLocaleDateString('en-US', {
+    this.currentDate = now.toLocaleDateString('en-PH', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

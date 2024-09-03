@@ -1,40 +1,47 @@
 <div class="flex h-screen bg-[#22381F]">
   <!-- Sidebar -->
-  <div class="fixed top-0 left-0 bottom-0 w-[300px] border-l-[5px] border-[#22381F] bg-[#22381F] transition-all duration-500 overflow-x-hidden flex flex-col">
+  <div class="fixed top-0 left-0 bottom-0 w-[300px] bg-[#22381F] transition-all duration-500 overflow-x-hidden flex flex-col">
     <!-- Logo and Title -->
     <div class="p-4 flex items-center space-x-4 border-b border-white/10">
-      <div class="w-20 h-20 bg-white rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden">
+      <div class="w-16 h-16 bg-white rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden">
         <img src="assets/logo/vsu.png" alt="Logo" class="w-full h-full object-contain">
       </div>
-      <h1 class="text-white text-lg font-bold flex-1">{{ appTitle }}</h1>
+      <div class="flex flex-col">
+        <h1 class="text-white text-lg font-bold">Visayas State</h1>
+        <h2 class="text-white text-sm">University</h2>
+      </div>
     </div>
 
     <!-- Navigation Items -->
-    <ul class="w-full pl-[5px] mt-6 pt-5 flex-grow overflow-y-auto">
+    <ul class="w-full mt-6 flex-grow overflow-y-auto">
       <li *ngFor="let item of menuItems; let i = index" 
-          class="relative list-none w-full rounded-tl-[20px] rounded-bl-[20px] mb-2" 
-          [class.bg-white]="item.active">
-        <b class="absolute top-[-20px] h-5 w-full bg-white" [class.hidden]="!item.active">
-          <span class="absolute top-0 left-0 w-full h-full rounded-br-[20px] bg-[#22381F]"></span>
-        </b>
-        <b class="absolute bottom-[-20px] h-5 w-full bg-white" [class.hidden]="!item.active">
-          <span class="absolute bottom-0 left-0 w-full h-full rounded-tr-[20px] bg-[#22381F]"></span>
-        </b>
-        <a class="relative w-full flex items-center no-underline cursor-pointer py-3 px-4 font-bold" 
-           [class.text-[#22381F]]="item.active" 
-           [class.text-[#2F4A2C]]="item.active" 
+          class="relative list-none w-full mb-2 px-4">
+        <a class="relative w-full flex items-center no-underline cursor-pointer py-3 px-4 font-medium rounded-xl transition-all duration-300 ease-in-out text-white"
+           [class.bg-[#2F4A2C]]="item.active"
+           [class.shadow-md]="item.active"
            (click)="setActiveItem(i)">
-          <span class="flex items-center justify-center min-w-[40px] h-[40px] mr-3" [innerHTML]="item.svgIcon"></span>
-          <span [class.text-[#2F4A2C]]="item.active" class="whitespace-nowrap">
+          <span class="flex items-center justify-center w-6 h-6 mr-4 transition-transform duration-300 ease-in-out" 
+                [class.transform]="item.active" 
+                [class.scale-110]="item.active" 
+                [innerHTML]="item.svgIcon"></span>
+          <span class="whitespace-nowrap transition-all duration-300 ease-in-out"
+                [class.font-bold]="item.active">
             {{ item.title }}
           </span>
         </a>
       </li>
     </ul>
+
+    <!-- Logout Button (optional, not shown in the image but kept for functionality) -->
     <div class="p-4">
-      <button (click)="logout()" class="w-full py-3 px-4 bg-[#2F4A2C] text-white font-bold rounded-md hover:bg-[#1F3419]">
+      <button (click)="logout()" class="w-full py-3 px-4 bg-[#2F4A2C] text-white font-bold rounded-xl transition-all duration-300 ease-in-out hover:bg-[#1F3419]">
         <i class="fas fa-sign-out-alt mr-2"></i> Logout
       </button>
     </div>
+  </div>
+
+  <!-- Main Content Area (placeholder) -->
+  <div class="flex-grow ml-[300px] bg-white">
+    <!-- Your main content goes here -->
   </div>
 </div>

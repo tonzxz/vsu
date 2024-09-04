@@ -21,6 +21,8 @@ export class AContentmgmtComponent {
     'Background Photo': null,
     Video: null,
   };
+  youtubeUrl: string = ''; // For YouTube URL input
+  videoOption: 'upload' | 'url' = 'upload'; // Video input method
   maxCharCount: number = 200;
 
   onFileUpload(event: Event, type: string): void {
@@ -58,6 +60,21 @@ export class AContentmgmtComponent {
     this.backgroundColor = input.value;
   }
 
+  onYoutubeUrlChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.youtubeUrl = input.value;
+    console.log('YouTube URL:', this.youtubeUrl);
+  }
+
+  onVideoOptionChange(option: 'upload' | 'url'): void {
+    this.videoOption = option;
+    if (option === 'upload') {
+      this.youtubeUrl = ''; // Clear YouTube URL when switching to upload
+    } else {
+      this.selectedFiles['Video'] = null; // Clear video file when switching to URL
+    }
+  }
+
   getFileName(fileType: string): string {
     return this.selectedFiles[fileType]?.name || 'No file chosen';
   }
@@ -87,9 +104,16 @@ export class AContentmgmtComponent {
     if (this.backgroundType === 'color') {
       console.log('Background Color:', this.backgroundColor);
     }
-    
+
+    // Handle video input type
+    if (this.videoOption === 'url' && this.youtubeUrl) {
+      console.log('YouTube URL:', this.youtubeUrl);
+    } else if (this.videoOption === 'upload' && this.selectedFiles['Video']) {
+      console.log('Video File:', this.selectedFiles['Video']?.name);
+    }
+
     // Implement actual save logic here (e.g., API call)
-    
+
     // Show success message
     this.showSuccessMessage('Changes have been saved successfully!');
   }

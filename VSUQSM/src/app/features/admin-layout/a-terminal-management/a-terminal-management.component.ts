@@ -26,7 +26,7 @@ export class ATerminalManagementComponent implements OnInit {
   // Active tab being displayed
   activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Registrar';
 
-  // Maximum number of counters allowed per tab
+  // Maximum number of counters allowed across all tabs
   maxCounters: number = 10;
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -51,8 +51,11 @@ export class ATerminalManagementComponent implements OnInit {
   addCounter(): void {
     const countersForTab = this.counters[this.activeTab];
 
-    // Check if the maximum number of counters has been reached
-    if (countersForTab.length < this.maxCounters) {
+    // Calculate the total number of counters across all tabs
+    const totalCounters = this.getTotalCounters();
+
+    // Check if the combined total of counters exceeds the max limit
+    if (totalCounters < this.maxCounters) {
       const prefix = this.getPrefixForActiveTab(); // Get prefix based on the active tab
       const newCounterName = `${prefix}${countersForTab.length + 1}`; // Create counter name with prefix
 
@@ -69,7 +72,8 @@ export class ATerminalManagementComponent implements OnInit {
       // Force change detection to update the view
       this.cdr.detectChanges();
     } else {
-      console.log(`Maximum of ${this.maxCounters} counters reached for ${this.activeTab}`);
+      // If the limit of 10 counters is reached, show a message or handle it appropriately
+      console.log(`Maximum of ${this.maxCounters} counters reached across all tabs`);
     }
   }
 
@@ -106,6 +110,15 @@ export class ATerminalManagementComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Method to calculate the total number of counters across all tabs
+  getTotalCounters(): number {
+    const registrarCount = this.counters['Registrar'].length;
+    const cashDivisionCount = this.counters['Cash Division'].length;
+    const accountingOfficeCount = this.counters['Accounting Office'].length;
+    
+    return registrarCount + cashDivisionCount + accountingOfficeCount;
+  }
+
   // Method to toggle the status (active/inactive) of a counter
   toggleCounterStatus(counter: Counter): void {
     counter.isActive = !counter.isActive;
@@ -118,6 +131,6 @@ export class ATerminalManagementComponent implements OnInit {
 
   // Method to determine if the "Add Counter" button should be displayed
   shouldShowAddButton(): boolean {
-    return this.counters[this.activeTab].length < this.maxCounters;
+    return this.getTotalCounters() < this.maxCounters;
   }
 }

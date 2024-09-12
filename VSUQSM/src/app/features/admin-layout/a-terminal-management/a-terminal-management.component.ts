@@ -53,41 +53,32 @@ export class ATerminalManagementComponent implements OnInit {
 
     // Check if the maximum number of counters has been reached
     if (countersForTab.length < this.maxCounters) {
-      const newId = this.generateUniqueId(countersForTab); // Generate a unique counter ID
       const prefix = this.getPrefixForActiveTab(); // Get prefix based on the active tab
-      const newCounterName = `${prefix}${newId}`; // Create counter name with prefix
+      const newCounterName = `${prefix}${countersForTab.length + 1}`; // Create counter name with prefix
 
-      // Check if a counter with the new name already exists
-      const isDuplicateName = countersForTab.some(counter => counter.name === newCounterName);
+      // Add the new counter to the list
+      countersForTab.push({
+        id: countersForTab.length + 1,
+        name: newCounterName,
+        isActive: false
+      });
 
-      if (!isDuplicateName) {
-        // Add the new counter to the list
-        countersForTab.push({
-          id: newId,
-          name: newCounterName,
-          isActive: false
-        });
+      // Reassign IDs to maintain sequential numbering
+      this.reassignSequentialIds();
 
-        // Sort the counters after adding a new one
-        this.sortCountersForTab();
-
-        // Force change detection to update the view
-        this.cdr.detectChanges();
-      } else {
-        console.log('Counter with this name already exists.');
-      }
+      // Force change detection to update the view
+      this.cdr.detectChanges();
     } else {
       console.log(`Maximum of ${this.maxCounters} counters reached for ${this.activeTab}`);
     }
   }
 
-  // Generate a unique ID for the new counter
-  generateUniqueId(countersForTab: Counter[]): number {
-    let newId = 1;
-    while (countersForTab.some(counter => counter.id === newId)) {
-      newId++;
-    }
-    return newId;
+  // Reassigns sequential IDs to counters
+  reassignSequentialIds(): void {
+    this.counters[this.activeTab].forEach((counter, index) => {
+      counter.id = index + 1;
+      counter.name = `${this.getPrefixForActiveTab()}${counter.id}`;
+    });
   }
 
   // Method to get the prefix for the active tab (R for Registrar, C for Cash Division, A for Accounting Office)
@@ -104,9 +95,15 @@ export class ATerminalManagementComponent implements OnInit {
     }
   }
 
-  // Method to sort the counters within the active tab
-  sortCountersForTab(): void {
-    this.counters[this.activeTab].sort((a, b) => a.id - b.id);
+  // Method to delete a counter by its ID from the active tab
+  deleteCounter(counterId: number): void {
+    this.counters[this.activeTab] = this.counters[this.activeTab].filter(counter => counter.id !== counterId);
+
+    // Reassign IDs after deletion to maintain sequential order
+    this.reassignSequentialIds();
+
+    // Force change detection to update the view
+    this.cdr.detectChanges();
   }
 
   // Method to toggle the status (active/inactive) of a counter
@@ -117,17 +114,6 @@ export class ATerminalManagementComponent implements OnInit {
   // Method to change the active tab
   changeTab(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
     this.activeTab = tab;
-  }
-
-  // Method to delete a counter by its ID from the active tab
-  deleteCounter(counterId: number): void {
-    this.counters[this.activeTab] = this.counters[this.activeTab].filter(counter => counter.id !== counterId);
-
-    // Sort the counters after deletion
-    this.sortCountersForTab();
-
-    // Force change detection to update the view
-    this.cdr.detectChanges();
   }
 
   // Method to determine if the "Add Counter" button should be displayed

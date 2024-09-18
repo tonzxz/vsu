@@ -1,4 +1,3 @@
-// a-contentmgmt.component.ts
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +12,9 @@ import { ContentModComponent } from './content-mod/content-mod.component';
 })
 export class AContentmgmtComponent {
   @ViewChild(ContentModComponent) contentModComponent!: ContentModComponent;
+
+  // Track selected tab
+  selectedTab: string = 'Registrar';
 
   showModal: boolean = false;
   announcementText: string = '';
@@ -29,6 +31,55 @@ export class AContentmgmtComponent {
   maxCharCount: number = 200;
   logoUrl: string = 'path/to/default/logo.png';
 
+  // Default content for each tab
+  contentData: { [key: string]: any } = {
+    'Registrar': {
+      logoUrl: 'path/to/registrar/logo.png',
+      backgroundType: 'photo',
+      backgroundColor: '#FFFFFF',
+      backgroundPhotoUrl: null,
+      videoUrl: null,
+      announcementText: 'Registrar Announcements',
+      notesText: 'Registrar Notes'
+    },
+    'Cash Division': {
+      logoUrl: 'path/to/cash-division/logo.png',
+      backgroundType: 'color',
+      backgroundColor: '#FFEEAA',
+      backgroundPhotoUrl: null,
+      videoUrl: 'https://example.com/cash-division-video.mp4',
+      announcementText: 'Cash Division Announcements',
+      notesText: 'Cash Division Notes'
+    },
+    'Accounting Office': {
+      logoUrl: 'path/to/accounting-office/logo.png',
+      backgroundType: 'photo',
+      backgroundColor: '#FFFFFF',
+      backgroundPhotoUrl: null,
+      videoUrl: null,
+      announcementText: 'Accounting Office Announcements',
+      notesText: 'Accounting Office Notes'
+    }
+  };
+
+  // Handle tab click
+  onTabClick(tab: string): void {
+    this.selectedTab = tab;
+    const tabData = this.contentData[tab];
+    // Update all the properties based on the selected tab
+    this.logoUrl = tabData.logoUrl;
+    this.backgroundType = tabData.backgroundType;
+    this.backgroundColor = tabData.backgroundColor;
+    this.selectedFiles['Background Photo'] = null; // Reset background photo
+    this.youtubeUrl = tabData.videoUrl || ''; // Reset YouTube URL or load tab's video URL
+    this.videoOption = tabData.videoUrl ? 'url' : 'upload';
+    this.announcementText = tabData.announcementText;
+    this.notesText = tabData.notesText;
+
+    // Update content on ContentModComponent
+    this.updateContentMod();
+  }
+
   private updateContentMod(): void {
     if (this.contentModComponent) {
       this.contentModComponent.updateContent({
@@ -38,7 +89,8 @@ export class AContentmgmtComponent {
         backgroundPhotoUrl: this.selectedFiles['Background Photo'] ? URL.createObjectURL(this.selectedFiles['Background Photo']) : null,
         videoUrl: this.videoOption === 'url' ? this.youtubeUrl : (this.selectedFiles['Video'] ? URL.createObjectURL(this.selectedFiles['Video']) : null),
         announcementText: this.announcementText,
-        notesText: this.notesText
+        notesText: this.notesText,
+        tabName: this.selectedTab
       });
     }
   }
@@ -134,6 +186,7 @@ export class AContentmgmtComponent {
 
   saveChanges(): void {
     console.log('Saving changes...');
+    console.log('Selected Tab:', this.selectedTab);
     console.log('Announcement Text:', this.announcementText);
     console.log('Notes Text:', this.notesText);
     console.log('Selected Files:', this.selectedFiles);
@@ -148,6 +201,17 @@ export class AContentmgmtComponent {
     } else if (this.videoOption === 'upload' && this.selectedFiles['Video']) {
       console.log('Video File:', this.selectedFiles['Video']?.name);
     }
+
+    // Update the contentData for the current tab
+    this.contentData[this.selectedTab] = {
+      logoUrl: this.logoUrl,
+      backgroundType: this.backgroundType,
+      backgroundColor: this.backgroundColor,
+      backgroundPhotoUrl: this.selectedFiles['Background Photo'] ? URL.createObjectURL(this.selectedFiles['Background Photo']) : null,
+      videoUrl: this.videoOption === 'url' ? this.youtubeUrl : (this.selectedFiles['Video'] ? URL.createObjectURL(this.selectedFiles['Video']) : null),
+      announcementText: this.announcementText,
+      notesText: this.notesText
+    };
 
     this.showSuccessMessage('Changes have been saved successfully!');
     this.updateContentMod();

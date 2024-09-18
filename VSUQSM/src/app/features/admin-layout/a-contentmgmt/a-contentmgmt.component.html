@@ -7,17 +7,23 @@
     <!-- Tabs -->
     <nav class="flex border-b border-gray-200">
       <!-- Registrar Tab -->
-      <a href="#" class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm text-white bg-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-700" aria-current="page">
+      <div (click)="onTabClick('Registrar')" 
+         [ngClass]="{'bg-neutral-800 text-white': selectedTab === 'Registrar', 'bg-zinc-200 text-neutral-800': selectedTab !== 'Registrar'}"
+         class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap cursor-pointer border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm transition duration-300 ease-in-out hover:bg-neutral-700">
         Registrar
-      </a>
+      </div>
       <!-- Cash Division Tab -->
-      <a href="#" class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm bg-zinc-200 text-neutral-800 transition duration-300 ease-in-out hover:bg-zinc-300">
+      <div (click)="onTabClick('Cash Division')" 
+         [ngClass]="{'bg-neutral-800 text-white': selectedTab === 'Cash Division', 'bg-zinc-200 text-neutral-800': selectedTab !== 'Cash Division'}"
+         class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap cursor-pointer border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm transition duration-300 ease-in-out hover:bg-zinc-300">
         Cash Division
-      </a>
+      </div>
       <!-- Accounting Office Tab -->
-      <a href="#" class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm bg-zinc-200 text-neutral-800 transition duration-300 ease-in-out hover:bg-zinc-300">
+      <div (click)="onTabClick('Accounting Office')" 
+         [ngClass]="{'bg-neutral-800 text-white': selectedTab === 'Accounting Office', 'bg-zinc-200 text-neutral-800': selectedTab !== 'Accounting Office'}"
+         class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap cursor-pointer border-solid border-[3px] rounded-[30px_30px_0px_0px] max-md:px-5 text-sm transition duration-300 ease-in-out hover:bg-zinc-300">
         Accounting Office
-      </a>
+      </div>
     </nav>
 
     <div class="p-6">
@@ -25,8 +31,17 @@
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4">Preview</h2>
         <div class="bg-gray-100 rounded-lg p-4 aspect-video flex items-center justify-center">
-          <!-- Replace this with your actual preview component -->
-          <app-content-mod class="w-full h-full"></app-content-mod>
+          <app-content-mod 
+            [logoUrl]="contentData[selectedTab].logoUrl"
+            [backgroundType]="contentData[selectedTab].backgroundType"
+            [backgroundColor]="contentData[selectedTab].backgroundColor"
+            [backgroundPhotoUrl]="contentData[selectedTab].backgroundPhotoUrl"
+            [videoUrl]="contentData[selectedTab].videoUrl"
+            [announcementText]="contentData[selectedTab].announcementText"
+            [notesText]="contentData[selectedTab].notesText"
+            [tabName]="selectedTab"
+            class="w-full h-full">
+          </app-content-mod>
         </div>
       </div>
 
@@ -169,4 +184,4 @@
       </div>
     </div>
   </div>
-</main>
+

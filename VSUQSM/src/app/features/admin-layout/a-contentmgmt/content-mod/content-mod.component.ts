@@ -1,4 +1,3 @@
-// content-mod.component.ts
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SafeUrlPipe } from '../safe-url.pipe';
@@ -11,6 +10,7 @@ interface ContentUpdate {
   videoUrl: string | null;
   announcementText: string;
   notesText: string;
+  tabName: string;
 }
 
 @Component({
@@ -31,6 +31,7 @@ export class ContentModComponent implements OnInit {
   @Input() videoUrl: string | null = null;
   @Input() announcementText: string = '';
   @Input() notesText: string = '';
+  @Input() tabName: string = 'Registrar';
 
   constructor() {}
 
@@ -47,6 +48,7 @@ export class ContentModComponent implements OnInit {
     this.videoUrl = update.videoUrl;
     this.announcementText = update.announcementText;
     this.notesText = update.notesText;
+    this.tabName = update.tabName;
   }
 
   private updateCurrentDate(): void {

@@ -26,24 +26,24 @@
       </div>
     </nav>
 
-    <div class="p-6">
-      <!-- Preview Section -->
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4">Preview</h2>
-        <div class="bg-gray-100 rounded-lg p-4 aspect-video flex items-center justify-center">
-          <app-content-mod 
-            [logoUrl]="contentData[selectedTab].logoUrl"
-            [backgroundType]="contentData[selectedTab].backgroundType"
-            [backgroundColor]="contentData[selectedTab].backgroundColor"
-            [backgroundPhotoUrl]="contentData[selectedTab].backgroundPhotoUrl"
-            [videoUrl]="contentData[selectedTab].videoUrl"
-            [announcementText]="contentData[selectedTab].announcementText"
-            [notesText]="contentData[selectedTab].notesText"
-            [tabName]="selectedTab"
-            class="w-full h-full">
-          </app-content-mod>
-        </div>
-      </div>
+<div class="p-6">
+    <!-- Preview Section -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Preview</h2>
+      
+        <app-content-mod 
+          [logoUrl]="contentData[selectedTab].logoUrl"
+          [backgroundType]="contentData[selectedTab].backgroundType"
+          [backgroundColor]="contentData[selectedTab].backgroundColor"
+          [backgroundPhotoUrl]="contentData[selectedTab].backgroundPhotoUrl"
+          [videoUrl]="contentData[selectedTab].videoUrl"
+          [announcementText]="contentData[selectedTab].announcementText"
+          [notesText]="contentData[selectedTab].notesText"
+          [tabName]="selectedTab"
+          class="w-full h-full">
+        </app-content-mod>
+      
+    </div>
 
       <!-- Content Settings -->
       <div class="bg-white rounded-lg p-6 w-full">

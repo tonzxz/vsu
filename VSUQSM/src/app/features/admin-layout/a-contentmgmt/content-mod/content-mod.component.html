@@ -13,79 +13,98 @@
           </div>
         </div>
 
-        <!-- Widgets Section -->
+        <!-- Combined Widgets Section -->
         <div class="flex flex-col lg:w-3/5 w-full">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
-            <!-- Time and Date Widget -->
-            <div class="flex items-center justify-between bg-neutral-800 text-white rounded-xl shadow-sm p-3">
-              <time class="date">{{ currentDate }}</time>
-              <div class="w-[40px] text-right">{{ timer }}</div>
-            </div>
-
-            <!-- Currency Converter Widget -->
-            <div class="flex items-center justify-between bg-neutral-800 text-white rounded-xl shadow-sm p-3">
-              <div class="flex items-center gap-2">
-                <img src="/api/placeholder/25/25" alt="Currency icon" class="w-[25px]" />
-                <span class="text-lg font-bold">USD</span>
+          <div class="bg-neutral-800 text-white rounded-xl shadow-sm p-3 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <!-- Time and Date -->
+              <div class="flex flex-col">
+                <time class="text-sm">{{ currentDate }}</time>
+                <div class="text-xs">{{ timer }}</div>
               </div>
-              <div class="flex items-center gap-2">
-                <div class="text-lg font-light">90,6253 ₽</div>
-                <img src="/api/placeholder/40/40" alt="Exchange rate icon" class="w-[40px]" />
+              <!-- Weather -->
+              <div class="flex items-center">
+                <span class="text-sm font-bold mr-1">25°C</span>
+                <img src="/api/placeholder/20/20" alt="Weather icon" class="w-[20px]" />
               </div>
             </div>
-
-            <!-- Weather Widget -->
-            <div class="flex items-center justify-between bg-neutral-800 text-white rounded-xl shadow-sm p-3">
-              <span class="text-lg font-bold">25°C</span>
-              <img src="/api/placeholder/40/40" alt="Weather icon" class="w-[40px]" />
+            <!-- Currency Converter -->
+            <div class="flex items-center space-x-2">
+              <img src="/api/placeholder/20/20" alt="Currency icon" class="w-[20px]" />
+              <span class="text-sm font-bold">USD</span>
+              <span class="text-xs">90,6253 ₽</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Now Serving Section -->
+      <!-- Now Serving and Video Section -->
       <div class="relative flex flex-col lg:flex-row gap-3 mt-4 p-4">
-        <div class="bg-white border border-solid border-neutral-800 rounded-lg p-3 w-full lg:w-2/3">
-          <h3 class="text-3xl font-bold text-white bg-neutral-800 text-center rounded-lg py-2">Processing</h3>
+        <div class="bg-white border border-solid border-neutral-800 rounded-lg p-3 w-full lg:w-1/2">
+          <h3 class="text-2xl font-bold text-white bg-neutral-800 text-center rounded-lg py-2">Processing</h3>
           <div class="flex justify-around mt-3">
             <div class="text-center">
-              <h4 class="text-4xl">Now serving</h4>
+              <h4 class="text-3xl">Now serving</h4>
               <ul class="list-none p-0">
-                <li class="text-3xl mt-2">1</li>
-                <li class="text-3xl mt-2">2</li>
-                <li class="text-3xl mt-2">3</li>
+                <li class="text-2xl mt-2">1</li>
+                <li class="text-2xl mt-2">2</li>
+                <li class="text-2xl mt-2">3</li>
               </ul>
             </div>
             <div class="text-center">
-              <h4 class="text-4xl">Counter</h4>
+              <h4 class="text-3xl">Counter</h4>
               <ul class="list-none p-0">
-                <li class="text-3xl mt-2">R1</li>
-                <li class="text-3xl mt-2">R2</li>
-                <li class="text-3xl mt-2">R3</li>
+                <li class="text-2xl mt-2">R1</li>
+                <li class="text-2xl mt-2">R2</li>
+                <li class="text-2xl mt-2">R3</li>
               </ul>
             </div>
           </div>
         </div>
 
         <!-- Video Section -->
-        <div *ngIf="videoUrl" class="lg:w-1/3 w-full mt-4 lg:mt-0">
-          <video *ngIf="!videoUrl.includes('youtube')" [src]="videoUrl" controls class="w-full h-full object-cover rounded-lg"></video>
-          <iframe *ngIf="videoUrl.includes('youtube')" [src]="videoUrl | safeUrl" frameborder="0" allowfullscreen class="w-full h-full rounded-lg"></iframe>
+        <div *ngIf="videoUrl" class="lg:w-1/2 w-full mt-4 lg:mt-0">
+          <div class="relative w-full" style="padding-top: 56.25%;">
+            <!-- YouTube Video -->
+            <iframe *ngIf="youtubeSafeUrl"
+                    [src]="youtubeSafeUrl"
+                    frameborder="0"
+                    allowfullscreen
+                    class="absolute top-0 left-0 w-full h-full rounded-lg">
+            </iframe>
+            
+            <!-- Blob URL or Regular Video -->
+            <video #videoPlayer *ngIf="!youtubeSafeUrl"
+                   [src]="getSafeUrl(videoUrl!)"
+                   (ended)="onVideoEnded()"
+                   class="absolute top-0 left-0 w-full h-full object-contain rounded-lg">
+            </video>
+
+            <!-- Video Controls (only for non-YouTube videos) -->
+            <div *ngIf="!youtubeSafeUrl" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              <button (click)="togglePlay()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">
+                {{ isPlaying ? 'Pause' : 'Play' }}
+              </button>
+              <button (click)="restartVideo()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">
+                Restart
+              </button>
+              <button (click)="toggleLoop()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold" 
+                      [class.bg-green-500]="isLooping" [class.text-white]="isLooping">
+                {{ isLooping ? 'Looping' : 'Loop' }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Announcement Section -->
-      <div class="bg-neutral-800 text-white py-2 px-4 rounded-lg mt-8">
-        <div class="marquee" role="marquee">
-          <p class="marquee-text">{{ announcementText }}</p>
-        </div>
-      </div>
-
-      <!-- Notes Section -->
-      <div *ngIf="notesText" class="bg-white text-neutral-800 py-2 px-4 rounded-lg mt-4">
-        <h3 class="text-xl font-bold">Notes</h3>
-        <p>{{ notesText }}</p>
-      </div>
+      <!-- Announcement and Notes Section -->
+ <!-- Announcement and Notes Section -->
+ <div class="bg-neutral-800 text-white py-2 px-4 rounded-lg mt-8 overflow-hidden">
+  <div class="marquee-container" [style.animation-duration]="marqueeDuration + 's'">
+    <p class="marquee-text" *ngIf="showAnnouncement">{{ announcementText }}</p>
+    <p class="marquee-text" *ngIf="!showAnnouncement">NOTE: {{ notesText }}</p>
+  </div>
+</div>
     </div>
   </div>
 </section>

@@ -1,48 +1,71 @@
 // content-mod.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SafeUrlPipe } from '../safe-url.pipe';
+
+interface ContentUpdate {
+  logoUrl: string;
+  backgroundType: 'photo' | 'color';
+  backgroundColor: string;
+  backgroundPhotoUrl: string | null;
+  videoUrl: string | null;
+  announcementText: string;
+  notesText: string;
+}
 
 @Component({
-  selector: 'app-content-mod', // Defines the selector for this component
-  standalone: true, // Allows this component to be used independently without being part of a module
-  imports: [CommonModule], // Imports necessary modules for this component
-  templateUrl: './content-mod.component.html', // Path to the HTML template
-  styleUrls: ['./content-mod.component.css'] // Path to the CSS styles for this component
+  selector: 'app-content-mod',
+  standalone: true,
+  imports: [CommonModule, SafeUrlPipe],
+  templateUrl: './content-mod.component.html',
+  styleUrls: ['./content-mod.component.css']
 })
 export class ContentModComponent implements OnInit {
-  // Holds the current date and time in a specific format
   currentDate: string = '';
-
-  // Holds the current time as a string (HH:mm:ss format)
   timer: string = '00:00:00';
+
+  @Input() logoUrl: string = 'path/to/default/logo.png';
+  @Input() backgroundType: 'photo' | 'color' = 'photo';
+  @Input() backgroundColor: string = '#FFFFFF';
+  @Input() backgroundPhotoUrl: string | null = null;
+  @Input() videoUrl: string | null = null;
+  @Input() announcementText: string = '';
+  @Input() notesText: string = '';
 
   constructor() {}
 
-  // Lifecycle hook that gets called after the component is initialized
   ngOnInit(): void {
-    this.startTimer(); // Start the timer on component initialization
-    this.updateCurrentDate(); // Update the current date on component initialization
+    this.startTimer();
+    this.updateCurrentDate();
   }
 
-  // Updates the current date every second and formats it to include year, month, day, and time
+  updateContent(update: ContentUpdate): void {
+    this.logoUrl = update.logoUrl;
+    this.backgroundType = update.backgroundType;
+    this.backgroundColor = update.backgroundColor;
+    this.backgroundPhotoUrl = update.backgroundPhotoUrl;
+    this.videoUrl = update.videoUrl;
+    this.announcementText = update.announcementText;
+    this.notesText = update.notesText;
+  }
+
   private updateCurrentDate(): void {
     setInterval(() => {
-      const now = new Date(); // Get the current date and time
+      const now = new Date();
       this.currentDate = now.toLocaleDateString('en-PH', {
-        year: 'numeric', // Display the full year
-        month: 'short', // Display the short name of the month
-        day: 'numeric', // Display the day of the month
-        hour: '2-digit', // Display the hour in two-digit format
-        minute: '2-digit', // Display the minute in two-digit format
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       });
-    }, 1000); // Update the date every 1000 milliseconds (1 second)
+    }, 1000);
   }
 
-  // Starts a timer that updates every second and displays the current time in HH:mm:ss format
   private startTimer(): void {
     setInterval(() => {
-      const now = new Date(); // Get the current time
-      this.timer = now.toTimeString().split(' ')[0]; // Extract and format the time (HH:mm:ss)
-    }, 1000); // Update the timer every 1000 milliseconds (1 second)
+      const now = new Date();
+      this.timer = now.toTimeString().split(' ')[0];
+    }, 1000);
   }
 }

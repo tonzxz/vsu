@@ -13,7 +13,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 export class ContentModComponent implements OnInit, AfterViewInit {
   @Input() logoUrl: string = 'path/to/default/logo.png';
   @Input() backgroundType: 'photo' | 'color' = 'photo';
-  @Input() backgroundColor: string = '#FFFFFF';
+  @Input() backgroundColor: string = '#283c1c';
   @Input() backgroundPhotoUrl: string | null = null;
   @Input() videoUrl: string | null = null;
   @Input() announcementText: string = '';

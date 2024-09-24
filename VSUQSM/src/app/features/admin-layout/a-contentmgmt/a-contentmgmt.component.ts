@@ -20,7 +20,7 @@ export class AContentmgmtComponent {
   announcementText: string = '';
   notesText: string = '';
   backgroundType: 'photo' | 'color' = 'photo';
-  backgroundColor: string = '#FFFFFF';
+  backgroundColor: string = '#283c1c';
   selectedFiles: { [key: string]: File | null } = {
     Logo: null,
     'Background Photo': null,
@@ -45,7 +45,7 @@ export class AContentmgmtComponent {
     Registrar: {
       logoUrl: 'assets/logo/vsu.png', // Updated logo URL
       backgroundType: 'photo',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: '#283c1c',
       backgroundPhotoUrl: null,
       videoUrl: null,
       announcementText: 'Registrar Announcements',
@@ -59,9 +59,9 @@ export class AContentmgmtComponent {
     'Cash Division': {
       logoUrl: 'assets/logo/vsu.png', // Updated logo URL
       backgroundType: 'color',
-      backgroundColor: '#FFEEAA',
+      backgroundColor: '#283c1c',
       backgroundPhotoUrl: null,
-      videoUrl: 'https://example.com/cash-division-video.mp4',
+      videoUrl: null,
       announcementText: 'Cash Division Announcements',
       notesText: 'Cash Division Notes',
       widgets: {
@@ -73,7 +73,7 @@ export class AContentmgmtComponent {
     'Accounting Office': {
       logoUrl: 'assets/logo/vsu.png', // Updated logo URL
       backgroundType: 'photo',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: '#283c1c',
       backgroundPhotoUrl: null,
       videoUrl: null,
       announcementText: 'Accounting Office Announcements',

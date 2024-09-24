@@ -43,7 +43,7 @@
         </div>
       </div>
 
-<!-- Now Serving and Video Section -->
+      <!-- Now Serving and Video Section -->
 <div class="relative flex flex-col lg:flex-row gap-5 mt-6 p-6">
   <div class="bg-white border border-neutral-800 rounded-3xl p-5 w-full" [ngClass]="{'lg:w-1/2': videoUrl}">
     <h3 class="text-2xl font-bold text-white bg-neutral-800 text-center rounded-lg py-3">Processing</h3>
@@ -67,19 +67,19 @@
     </div>
   </div>
 
-        <!-- Video Section -->
-        <div *ngIf="videoUrl" class="lg:w-1/2 w-full mt-4 lg:mt-0">
-          <div class="relative w-full" style="padding-top: 56.25%;">
-            <iframe *ngIf="youtubeSafeUrl" [src]="youtubeSafeUrl" frameborder="0" allowfullscreen class="absolute top-0 left-0 w-full h-full rounded-lg"></iframe>
-            <video #videoPlayer *ngIf="!youtubeSafeUrl" [src]="getSafeUrl(videoUrl!)" (ended)="onVideoEnded()" class="absolute top-0 left-0 w-full h-full object-contain rounded-lg"></video>
-            <div *ngIf="!youtubeSafeUrl" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3">
-              <button (click)="togglePlay()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">{{ isPlaying ? 'Pause' : 'Play' }}</button>
-              <button (click)="restartVideo()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">Restart</button>
-              <button (click)="toggleLoop()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold" [class.bg-green-500]="isLooping">{{ isLooping ? 'Looping' : 'Loop' }}</button>
-            </div>
-          </div>
-        </div>
+  <!-- Video Section -->
+  <div *ngIf="videoUrl" class="lg:w-1/2 w-full mt-4 lg:mt-0">
+    <div class="relative w-full" style="padding-top: 56.25%;">
+      <iframe *ngIf="youtubeSafeUrl" [src]="youtubeSafeUrl" frameborder="0" allowfullscreen class="absolute top-0 left-0 w-full h-full rounded-lg"></iframe>
+      <video #videoPlayer *ngIf="!youtubeSafeUrl" [src]="getSafeUrl(videoUrl!)" (ended)="onVideoEnded()" class="absolute top-0 left-0 w-full h-full object-contain rounded-lg"></video>
+      <div *ngIf="!youtubeSafeUrl" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3">
+        <button (click)="togglePlay()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">{{ isPlaying ? 'Pause' : 'Play' }}</button>
+        <button (click)="restartVideo()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">Restart</button>
+        <button (click)="toggleLoop()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold" [class.bg-green-500]="isLooping">{{ isLooping ? 'Looping' : 'Loop' }}</button>
       </div>
+    </div>
+  </div>
+</div>
 
       <!-- Announcement and Notes Section -->
       <div class="bg-neutral-800 text-white py-2 px-4 rounded-lg mt-8 overflow-hidden shadow-lg">

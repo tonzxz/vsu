@@ -8,7 +8,7 @@ import { ContentModComponent } from './content-mod/content-mod.component';
   standalone: true,
   imports: [ContentModComponent, CommonModule, FormsModule],
   templateUrl: './a-contentmgmt.component.html',
-  styleUrls: ['./a-contentmgmt.component.css']
+  styleUrls: ['./a-contentmgmt.component.css'],
 })
 export class AContentmgmtComponent {
   @ViewChild(ContentModComponent) contentModComponent!: ContentModComponent;
@@ -29,7 +29,9 @@ export class AContentmgmtComponent {
   youtubeUrl: string = '';
   videoOption: 'upload' | 'url' = 'upload';
   maxCharCount: number = 200;
-  logoUrl: string = 'path/to/default/logo.png';
+
+  // Updated the default logo URL
+  logoUrl: string = 'assets/logo/vsu.png';
 
   // Widgets state
   public widgets = {
@@ -40,8 +42,8 @@ export class AContentmgmtComponent {
 
   // Default content for each tab
   contentData: { [key: string]: any } = {
-    'Registrar': {
-      logoUrl: 'path/to/registrar/logo.png',
+    Registrar: {
+      logoUrl: 'assets/logo/vsu.png', // Updated logo URL
       backgroundType: 'photo',
       backgroundColor: '#FFFFFF',
       backgroundPhotoUrl: null,
@@ -52,10 +54,10 @@ export class AContentmgmtComponent {
         weather: false,
         timeAndDate: false,
         currencyConverter: false,
-      }
+      },
     },
     'Cash Division': {
-      logoUrl: 'path/to/cash-division/logo.png',
+      logoUrl: 'assets/logo/vsu.png', // Updated logo URL
       backgroundType: 'color',
       backgroundColor: '#FFEEAA',
       backgroundPhotoUrl: null,
@@ -66,10 +68,10 @@ export class AContentmgmtComponent {
         weather: false,
         timeAndDate: false,
         currencyConverter: false,
-      }
+      },
     },
     'Accounting Office': {
-      logoUrl: 'path/to/accounting-office/logo.png',
+      logoUrl: 'assets/logo/vsu.png', // Updated logo URL
       backgroundType: 'photo',
       backgroundColor: '#FFFFFF',
       backgroundPhotoUrl: null,
@@ -80,8 +82,8 @@ export class AContentmgmtComponent {
         weather: false,
         timeAndDate: false,
         currencyConverter: false,
-      }
-    }
+      },
+    },
   };
 
   // Handle tab click
@@ -121,7 +123,7 @@ export class AContentmgmtComponent {
         announcementText: this.announcementText,
         notesText: this.notesText,
         tabName: this.selectedTab,
-        widgets: this.widgets
+        widgets: this.widgets,
       });
     }
   }
@@ -143,6 +145,7 @@ export class AContentmgmtComponent {
     const reader = new FileReader();
     reader.onload = (e: ProgressEvent<FileReader>) => {
       this.logoUrl = e.target?.result as string;
+      this.updateContentMod(); // Ensure the content is updated with the new logo
     };
     reader.readAsDataURL(file);
   }
@@ -229,7 +232,10 @@ export class AContentmgmtComponent {
 
     if (this.videoOption === 'url' && this.youtubeUrl) {
       console.log('YouTube URL:', this.youtubeUrl);
-    } else if (this.videoOption === 'upload' && this.selectedFiles['Video']) {
+    } else if (
+      this.videoOption === 'upload' &&
+      this.selectedFiles['Video']
+    ) {
       console.log('Video File:', this.selectedFiles['Video']?.name);
     }
 
@@ -251,7 +257,7 @@ export class AContentmgmtComponent {
           : null,
       announcementText: this.announcementText,
       notesText: this.notesText,
-      widgets: { ...this.widgets } // Save the widgets state
+      widgets: { ...this.widgets }, // Save the widgets state
     };
 
     this.showSuccessMessage('Changes have been saved successfully!');

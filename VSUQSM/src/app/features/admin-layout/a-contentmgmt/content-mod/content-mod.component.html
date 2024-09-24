@@ -27,53 +27,51 @@
 
         <!-- Widget Section -->
         <div
-          class="flex lg:w-1/2 w-full gap-3 items-center justify-end"
+          class="flex lg:w-1/2 w-full gap-3 items-center justify-end flex-wrap"
         >
           <!-- Time and Date Widget -->
           <div
             *ngIf="widgets.timeAndDate"
             class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
-            style="width: 110px; height: 110px;"
+            style="width: 100%; max-width: 110px; height: 110px;"
           >
             <div class="flex flex-col items-center text-center h-full justify-center">
-              <i class="fas fa-calendar-day text-2xl"></i>
-              <time class="text-sm font-semibold mt-1">{{ currentDate }}</time>
+              <!-- Font Awesome Calendar Icon -->
+              <i class="fas fa-calendar-day text-xl md:text-2xl"></i>
+              <time class="text-xs md:text-sm font-semibold mt-1">
+                {{ currentDate }}
+              </time>
               <div class="text-xs text-gray-500">
                 <i class="far fa-clock"></i> {{ timer }}
               </div>
             </div>
           </div>
+          
           <!-- Weather Widget -->
           <div
             *ngIf="widgets.weather"
             class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
-            style="width: 110px; height: 110px;"
+            style="width: 100%; max-width: 110px; height: 110px;"
           >
             <div class="flex flex-col items-center text-center h-full justify-center">
-              <i class="fas fa-cloud-sun text-2xl"></i>
-              <span class="text-sm font-bold mt-1">25°C</span>
-              <!-- Placeholder for weather icon -->
-              <img
-                src="/api/placeholder/20/20"
-                alt="Weather icon"
-                class="w-5 animate-bounce mt-1"
-              />
+              <!-- Font Awesome Weather Icon -->
+              <i class="fas fa-cloud-sun text-xl md:text-2xl"></i>
+              <span class="text-xs md:text-sm font-bold mt-1">25°C</span>
+              <!-- Optional: Additional Weather Info -->
+              <span class="text-xs text-gray-500">Sunny</span>
             </div>
           </div>
+          
           <!-- Currency Converter Widget -->
           <div
             *ngIf="widgets.currencyConverter"
             class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
-            style="width: 110px; height: 110px;"
+            style="width: 100%; max-width: 110px; height: 110px;"
           >
             <div class="flex flex-col items-center text-center h-full justify-center">
-              <!-- Placeholder for currency icon -->
-              <img
-                src="/api/placeholder/20/20"
-                alt="Currency icon"
-                class="w-5 animate-pulse mb-1"
-              />
-              <span class="text-sm font-bold">USD</span>
+              <!-- Font Awesome Exchange Icon -->
+              <i class="fas fa-exchange-alt text-xl md:text-2xl"></i>
+              <span class="text-xs md:text-sm font-bold mt-1">USD</span>
               <span class="text-xs text-gray-500">90.62₽</span>
             </div>
           </div>
@@ -112,14 +110,8 @@
         </div>
 
         <!-- Video Section -->
-        <div
-          *ngIf="videoUrl"
-          class="lg:w-1/2 w-full mt-4 lg:mt-0"
-        >
-          <div
-            class="relative w-full"
-            style="padding-top: 56.25%;"
-          >
+        <div *ngIf="videoUrl" class="lg:w-1/2 w-full mt-4 lg:mt-0">
+          <div class="relative w-full" style="padding-top: 56.25%;">
             <iframe
               *ngIf="youtubeSafeUrl"
               [src]="youtubeSafeUrl"
@@ -170,16 +162,10 @@
           class="marquee-container"
           [style.animation-duration]="marqueeDuration + 's'"
         >
-          <p
-            class="marquee-text text-xl font-semibold"
-            *ngIf="showAnnouncement"
-          >
+          <p class="marquee-text text-xl font-semibold" *ngIf="showAnnouncement">
             {{ announcementText }}
           </p>
-          <p
-            class="marquee-text text-xl font-semibold"
-            *ngIf="!showAnnouncement"
-          >
+          <p class="marquee-text text-xl font-semibold" *ngIf="!showAnnouncement">
             NOTE: {{ notesText }}
           </p>
         </div>

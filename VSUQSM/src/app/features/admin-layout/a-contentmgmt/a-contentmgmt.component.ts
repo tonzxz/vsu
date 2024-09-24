@@ -31,6 +31,13 @@ export class AContentmgmtComponent {
   maxCharCount: number = 200;
   logoUrl: string = 'path/to/default/logo.png';
 
+  // Widgets state
+  public widgets = {
+    weather: false,
+    timeAndDate: false,
+    currencyConverter: false,
+  };
+
   // Default content for each tab
   contentData: { [key: string]: any } = {
     'Registrar': {
@@ -40,7 +47,12 @@ export class AContentmgmtComponent {
       backgroundPhotoUrl: null,
       videoUrl: null,
       announcementText: 'Registrar Announcements',
-      notesText: 'Registrar Notes'
+      notesText: 'Registrar Notes',
+      widgets: {
+        weather: false,
+        timeAndDate: false,
+        currencyConverter: false,
+      }
     },
     'Cash Division': {
       logoUrl: 'path/to/cash-division/logo.png',
@@ -49,7 +61,12 @@ export class AContentmgmtComponent {
       backgroundPhotoUrl: null,
       videoUrl: 'https://example.com/cash-division-video.mp4',
       announcementText: 'Cash Division Announcements',
-      notesText: 'Cash Division Notes'
+      notesText: 'Cash Division Notes',
+      widgets: {
+        weather: false,
+        timeAndDate: false,
+        currencyConverter: false,
+      }
     },
     'Accounting Office': {
       logoUrl: 'path/to/accounting-office/logo.png',
@@ -58,7 +75,12 @@ export class AContentmgmtComponent {
       backgroundPhotoUrl: null,
       videoUrl: null,
       announcementText: 'Accounting Office Announcements',
-      notesText: 'Accounting Office Notes'
+      notesText: 'Accounting Office Notes',
+      widgets: {
+        weather: false,
+        timeAndDate: false,
+        currencyConverter: false,
+      }
     }
   };
 
@@ -75,6 +97,7 @@ export class AContentmgmtComponent {
     this.videoOption = tabData.videoUrl ? 'url' : 'upload';
     this.announcementText = tabData.announcementText;
     this.notesText = tabData.notesText;
+    this.widgets = { ...tabData.widgets }; // Copy widgets state
 
     // Update content on ContentModComponent
     this.updateContentMod();
@@ -86,11 +109,19 @@ export class AContentmgmtComponent {
         logoUrl: this.logoUrl,
         backgroundType: this.backgroundType,
         backgroundColor: this.backgroundColor,
-        backgroundPhotoUrl: this.selectedFiles['Background Photo'] ? URL.createObjectURL(this.selectedFiles['Background Photo']) : null,
-        videoUrl: this.videoOption === 'url' ? this.youtubeUrl : (this.selectedFiles['Video'] ? URL.createObjectURL(this.selectedFiles['Video']) : null),
+        backgroundPhotoUrl: this.selectedFiles['Background Photo']
+          ? URL.createObjectURL(this.selectedFiles['Background Photo'])
+          : null,
+        videoUrl:
+          this.videoOption === 'url'
+            ? this.youtubeUrl
+            : this.selectedFiles['Video']
+            ? URL.createObjectURL(this.selectedFiles['Video'])
+            : null,
         announcementText: this.announcementText,
         notesText: this.notesText,
-        tabName: this.selectedTab
+        tabName: this.selectedTab,
+        widgets: this.widgets
       });
     }
   }
@@ -114,11 +145,6 @@ export class AContentmgmtComponent {
       this.logoUrl = e.target?.result as string;
     };
     reader.readAsDataURL(file);
-  }
-
-  addWidget(widgetType: string): void {
-    console.log(`${widgetType} added`);
-    this.updateContentMod();
   }
 
   onAnnouncementChange(event: Event): void {
@@ -184,6 +210,11 @@ export class AContentmgmtComponent {
     this.showModal = true;
   }
 
+  onWidgetChange(): void {
+    console.log('Widgets updated:', this.widgets);
+    this.updateContentMod();
+  }
+
   saveChanges(): void {
     console.log('Saving changes...');
     console.log('Selected Tab:', this.selectedTab);
@@ -202,15 +233,25 @@ export class AContentmgmtComponent {
       console.log('Video File:', this.selectedFiles['Video']?.name);
     }
 
+    console.log('Widgets:', this.widgets);
+
     // Update the contentData for the current tab
     this.contentData[this.selectedTab] = {
       logoUrl: this.logoUrl,
       backgroundType: this.backgroundType,
       backgroundColor: this.backgroundColor,
-      backgroundPhotoUrl: this.selectedFiles['Background Photo'] ? URL.createObjectURL(this.selectedFiles['Background Photo']) : null,
-      videoUrl: this.videoOption === 'url' ? this.youtubeUrl : (this.selectedFiles['Video'] ? URL.createObjectURL(this.selectedFiles['Video']) : null),
+      backgroundPhotoUrl: this.selectedFiles['Background Photo']
+        ? URL.createObjectURL(this.selectedFiles['Background Photo'])
+        : null,
+      videoUrl:
+        this.videoOption === 'url'
+          ? this.youtubeUrl
+          : this.selectedFiles['Video']
+          ? URL.createObjectURL(this.selectedFiles['Video'])
+          : null,
       announcementText: this.announcementText,
-      notesText: this.notesText
+      notesText: this.notesText,
+      widgets: { ...this.widgets } // Save the widgets state
     };
 
     this.showSuccessMessage('Changes have been saved successfully!');

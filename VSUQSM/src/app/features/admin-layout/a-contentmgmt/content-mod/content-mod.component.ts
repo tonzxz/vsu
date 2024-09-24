@@ -20,8 +20,17 @@ export class ContentModComponent implements OnInit, AfterViewInit {
   @Input() notesText: string = '';
   @Input() tabName: string = 'Registrar';
 
+  @Input() widgets: {
+    weather: boolean;
+    timeAndDate: boolean;
+    currencyConverter: boolean;
+  } = {
+    weather: false,
+    timeAndDate: false,
+    currencyConverter: false,
+  };
+
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
-  @ViewChild('marqueeText') marqueeText!: ElementRef;
 
   currentDate: string = '';
   timer: string = '00:00:00';
@@ -58,6 +67,11 @@ export class ContentModComponent implements OnInit, AfterViewInit {
     announcementText: string;
     notesText: string;
     tabName: string;
+    widgets: {
+      weather: boolean;
+      timeAndDate: boolean;
+      currencyConverter: boolean;
+    };
   }): void {
     this.logoUrl = update.logoUrl;
     this.backgroundType = update.backgroundType;
@@ -67,7 +81,8 @@ export class ContentModComponent implements OnInit, AfterViewInit {
     this.announcementText = update.announcementText;
     this.notesText = update.notesText;
     this.tabName = update.tabName;
-    
+    this.widgets = update.widgets;
+
     this.isPlaying = false;
     this.isLooping = false;
     this.updateVideoSource();
@@ -204,8 +219,6 @@ export class ContentModComponent implements OnInit, AfterViewInit {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
       });
     }, 1000);
   }
@@ -216,7 +229,7 @@ export class ContentModComponent implements OnInit, AfterViewInit {
   private startTimer(): void {
     setInterval(() => {
       const now = new Date();
-      this.timer = now.toTimeString().split(' ')[0];
+      this.timer = now.toLocaleTimeString();
     }, 1000);
   }
 }

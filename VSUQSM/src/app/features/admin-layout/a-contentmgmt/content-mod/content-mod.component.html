@@ -1,94 +1,189 @@
-<section class="flex flex-col p-6 bg-neutral-100 min-h-screen">
+<section class="flex flex-col p-6 min-h-screen">
   <div class="flex flex-col justify-center w-full overflow-hidden mt-4">
-    <div class="relative flex flex-col w-full min-h-[500px] bg-cover rounded-lg shadow-lg"
-         [ngStyle]="{'background-color': backgroundType === 'color' ? backgroundColor : 'transparent',
-                     'background-image': backgroundType === 'photo' && backgroundPhotoUrl ? 'url(' + backgroundPhotoUrl + ')' : 'none'}">
-      
-       <!-- Content Containers -->
-       <div class="relative flex flex-col lg:flex-row gap-3 p-4 mt-4">
+    <div
+      class="relative flex flex-col w-full min-h-[500px] bg-cover rounded-lg shadow-lg"
+      [ngStyle]="{
+        'background-color':
+          backgroundType === 'color' ? backgroundColor : 'transparent',
+        'background-image':
+          backgroundType === 'photo' && backgroundPhotoUrl
+            ? 'url(' + backgroundPhotoUrl + ')'
+            : 'none'
+      }"
+    >
+      <!-- Content Containers -->
+      <div class="relative flex flex-col lg:flex-row gap-3 p-4 mt-4">
         <!-- Info -->
-        <div class="flex items-center lg:w-2/5 w-full bg-white rounded-2xl p-3 shadow-lg">
-          <img [src]="logoUrl || '/assets/placeholder-logo.png'" [alt]="tabName + ' logo'" class="object-contain w-[60px] h-[60px] rounded-full border-2 border-[#F2F2F2] mr-3" />
+        <div
+          class="flex items-center lg:w-1/2 w-full bg-white rounded-2xl p-3 shadow-lg"
+        >
+          <img
+            [src]="logoUrl || '/assets/placeholder-logo.png'"
+            [alt]="tabName + ' logo'"
+            class="object-contain w-[60px] h-[60px] rounded-full border-2 border-[#F2F2F2] mr-3"
+          />
           <h2 class="text-2xl font-bold text-black">{{ tabName }}</h2>
         </div>
 
         <!-- Widget Section -->
-        <div class="flex flex-col lg:w-3/5 w-full">
-          <div class="bg-white rounded-3xl shadow-lg p-6 flex items-center justify-between">
-            <div class="flex items-center space-x-8">
-              <!-- Date -->
-              <div class="flex items-center space-x-3 text-lg">
-                <i class="fas fa-calendar-day text-2xl"></i>
-                <div class="flex flex-col">
-                  <time class="font-semibold">{{ currentDate }}</time>
-                  <div class="text-sm text-gray-500">
-                    <i class="far fa-clock"></i> {{ timer }}
-                  </div>
-                </div>
-              </div>
-              <!-- Weather -->
-              <div class="flex items-center space-x-3">
-                <i class="fas fa-cloud-sun text-2xl"></i>
-                <span class="text-xl font-bold">25°C</span>
-                <img src="/api/placeholder/30/30" alt="Weather icon" class="w-[30px] animate-bounce" />
+        <div
+          class="flex lg:w-1/2 w-full gap-3 items-center justify-end"
+        >
+          <!-- Time and Date Widget -->
+          <div
+            *ngIf="widgets.timeAndDate"
+            class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
+            style="width: 110px; height: 110px;"
+          >
+            <div class="flex flex-col items-center text-center h-full justify-center">
+              <i class="fas fa-calendar-day text-2xl"></i>
+              <time class="text-sm font-semibold mt-1">{{ currentDate }}</time>
+              <div class="text-xs text-gray-500">
+                <i class="far fa-clock"></i> {{ timer }}
               </div>
             </div>
-            <!-- Currency Converter -->
-            <div class="flex items-center space-x-4">
-              <img src="/api/placeholder/30/30" alt="Currency icon" class="w-[30px] animate-pulse" />
-              <span class="text-lg font-bold">USD</span>
-              <span class="text-sm text-gray-500">90,6253 ₽</span>
+          </div>
+          <!-- Weather Widget -->
+          <div
+            *ngIf="widgets.weather"
+            class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
+            style="width: 110px; height: 110px;"
+          >
+            <div class="flex flex-col items-center text-center h-full justify-center">
+              <i class="fas fa-cloud-sun text-2xl"></i>
+              <span class="text-sm font-bold mt-1">25°C</span>
+              <!-- Placeholder for weather icon -->
+              <img
+                src="/api/placeholder/20/20"
+                alt="Weather icon"
+                class="w-5 animate-bounce mt-1"
+              />
+            </div>
+          </div>
+          <!-- Currency Converter Widget -->
+          <div
+            *ngIf="widgets.currencyConverter"
+            class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
+            style="width: 110px; height: 110px;"
+          >
+            <div class="flex flex-col items-center text-center h-full justify-center">
+              <!-- Placeholder for currency icon -->
+              <img
+                src="/api/placeholder/20/20"
+                alt="Currency icon"
+                class="w-5 animate-pulse mb-1"
+              />
+              <span class="text-sm font-bold">USD</span>
+              <span class="text-xs text-gray-500">90.62₽</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Now Serving and Video Section -->
-<div class="relative flex flex-col lg:flex-row gap-5 mt-6 p-6">
-  <div class="bg-white border border-neutral-800 rounded-3xl p-5 w-full" [ngClass]="{'lg:w-1/2': videoUrl}">
-    <h3 class="text-2xl font-bold text-white bg-neutral-800 text-center rounded-lg py-3">Processing</h3>
-    <div class="flex justify-around mt-4">
-      <div class="text-center">
-        <h4 class="text-3xl">Now Serving</h4>
-        <ul class="list-none p-0 mt-2">
-          <li class="text-2xl">1</li>
-          <li class="text-2xl">2</li>
-          <li class="text-2xl">3</li>
-        </ul>
-      </div>
-      <div class="text-center">
-        <h4 class="text-3xl">Counter</h4>
-        <ul class="list-none p-0 mt-2">
-          <li class="text-2xl">R1</li>
-          <li class="text-2xl">R2</li>
-          <li class="text-2xl">R3</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+      <div class="relative flex flex-col lg:flex-row gap-5 mt-6 p-6">
+        <div
+          class="bg-white border border-neutral-800 rounded-3xl p-5 w-full"
+          [ngClass]="{ 'lg:w-1/2': videoUrl }"
+        >
+          <h3
+            class="text-2xl font-bold text-white bg-neutral-800 text-center rounded-lg py-3"
+          >
+            Processing
+          </h3>
+          <div class="flex justify-around mt-4">
+            <div class="text-center">
+              <h4 class="text-3xl">Now Serving</h4>
+              <ul class="list-none p-0 mt-2">
+                <li class="text-2xl">1</li>
+                <li class="text-2xl">2</li>
+                <li class="text-2xl">3</li>
+              </ul>
+            </div>
+            <div class="text-center">
+              <h4 class="text-3xl">Counter</h4>
+              <ul class="list-none p-0 mt-2">
+                <li class="text-2xl">R1</li>
+                <li class="text-2xl">R2</li>
+                <li class="text-2xl">R3</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
-  <!-- Video Section -->
-  <div *ngIf="videoUrl" class="lg:w-1/2 w-full mt-4 lg:mt-0">
-    <div class="relative w-full" style="padding-top: 56.25%;">
-      <iframe *ngIf="youtubeSafeUrl" [src]="youtubeSafeUrl" frameborder="0" allowfullscreen class="absolute top-0 left-0 w-full h-full rounded-lg"></iframe>
-      <video #videoPlayer *ngIf="!youtubeSafeUrl" [src]="getSafeUrl(videoUrl!)" (ended)="onVideoEnded()" class="absolute top-0 left-0 w-full h-full object-contain rounded-lg"></video>
-      <div *ngIf="!youtubeSafeUrl" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3">
-        <button (click)="togglePlay()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">{{ isPlaying ? 'Pause' : 'Play' }}</button>
-        <button (click)="restartVideo()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold">Restart</button>
-        <button (click)="toggleLoop()" class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold" [class.bg-green-500]="isLooping">{{ isLooping ? 'Looping' : 'Loop' }}</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-      <!-- Announcement and Notes Section -->
-      <div class="bg-neutral-800 text-white py-2 px-4 rounded-lg mt-8 overflow-hidden shadow-lg">
-        <div class="marquee-container" [style.animation-duration]="marqueeDuration + 's'">
-          <p class="marquee-text text-xl font-semibold" *ngIf="showAnnouncement">{{ announcementText }}</p>
-          <p class="marquee-text text-xl font-semibold" *ngIf="!showAnnouncement">NOTE: {{ notesText }}</p>
+        <!-- Video Section -->
+        <div
+          *ngIf="videoUrl"
+          class="lg:w-1/2 w-full mt-4 lg:mt-0"
+        >
+          <div
+            class="relative w-full"
+            style="padding-top: 56.25%;"
+          >
+            <iframe
+              *ngIf="youtubeSafeUrl"
+              [src]="youtubeSafeUrl"
+              frameborder="0"
+              allowfullscreen
+              class="absolute top-0 left-0 w-full h-full rounded-lg"
+            ></iframe>
+            <video
+              #videoPlayer
+              *ngIf="!youtubeSafeUrl"
+              [src]="getSafeUrl(videoUrl!)"
+              (ended)="onVideoEnded()"
+              class="absolute top-0 left-0 w-full h-full object-contain rounded-lg"
+            ></video>
+            <div
+              *ngIf="!youtubeSafeUrl"
+              class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3"
+            >
+              <button
+                (click)="togglePlay()"
+                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold"
+              >
+                {{ isPlaying ? 'Pause' : 'Play' }}
+              </button>
+              <button
+                (click)="restartVideo()"
+                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold"
+              >
+                Restart
+              </button>
+              <button
+                (click)="toggleLoop()"
+                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold"
+                [class.bg-green-500]="isLooping"
+              >
+                {{ isLooping ? 'Looping' : 'Loop' }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- Announcement and Notes Section -->
+      <div
+        class="bg-neutral-800 text-white py-2 px-4 rounded-lg mt-8 overflow-hidden shadow-lg"
+      >
+        <div
+          class="marquee-container"
+          [style.animation-duration]="marqueeDuration + 's'"
+        >
+          <p
+            class="marquee-text text-xl font-semibold"
+            *ngIf="showAnnouncement"
+          >
+            {{ announcementText }}
+          </p>
+          <p
+            class="marquee-text text-xl font-semibold"
+            *ngIf="!showAnnouncement"
+          >
+            NOTE: {{ notesText }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </section>

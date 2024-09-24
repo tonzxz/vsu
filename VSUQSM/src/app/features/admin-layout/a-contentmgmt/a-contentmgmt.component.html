@@ -157,21 +157,53 @@
               </div>
 
               <!-- Widgets -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Add Widgets</label>
-                <div class="flex flex-wrap gap-2">
-                  <button class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" (click)="addWidget('Weather Widget')">
-                    <i class="fas fa-cloud mr-2"></i> Weather
-                  </button>
-                  <button class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" (click)="addWidget('Time and Date Widget')">
-                    <i class="fas fa-clock mr-2"></i> Time and Date
-                  </button>
-                  <button class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" (click)="addWidget('Currency Converter Widget')">
-                    <i class="fas fa-exchange-alt mr-2"></i> Currency Converter
-                  </button>
-                </div>
-              </div>
-            </div>
+<!-- Widgets -->
+<div>
+  <label class="block text-sm font-medium text-gray-700 mb-2">Add Widgets</label>
+  <div class="flex flex-wrap gap-4">
+    <!-- Weather Widget Checkbox -->
+    <div class="flex items-center">
+      <input
+        type="checkbox"
+        id="weatherWidget"
+        class="form-checkbox h-5 w-5 text-indigo-600"
+        [(ngModel)]="widgets.weather"
+        (change)="onWidgetChange()"
+      />
+      <label for="weatherWidget" class="ml-2 text-sm text-gray-700">
+        <i class="fas fa-cloud mr-1"></i> Weather
+      </label>
+    </div>
+    <!-- Time and Date Widget Checkbox -->
+    <div class="flex items-center">
+      <input
+        type="checkbox"
+        id="timeDateWidget"
+        class="form-checkbox h-5 w-5 text-indigo-600"
+        [(ngModel)]="widgets.timeAndDate"
+        (change)="onWidgetChange()"
+      />
+      <label for="timeDateWidget" class="ml-2 text-sm text-gray-700">
+        <i class="fas fa-clock mr-1"></i> Time and Date
+      </label>
+    </div>
+    <!-- Currency Converter Widget Checkbox -->
+    <div class="flex items-center">
+      <input
+        type="checkbox"
+        id="currencyConverterWidget"
+        class="form-checkbox h-5 w-5 text-indigo-600"
+        [(ngModel)]="widgets.currencyConverter"
+        (change)="onWidgetChange()"
+      />
+      <label for="currencyConverterWidget" class="ml-2 text-sm text-gray-700">
+        <i class="fas fa-exchange-alt mr-1"></i> Currency Converter
+      </label>
+    </div>
+  </div>
+</div>
+
+
           </div>
         </div>
 
@@ -184,3 +216,4 @@
       </div>
     </div>
   </div>
+

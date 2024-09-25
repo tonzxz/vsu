@@ -57,6 +57,13 @@ export class AContentmgmtComponent implements AfterViewInit {
     currencyConverter: false,
   };
 
+  // Preview URLs for uploaded images/videos
+  previewUrls: { [key: string]: string | null } = {
+    Logo: null,
+    'Background Photo': null,
+    Video: null,
+  };
+
   // Default content for each tab
   contentData: { [key: string]: any } = {
     Registrar: {
@@ -151,16 +158,21 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.logoUrl = tabData.logoUrl;
     this.backgroundType = tabData.backgroundType;
     this.backgroundColor = tabData.backgroundColor;
-    this.selectedFiles['Background Photo'] = null; // Reset background photo
     this.youtubeUrl = tabData.videoUrl || ''; // Reset YouTube URL or load tab's video URL
     this.videoOption = tabData.videoUrl ? 'url' : 'upload';
     this.announcementText = tabData.announcementText;
     this.notesText = tabData.notesText;
     this.widgets = { ...tabData.widgets }; // Copy widgets state
 
-    // Reset file inputs (if necessary)
+    // Load existing preview URLs from contentData
+    this.previewUrls['Logo'] = tabData.logoUrl;
+    this.previewUrls['Background Photo'] = tabData.backgroundPhotoUrl;
+    this.previewUrls['Video'] = tabData.videoUrl;
+
+    // Reset file inputs
     this.selectedFiles['Video'] = null;
     this.selectedFiles['Logo'] = null;
+    this.selectedFiles['Background Photo'] = null;
 
     // Update content on ContentModComponent
     this.updateContentMod();
@@ -180,18 +192,11 @@ export class AContentmgmtComponent implements AfterViewInit {
   private updateContentMod(): void {
     if (this.contentModComponent) {
       this.contentModComponent.updateContent({
-        logoUrl: this.logoUrl,
+        logoUrl: this.previewUrls['Logo'] || this.logoUrl,
         backgroundType: this.backgroundType,
         backgroundColor: this.backgroundColor,
-        backgroundPhotoUrl: this.selectedFiles['Background Photo']
-          ? URL.createObjectURL(this.selectedFiles['Background Photo'])
-          : null,
-        videoUrl:
-          this.videoOption === 'url'
-            ? this.youtubeUrl
-            : this.selectedFiles['Video']
-            ? URL.createObjectURL(this.selectedFiles['Video'])
-            : null,
+        backgroundPhotoUrl: this.previewUrls['Background Photo'],
+        videoUrl: this.previewUrls['Video'],
         announcementText: this.announcementText,
         notesText: this.notesText,
         tabName: this.selectedTab,
@@ -218,6 +223,7 @@ export class AContentmgmtComponent implements AfterViewInit {
             duration: 3000,
           });
           this.selectedFiles['Logo'] = null;
+          this.previewUrls['Logo'] = null;
           return;
         }
       }
@@ -229,6 +235,7 @@ export class AContentmgmtComponent implements AfterViewInit {
             duration: 3000,
           });
           this.selectedFiles['Background Photo'] = null;
+          this.previewUrls['Background Photo'] = null;
           return;
         }
       }
@@ -240,6 +247,7 @@ export class AContentmgmtComponent implements AfterViewInit {
             duration: 3000,
           });
           this.selectedFiles['Video'] = null;
+          this.previewUrls['Video'] = null;
           return;
         }
       }
@@ -247,9 +255,8 @@ export class AContentmgmtComponent implements AfterViewInit {
       this.selectedFiles[type] = file;
       console.log(`${type} uploaded:`, file.name);
 
-      if (type === 'Logo') {
-        this.updateLogoUrl(file);
-      }
+      // Generate preview URL using FileReader
+      this.generatePreviewUrl(file, type);
 
       this.isDirty = true; // Mark as dirty
       this.updateContentMod();
@@ -257,17 +264,43 @@ export class AContentmgmtComponent implements AfterViewInit {
   }
 
   /**
-   * Update the logo URL after uploading a new logo
-   * @param file - The uploaded logo file
+   * Generate a data URL for previewing uploaded files
+   * @param file - The uploaded file
+   * @param type - The type of file (Logo, Background Photo, Video)
    */
-  private updateLogoUrl(file: File): void {
+  private generatePreviewUrl(file: File, type: string): void {
     const reader = new FileReader();
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      this.logoUrl = e.target?.result as string;
-      this.updateContentMod(); // Ensure the content is updated with the new logo
-      this.isDirty = true; // Mark as dirty
+    reader.onload = () => {
+      this.previewUrls[type] = reader.result as string;
+      this.updateContentMod();
     };
-    reader.readAsDataURL(file);
+    if (type === 'Video') {
+      // For videos, use the object URL
+      this.previewUrls[type] = URL.createObjectURL(file);
+      this.updateContentMod();
+    } else {
+      reader.readAsDataURL(file);
+    }
+  }
+
+  /**
+   * Remove an uploaded file and its preview
+   * @param type - The type of file to remove (Logo, Background Photo, Video)
+   */
+  removeFile(type: string): void {
+    this.selectedFiles[type] = null;
+    this.previewUrls[type] = null;
+
+    // Update the ContentModComponent
+    this.updateContentMod();
+
+    // Mark as dirty
+    this.isDirty = true;
+
+    // Notify user
+    this.snackBar.open(`${type} has been removed.`, 'Close', {
+      duration: 2000,
+    });
   }
 
   /**
@@ -314,6 +347,7 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.backgroundType = type;
     if (type === 'color') {
       this.selectedFiles['Background Photo'] = null;
+      this.previewUrls['Background Photo'] = null;
       // Optionally reset backgroundColor if not needed
     }
     this.isDirty = true; // Mark as dirty
@@ -341,6 +375,7 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.youtubeUrl = url;
 
     if (url === '') {
+      this.previewUrls['Video'] = null;
       this.updateContentMod();
       return;
     }
@@ -350,10 +385,15 @@ export class AContentmgmtComponent implements AfterViewInit {
         duration: 3000,
       });
       this.youtubeUrl = '';
+      this.previewUrls['Video'] = null;
+      this.updateContentMod();
+      return;
     }
 
-    this.isDirty = true; // Mark as dirty
+    // Generate embed URL or handle as needed
+    this.previewUrls['Video'] = this.youtubeUrl;
     this.updateContentMod();
+    this.isDirty = true; // Mark as dirty
   }
 
   /**
@@ -364,8 +404,10 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.videoOption = option;
     if (option === 'upload') {
       this.youtubeUrl = '';
+      this.previewUrls['Video'] = null;
     } else {
       this.selectedFiles['Video'] = null;
+      this.previewUrls['Video'] = null;
     }
     this.isDirty = true; // Mark as dirty
     this.updateContentMod();
@@ -452,17 +494,15 @@ export class AContentmgmtComponent implements AfterViewInit {
 
     // Update the contentData for the current tab
     this.contentData[this.selectedTab] = {
-      logoUrl: this.logoUrl,
+      logoUrl: this.previewUrls['Logo'] || this.contentData[this.selectedTab].logoUrl,
       backgroundType: this.backgroundType,
       backgroundColor: this.backgroundColor,
-      backgroundPhotoUrl: this.selectedFiles['Background Photo']
-        ? URL.createObjectURL(this.selectedFiles['Background Photo'])
-        : null,
+      backgroundPhotoUrl: this.previewUrls['Background Photo'],
       videoUrl:
         this.videoOption === 'url'
           ? this.youtubeUrl
           : this.selectedFiles['Video']
-          ? URL.createObjectURL(this.selectedFiles['Video'])
+          ? this.previewUrls['Video']
           : null,
       announcementText: this.announcementText,
       notesText: this.notesText,
@@ -489,16 +529,21 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.logoUrl = tabData.logoUrl;
     this.backgroundType = tabData.backgroundType;
     this.backgroundColor = tabData.backgroundColor;
-    this.selectedFiles['Background Photo'] = null; // Reset background photo
     this.youtubeUrl = tabData.videoUrl || ''; // Reset YouTube URL or load tab's video URL
     this.videoOption = tabData.videoUrl ? 'url' : 'upload';
     this.announcementText = tabData.announcementText;
     this.notesText = tabData.notesText;
     this.widgets = { ...tabData.widgets }; // Copy widgets state
 
-    // Reset file inputs (if necessary)
+    // Load existing preview URLs from contentData
+    this.previewUrls['Logo'] = tabData.logoUrl;
+    this.previewUrls['Background Photo'] = tabData.backgroundPhotoUrl;
+    this.previewUrls['Video'] = tabData.videoUrl;
+
+    // Reset file inputs
     this.selectedFiles['Video'] = null;
     this.selectedFiles['Logo'] = null;
+    this.selectedFiles['Background Photo'] = null;
 
     // Update content on ContentModComponent
     this.updateContentMod();

@@ -13,7 +13,7 @@ interface Counter {
   templateUrl: './a-terminal-management.component.html',
   styleUrls: ['./a-terminal-management.component.css'],
   standalone: true,
-  imports: [CommonModule]  // Import CommonModule for Angular's common directives
+  imports: [CommonModule]
 })
 export class ATerminalManagementComponent implements OnInit {
   // Object holding counters for each tab
@@ -28,6 +28,19 @@ export class ATerminalManagementComponent implements OnInit {
 
   // Maximum number of counters allowed across all tabs
   maxCounters: number = 10;
+
+  // Array of tab names for ngFor in the template
+  tabs: ('Registrar' | 'Cash Division' | 'Accounting Office')[] = ['Registrar', 'Cash Division', 'Accounting Office'];
+
+  // Selected counter for deletion
+  selectedCounter: Counter | null = null;
+
+  // Counter ID tracker to ensure unique IDs
+  private counterIdTracker: { [key: string]: number } = {
+    'Registrar': 2,
+    'Cash Division': 2,
+    'Accounting Office': 2
+  };
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -50,43 +63,72 @@ export class ATerminalManagementComponent implements OnInit {
   // Method to add a new counter to the active tab
   addCounter(): void {
     const countersForTab = this.counters[this.activeTab];
-
-    // Calculate the total number of counters across all tabs
     const totalCounters = this.getTotalCounters();
 
-    // Check if the combined total of counters exceeds the max limit
     if (totalCounters < this.maxCounters) {
-      const prefix = this.getPrefixForActiveTab(); // Get prefix based on the active tab
-      const newCounterName = `${prefix}${countersForTab.length + 1}`; // Create counter name with prefix
+      const prefix = this.getPrefixForActiveTab();
+      const newId = ++this.counterIdTracker[this.activeTab];
+      const newCounterName = `${prefix}${newId}`;
 
-      // Add the new counter to the list
       countersForTab.push({
-        id: countersForTab.length + 1,
+        id: newId,
         name: newCounterName,
         isActive: false
       });
 
-      // Reassign IDs to maintain sequential numbering
-      this.reassignSequentialIds();
-
-      // Force change detection to update the view
       this.cdr.detectChanges();
     } else {
-      // If the limit of 10 counters is reached, show a message or handle it appropriately
-      console.log(`Maximum of ${this.maxCounters} counters reached across all tabs`);
+      // Optionally, you can use a notification service to alert the user
+      alert(`Maximum of ${this.maxCounters} terminals reached across all tabs.`);
     }
   }
 
-  // Reassigns sequential IDs to counters
-  reassignSequentialIds(): void {
-    this.counters[this.activeTab].forEach((counter, index) => {
-      counter.id = index + 1;
-      counter.name = `${this.getPrefixForActiveTab()}${counter.id}`;
-    });
+  // Method to select a counter for potential deletion
+  selectCounter(counter: Counter): void {
+    if (this.selectedCounter === counter) {
+      this.selectedCounter = null;
+    } else {
+      this.selectedCounter = counter;
+    }
+    this.cdr.detectChanges();
+  }
+
+  // Method to delete the selected counter
+  deleteSelectedCounter(): void {
+    if (this.selectedCounter) {
+      this.counters[this.activeTab] = this.counters[this.activeTab].filter(
+        counter => counter.id !== this.selectedCounter!.id
+      );
+      this.selectedCounter = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // Method to toggle the status (active/inactive) of a counter
+  toggleCounterStatus(counter: Counter): void {
+    counter.isActive = !counter.isActive;
+    this.cdr.detectChanges();
+  }
+
+  // Method to change the active tab
+  onTabClick(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
+    this.activeTab = tab;
+    this.selectedCounter = null; // Deselect counter when changing tabs
+    this.cdr.detectChanges();
+  }
+
+  // Method to determine if the "Add Counter" button should be displayed
+  shouldShowAddButton(): boolean {
+    return this.getTotalCounters() < this.maxCounters;
+  }
+
+  // Method to calculate the total number of counters across all tabs
+  getTotalCounters(): number {
+    return Object.values(this.counters).reduce((acc, curr) => acc + curr.length, 0);
   }
 
   // Method to get the prefix for the active tab (R for Registrar, C for Cash Division, A for Accounting Office)
-  getPrefixForActiveTab(): string {
+  private getPrefixForActiveTab(): string {
     switch (this.activeTab) {
       case 'Registrar':
         return 'R';
@@ -97,40 +139,5 @@ export class ATerminalManagementComponent implements OnInit {
       default:
         return '';
     }
-  }
-
-  // Method to delete a counter by its ID from the active tab
-  deleteCounter(counterId: number): void {
-    this.counters[this.activeTab] = this.counters[this.activeTab].filter(counter => counter.id !== counterId);
-
-    // Reassign IDs after deletion to maintain sequential order
-    this.reassignSequentialIds();
-
-    // Force change detection to update the view
-    this.cdr.detectChanges();
-  }
-
-  // Method to calculate the total number of counters across all tabs
-  getTotalCounters(): number {
-    const registrarCount = this.counters['Registrar'].length;
-    const cashDivisionCount = this.counters['Cash Division'].length;
-    const accountingOfficeCount = this.counters['Accounting Office'].length;
-    
-    return registrarCount + cashDivisionCount + accountingOfficeCount;
-  }
-
-  // Method to toggle the status (active/inactive) of a counter
-  toggleCounterStatus(counter: Counter): void {
-    counter.isActive = !counter.isActive;
-  }
-
-  // Method to change the active tab
-  changeTab(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
-    this.activeTab = tab;
-  }
-
-  // Method to determine if the "Add Counter" button should be displayed
-  shouldShowAddButton(): boolean {
-    return this.getTotalCounters() < this.maxCounters;
   }
 }

@@ -1,106 +1,98 @@
-<main class="flex flex-col">
-    <h1 class="text-4xl font-bold text-neutral-800 max-md:max-w-full">
-      Kiosk Management
-    </h1>
-    <img
-      loading="lazy"
-      src="https://cdn.builder.io/api/v1/image/assets/TEMP/3ba9cd9dc6b71854e4bc5a14ca4f1f13316681dda683052b7593df3890599fd5?placeholderIfAbsent=true&apiKey=f64b8ca6f281475cbe8b66b807b3c3ce"
-      alt="Terminal Management Overview"
-      class="object-contain gap-2.5 mt-7 w-full rounded-3xl aspect-[10.1] min-h-[150px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full"
-    />
-    <section class="flex flex-col mt-7 w-full max-w-[1499px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full">
-      <nav class="flex flex-wrap items-start self-start text-2xl font-bold text-center text-neutral-800 max-md:max-w-full">
+<main class="flex flex-col p-8 bg-white-100 min-h-screen">
+  <header class="bg-white rounded-xl shadow-lg p-6 mb-8 transform hover:scale-102 transition-all duration-300">
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+      <h1 class="text-3xl md:text-4xl font-bold text-[#283c1c]">Kiosk Management</h1>
+      <div class="flex items-center space-x-6">
+        <!-- Animated Terminal Indicator -->
+        <div class="flex items-center bg-[#283c1c] bg-opacity-20 rounded-full px-4 py-2 transform hover:scale-105 transition-all duration-300">
+          <span class="text-lg font-medium text-[#283c1c]">
+            {{ getTotalCounters() }}/{{ maxCounters }}
+          </span>
+          <svg class="w-6 h-6 ml-2 text-[#283c1c]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+          </svg>
+        </div>
+        <!-- Enhanced Delete Button -->
         <button
-          class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] shadow-[0px_8px_8px_rgba(0,0,0,0.25)] max-md:px-5"
-          [ngClass]="{'bg-neutral-800 text-white': activeTab === 'Registrar', 'bg-zinc-400 text-neutral-800': activeTab !== 'Registrar'}"
-          (click)="changeTab('Registrar')"
+          (click)="deleteSelectedCounter()"
+          [disabled]="!selectedCounter"
+          class="bg-red-500 text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:hover:scale-100"
         >
-          Registrar
+          <i class="fas fa-trash-alt mr-2"></i> Delete
         </button>
+        <!-- Enhanced Add Counter Button -->
         <button
-          class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] shadow-[0px_8px_8px_rgba(0,0,0,0.25)] max-md:px-5"
-          [ngClass]="{'bg-neutral-800 text-white': activeTab === 'Cash Division', 'bg-zinc-400 text-neutral-800': activeTab !== 'Cash Division'}"
-          (click)="changeTab('Cash Division')"
+          *ngIf="shouldShowAddButton()"
+          (click)="addCounter()"
+          class="bg-[#283c1c] text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-[#3c4c3a] focus:outline-none focus:ring-2 focus:ring-[#283c1c] focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
         >
-          Cash Division
+          <i class="fas fa-plus mr-2"></i> Add Counter
         </button>
-        <button
-          class="gap-2.5 self-stretch px-7 py-1.5 whitespace-nowrap border-solid border-[3px] rounded-[30px_30px_0px_0px] shadow-[0px_8px_8px_rgba(0,0,0,0.25)] max-md:px-5"
-          [ngClass]="{'bg-neutral-800 text-white': activeTab === 'Accounting Office', 'bg-zinc-400 text-neutral-800': activeTab !== 'Accounting Office'}"
-          (click)="changeTab('Accounting Office')"
+      </div>
+    </div>
+  </header>
+
+  <section class="bg-white rounded-3xl shadow-lg overflow-hidden transform hover:shadow-xl transition-all duration-300">
+    <!-- Original Tabs Navigation -->
+    <nav class="flex border-b border-gray-200 bg-gray-50">
+      <button
+        *ngFor="let tab of tabs"
+        (click)="onTabClick(tab)"
+        [ngClass]="{
+          'bg-[#283c1c] text-white': activeTab === tab,
+          'bg-gray-100 text-gray-700 hover:bg-[#3c4c3a] hover:text-white': activeTab !== tab
+        }"
+        class="flex-1 py-3 px-4 text-base font-medium transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
+        tabindex="0"
+        role="tab"
+        [attr.aria-selected]="activeTab === tab"
+      >
+        {{ tab }}
+      </button>
+    </nav>
+
+    <!-- Content Area -->
+    <div class="p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Counter Cards with enhanced interactivity -->
+        <div
+          *ngFor="let counter of counters[activeTab]"
+          class="flex flex-col justify-between p-6 bg-gradient-to-br from-[#283c1c] to-[#3c4c3a] rounded-xl shadow-md transition-all duration-300 hover:shadow-xl cursor-pointer transform hover:scale-105"
+          [class.ring-4]="counter.isActive"
+          [class.ring-yellow-400]="counter.isActive"
+          [class.ring-6]="selectedCounter === counter"
+          [class.ring-blue-500]="selectedCounter === counter"
+          (click)="selectCounter(counter)"
         >
-          Accounting Office
-        </button>
-      </nav>
-      <div class="flex flex-col justify-center p-2.5 w-full bg-white rounded-none shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full">
-        <div class="flex flex-wrap gap-5 justify-center items-start w-full max-md:max-w-full">
-          <div class="flex flex-col justify-center w-full max-md:max-w-full">
-            <div class="flex gap-4 justify-center items-center max-md:max-w-full">
-              <div class="flex flex-wrap gap-10 items-center justify-center w-full max-md:max-w-full">
-                <div
-                  *ngFor="let counter of counters[activeTab]"
-                  class="relative flex flex-col justify-center px-4 py-2.5 bg-lime-900 rounded-3xl shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[300px] h-[150px] max-md:max-w-full"
-                  [class.active]="counter.isActive"
-                  (click)="toggleCounterStatus(counter)"
-                >
-                  <h2 class="mt-2.5 w-full text-4xl font-bold text-center text-gray-100 whitespace-nowrap leading-[60px]">
-                    {{ counter.name }}
-                  </h2>
-                  <button
-                    class="absolute top-2 right-2 text-white bg-red-600 rounded-full p-1 shadow-md hover:bg-red-700"
-                    (click)="deleteCounter(counter.id); $event.stopPropagation()"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <article
-                  *ngIf="shouldShowAddButton()"
-                  class="relative flex flex-col justify-center px-4 py-2.5 bg-lime-900 rounded-3xl shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[300px] h-[150px] max-md:max-w-full"
-                >
-                  <div class="flex justify-center items-center w-full max-w-full">
-                    <button
-                      class="text-white bg-green-600 rounded-full p-3 shadow-md hover:bg-green-700"
-                      (click)="addCounter()"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        class="w-8 h-8"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </article>
-              </div>
-            </div>
-          </div>
-          <div class="hidden max-md:flex flex-col items-center">
-            <div class="rounded-xl bg-zinc-300 h-[600px] w-[3px]"></div>
-            <div class="rounded-xl bg-zinc-300 h-[238px] w-[15px]"></div>
+          <h2 class="text-2xl font-bold text-white mb-4">
+            {{ counter.name }}
+          </h2>
+          <div class="flex justify-between items-center">
+            <span class="text-base font-medium text-green-100">
+              {{ counter.isActive ? 'Active' : 'Inactive' }}
+            </span>
+            <button
+              (click)="toggleCounterStatus(counter); $event.stopPropagation();"
+              class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300"
+              [ngClass]="{
+                'bg-green-500 hover:bg-green-600 text-white': !counter.isActive,
+                'bg-yellow-500 hover:bg-yellow-600 text-white': counter.isActive
+              }"
+            >
+              {{ counter.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
           </div>
         </div>
       </div>
-    </section>
-  </main>
-  
+
+      <!-- Max Terminal Reached Message with animation -->
+      <div 
+        *ngIf="getTotalCounters() >= maxCounters" 
+        class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-xl animate-pulse"
+      >
+        <p class="font-medium text-lg">Maximum Capacity Reached</p>
+        <p class="mt-2">You've reached the maximum of {{ maxCounters }} terminals. Please delete a terminal to add a new one.</p>
+      </div>
+    </div>
+  </section>
+</main>

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ContentModComponent } from './content-mod/content-mod.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '../../../confirmation-dialog/confirmation-dialog.component'; // Ensure correct path
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component'; // Ensure correct path
 import { Observable } from 'rxjs';
 
 @Component({

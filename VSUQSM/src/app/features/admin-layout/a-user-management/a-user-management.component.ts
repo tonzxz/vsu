@@ -1,4 +1,4 @@
-//a-user-management.component.ts
+// a-user-management.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,11 +11,10 @@ interface User {
   department: string;
   type: string;
   status: 'Online' | 'Offline';
-  location?: string;  // Add this line
-  password?: string;
+  location?: string;  // Optional field
+  password?: string;  // Optional field
   selected?: boolean; // Property to manage row selection
 }
-
 
 @Component({
   selector: 'app-user-management',
@@ -25,23 +24,37 @@ interface User {
   imports: [CommonModule, FormsModule, CreateAccountModalComponent],
 })
 export class AUserManagementComponent implements OnInit {
+  // Complete list of users
   users: User[] = [];
-  filteredUsers: User[] = [];
-  selectedUsers: User[] = []; // Array to store selected users
 
+  // Users filtered based on search query
+  filteredUsers: User[] = [];
+
+  // Array to store selected users
+  selectedUsers: User[] = [];
+
+  // Search query string
   searchQuery = '';
+
+  // Controls the visibility of the Create/Edit Account modal
   showModal = false;
+
+  // The user currently being edited (if any)
   selectedUser: User | null = null;
 
+  // Predefined departments and account types
   departments = ['Accounting Office', 'Registrar', 'Cash Division'];
-  accountTypes = ['Desk attendant', 'Kiosk', 'Queue Display'];
+  accountTypes = ['Desk Attendant', 'Kiosk', 'Queue Display'];
 
+  // Pagination variables
   currentPage = 1;
   pageSize = 10;
   totalPages = 1;
 
+  // Flag to determine if the modal is in edit mode
   isEditing = false;
 
+  // User performance metrics
   performanceMetrics = {
     totalCheckIns: 43212,
     totalCheckInsToday: 1345,
@@ -49,6 +62,7 @@ export class AUserManagementComponent implements OnInit {
   };
 
   ngOnInit() {
+    // Initialize the users list (this could be replaced with a service call)
     this.users = [
       {
         username: 'Carlo',
@@ -81,46 +95,69 @@ export class AUserManagementComponent implements OnInit {
         status: 'Online',
         password: '333333',
       },
+      // Add more users as needed
     ];
 
+    // Initially, all users are displayed
     this.filteredUsers = [...this.users];
     this.updatePagination();
   }
 
-  // Filter users based on search query
+  /**
+   * Filters users based on the search query.
+   * Currently filters by username and fullName.
+   */
   searchUsers() {
-    this.filteredUsers = this.users.filter(
-      (user) =>
-        user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        user.fullName.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+    const query = this.searchQuery.trim().toLowerCase();
+    if (query) {
+      this.filteredUsers = this.users.filter(
+        (user) =>
+          user.username.toLowerCase().includes(query) ||
+          user.fullName.toLowerCase().includes(query)
+      );
+    } else {
+      this.filteredUsers = [...this.users];
+    }
     this.updatePagination();
   }
 
-  // Open modal for creating a new account
+  /**
+   * Opens the modal for creating a new account.
+   */
   openModal() {
     this.showModal = true;
     this.isEditing = false;
     this.selectedUser = null;
   }
 
-  // Close modal and reset selections
+  /**
+   * Closes the modal and resets the selectedUser.
+   */
   closeModal() {
     this.showModal = false;
     this.selectedUser = null;
   }
 
-  // Handle account creation or update based on editing status
+  /**
+   * Handles the creation or updating of a user account.
+   * @param newAccount The new or updated user account.
+   */
   onAccountCreated(newAccount: User) {
     if (this.isEditing && this.selectedUser) {
       const index = this.users.findIndex(
         (u) => u.username === this.selectedUser!.username
       );
       if (index !== -1) {
-        this.users[index] = newAccount;
+        // Preserve password if not updated
+        if (!newAccount.password) {
+          newAccount.password = this.users[index].password;
+        }
+        this.users[index] = { ...newAccount, selected: false };
       }
+      // Remove from selectedUsers if present
+      this.selectedUsers = this.selectedUsers.filter(u => u.username !== this.selectedUser!.username);
     } else {
-      this.users.push(newAccount);
+      this.users.push({ ...newAccount, selected: false });
     }
 
     this.filteredUsers = [...this.users];
@@ -128,91 +165,132 @@ export class AUserManagementComponent implements OnInit {
     this.closeModal();
   }
 
-  // Open edit mode for the selected user
+  /**
+   * Opens the modal in edit mode for a specific user.
+   * @param user The user to be edited.
+   */
   editUser(user: User) {
     this.selectedUser = { ...user };
     this.isEditing = true;
     this.showModal = true;
   }
 
-  // Delete a specific user and update lists
+  /**
+   * Deletes a specific user from the list.
+   * @param user The user to be deleted.
+   */
   deleteUser(user: User) {
-    this.users = this.users.filter((u) => u !== user);
-    this.filteredUsers = this.filteredUsers.filter((u) => u !== user);
+    this.users = this.users.filter((u) => u.username !== user.username);
+    this.filteredUsers = this.filteredUsers.filter((u) => u.username !== user.username);
+    // Also remove from selectedUsers if present
+    this.selectedUsers = this.selectedUsers.filter((u) => u.username !== user.username);
     this.updatePagination();
   }
 
-  // Update selected users based on checkbox state
+  /**
+   * Updates the selectedUsers array based on individual checkbox state.
+   * @param user The user whose selection state has changed.
+   */
   updateSelectedUsers(user: User) {
     if (user.selected) {
-      this.selectedUsers.push(user);
+      if (!this.selectedUsers.find(u => u.username === user.username)) {
+        this.selectedUsers.push(user);
+      }
     } else {
-      this.selectedUsers = this.selectedUsers.filter((u) => u !== user);
+      this.selectedUsers = this.selectedUsers.filter((u) => u.username !== user.username);
     }
   }
 
-  // Toggle select all users based on main checkbox
+  /**
+   * Toggles the selection of all users on the current page.
+   * @param event The change event from the select all checkbox.
+   */
   toggleSelectAll(event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
-    this.filteredUsers.forEach((user) => {
+    const paginated = this.paginatedUsers;
+
+    paginated.forEach((user) => {
       user.selected = isChecked;
       if (isChecked) {
-        if (!this.selectedUsers.includes(user)) {
+        if (!this.selectedUsers.find(u => u.username === user.username)) {
           this.selectedUsers.push(user);
         }
       } else {
-        this.selectedUsers = [];
+        this.selectedUsers = this.selectedUsers.filter((u) => u.username !== user.username);
       }
     });
   }
 
-  // Edit the first selected user, assuming only one should be edited at a time
+  /**
+   * Initiates editing for the first selected user.
+   * Assumes only one user is selected for editing.
+   */
   editSelectedUser() {
     if (this.selectedUsers.length === 1) {
       this.editUser(this.selectedUsers[0]);
     }
   }
 
-  // Delete all selected users
+  /**
+   * Deletes all selected users from the list.
+   */
   deleteSelectedUsers() {
-    this.selectedUsers.forEach((user) => this.deleteUser(user));
+    // Clone the selectedUsers array to prevent mutation issues during iteration
+    const usersToDelete = [...this.selectedUsers];
+    usersToDelete.forEach((user) => this.deleteUser(user));
     this.selectedUsers = [];
   }
 
-  // Update pagination based on the filtered list of users
+  /**
+   * Updates pagination details based on the current filteredUsers list.
+   */
   updatePagination() {
-    this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
-    this.currentPage = 1;
+    this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize) || 1;
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
-  // Get the users to be displayed on the current page
-  get paginatedUsers() {
+  /**
+   * Retrieves the users to be displayed on the current page.
+   */
+  get paginatedUsers(): User[] {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     return this.filteredUsers.slice(startIndex, startIndex + this.pageSize);
   }
 
-  // Navigate to the previous page
+  /**
+   * Navigates to the previous page in pagination.
+   */
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
   }
 
-  // Navigate to the next page
+  /**
+   * Navigates to the next page in pagination.
+   */
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }
   }
 
-  // Navigate to a specific page number
+  /**
+   * Navigates to a specific page number in pagination.
+   * @param page The page number to navigate to.
+   */
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
   }
 
-  // Toggle row selection by clicking on the row
+  /**
+   * Toggles the selection of a user when the row is clicked.
+   * @param user The user whose row has been clicked.
+   */
   toggleRowSelection(user: User) {
     user.selected = !user.selected;
     this.updateSelectedUsers(user);

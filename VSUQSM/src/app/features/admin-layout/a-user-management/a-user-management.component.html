@@ -1,20 +1,24 @@
-<main class="container mx-auto p-4 flex flex-col items-start">
-  <header>
-    <h1 class="text-4xl font-bold text-neutral-800">User Management</h1>
+<main class="container mx-auto p-6 flex flex-col items-start bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="w-full">
+    <h1 class="text-5xl font-extrabold text-[#283c1c]">User Management</h1>
   </header>
 
-  <section class="w-full mt-12">
-    <div class="flex justify-between items-center">
+  <!-- User Actions and Search -->
+  <section class="w-full mt-8">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+      <!-- Create New Account Button -->
       <button
         (click)="openModal()"
-        class="flex items-center justify-center px-4 py-2 bg-lime-700 text-white font-semibold text-base rounded-md shadow-md hover:bg-lime-800 transition duration-300"
+        class="flex items-center px-5 py-3 bg-[#283c1c] text-white font-semibold rounded-lg shadow-md hover:bg-[#3a532c] transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3a532c]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 mr-2"
+          class="h-6 w-6 mr-3"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             stroke-linecap="round"
@@ -25,24 +29,30 @@
         </svg>
         Create New Account
       </button>
-      <div class="flex gap-2" *ngIf="selectedUsers.length > 0">
+
+      <!-- Edit and Delete Buttons -->
+      <div class="flex gap-3 mt-4 md:mt-0" *ngIf="selectedUsers.length > 0">
+        <!-- Edit Button (Visible only when one user is selected) -->
         <button
           *ngIf="selectedUsers.length === 1"
           (click)="editSelectedUser()"
-          class="px-4 py-2 bg-blue-500 text-white font-semibold text-base rounded-md shadow-md hover:bg-blue-600 transition duration-300"
+          class="flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Edit
         </button>
+        <!-- Delete Button -->
         <button
           (click)="deleteSelectedUsers()"
-          class="px-4 py-2 bg-red-500 text-white font-semibold text-base rounded-md shadow-md hover:bg-red-600 transition duration-300"
+          class="flex items-center px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         >
           Delete
         </button>
       </div>
     </div>
-    <div class="bg-white rounded-xl shadow-md p-6 mt-6">
-      <form class="mb-6">
+
+    <!-- Search Form -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <form class="mb-8">
         <div class="relative">
           <input
             [(ngModel)]="searchQuery"
@@ -51,14 +61,15 @@
             type="text"
             id="searchUser"
             placeholder="Search for a user"
-            class="w-full py-2 pl-10 pr-4 text-gray-700 bg-white border rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+            class="w-full pl-12 pr-4 py-3 text-gray-700 bg-gray-100 border border-transparent rounded-lg focus:border-[#283c1c] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition duration-300"
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="absolute top-2 left-3 h-5 w-5 text-gray-400"
+            class="absolute top-3 left-4 h-6 w-6 text-gray-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
@@ -69,40 +80,49 @@
           </svg>
         </div>
       </form>
+
+      <!-- Users Table -->
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-[#22381F]">
-          <thead class="bg-[#22381F]">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-[#283c1c]">
             <tr>
-              <th class="px-6 py-4">
-                <input type="checkbox" (change)="toggleSelectAll($event)" class="text-white" />
+              <!-- Select All Checkbox -->
+              <th class="px-6 py-4 text-left text-sm font-semibold text-white">
+                <input
+                  type="checkbox"
+                  (change)="toggleSelectAll($event)"
+                  class="form-checkbox h-5 w-5 text-white"
+                  aria-label="Select All Users"
+                />
               </th>
+              <!-- Table Headers -->
               <th
                 scope="col"
-                class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider"
+                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
               >
                 Name
               </th>
               <th
                 scope="col"
-                class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider"
+                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
               >
                 Username
               </th>
               <th
                 scope="col"
-                class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider"
+                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
               >
                 Department
               </th>
               <th
                 scope="col"
-                class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider"
+                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
               >
                 Type
               </th>
               <th
                 scope="col"
-                class="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider"
+                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
               >
                 Status
               </th>
@@ -115,20 +135,24 @@
               [ngClass]="{ 'bg-gray-100': user.selected }"
               class="cursor-pointer hover:bg-gray-50"
             >
+              <!-- User Selection Checkbox -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <input
                   type="checkbox"
                   [(ngModel)]="user.selected"
                   (change)="updateSelectedUsers(user)"
+                  class="form-checkbox h-5 w-5 text-[#283c1c]"
+                  aria-label="Select User"
                 />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.fullName }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.username }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.department }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.type }}</td>
+              <!-- User Details -->
+              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.fullName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.username }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.department }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.type }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  class="px-3 py-1 inline-flex text-xs font-semibold rounded-full"
                   [ngClass]="{
                     'bg-green-100 text-green-800': user.status === 'Online',
                     'bg-red-100 text-red-800': user.status === 'Offline'
@@ -142,52 +166,58 @@
         </table>
       </div>
 
-      <!-- Updated Centered Pagination Layout -->
+      <!-- Pagination Controls -->
       <nav
-        class="flex items-center justify-center px-4 py-3 bg-white border-t border-gray-200 sm:px-6"
+        class="flex items-center justify-center mt-6"
         aria-label="Pagination"
       >
-        <div class="flex items-center space-x-3">
-          <button
-            (click)="previousPage()"
-            [disabled]="currentPage === 1"
-            class="relative inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-300"
-            [ngClass]="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
-          >
-            &laquo; Prev
-          </button>
-
-          <div class="flex items-center space-x-1">
+        <ul class="inline-flex items-center -space-x-px">
+          <!-- Previous Page Button -->
+          <li>
             <button
-              *ngFor="let page of [].constructor(totalPages); let i = index"
-              (click)="goToPage(i + 1)"
-              class="px-4 py-2 border rounded-md"
-              [ngClass]="{
-                'bg-blue-500 text-white': currentPage === i + 1,
-                'bg-white text-gray-700 hover:bg-gray-50':
-                  currentPage !== i + 1
-              }"
+              (click)="previousPage()"
+              [disabled]="currentPage === 1"
+              class="px-4 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
+              aria-label="Previous Page"
             >
-              {{ i + 1 }}
+              &laquo; Prev
             </button>
-          </div>
+          </li>
 
-          <button
-            (click)="nextPage()"
-            [disabled]="currentPage === totalPages"
-            class="relative inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-300"
-            [ngClass]="{
-              'opacity-50 cursor-not-allowed': currentPage === totalPages
-            }"
-          >
-            Next &raquo;
-          </button>
-        </div>
+          <!-- Page Number Buttons -->
+          <li>
+            <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+                <button
+                  (click)="goToPage(i + 1)"
+                  class="px-4 py-2 leading-tight border border-gray-300 hover:bg-[#283c1c] hover:text-white transition duration-300"
+                  [ngClass]="{
+                    'bg-[#283c1c] text-white': currentPage === i + 1,
+                    'text-gray-700': currentPage !== i + 1
+                  }"
+                  [attr.aria-label]="'Page ' + (i + 1)"
+                >
+                  {{ i + 1 }}
+                </button>
+            </ng-container>
+          </li>
+
+          <!-- Next Page Button -->
+          <li>
+            <button
+              (click)="nextPage()"
+              [disabled]="currentPage === totalPages"
+              class="px-4 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
+              aria-label="Next Page"
+            >
+              Next &raquo;
+            </button>
+          </li>
+        </ul>
       </nav>
     </div>
   </section>
 
-  <!-- Create Account Modal -->
+  <!-- Create/Edit Account Modal -->
   <app-create-account-modal
     *ngIf="showModal"
     [editingUser]="selectedUser"
@@ -196,77 +226,82 @@
   ></app-create-account-modal>
 
   <!-- User Performance Metrics Section -->
-  <section class="w-full mt-8">
-    <div class="bg-white rounded-xl shadow-md p-6">
-      <h2 class="text-2xl font-bold mb-4">User Performance Metrics</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h3 class="text-lg font-semibold mb-2">Daily Customers Served</h3>
-          <div
-            class="bg-gray-200 h-64 rounded flex items-center justify-center"
-          >
-            Chart Placeholder
+  <section class="w-full mt-12">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-[#283c1c] mb-6">User Performance Metrics</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Daily Customers Served Chart -->
+        <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Daily Customers Served</h3>
+          <div class="bg-gray-200 h-64 rounded flex items-center justify-center">
+            <!-- Replace with actual chart component -->
+            <span class="text-gray-500">Chart Placeholder</span>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-white p-4 rounded-lg shadow text-center">
-            <h3 class="text-2xl font-bold">
-              {{ performanceMetrics.totalCheckIns }}
-            </h3>
-            <p class="text-gray-600">Total Clients Served</p>
+
+        <!-- Performance Metrics Stats -->
+        <div class="grid grid-cols-1 gap-6 lg:col-span-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+              <h3 class="text-3xl font-bold text-[#283c1c]">{{ performanceMetrics.totalCheckIns }}</h3>
+              <p class="mt-2 text-gray-600">Total Clients Served</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+              <h3 class="text-3xl font-bold text-[#283c1c]">{{ performanceMetrics.totalCheckInsToday }}</h3>
+              <p class="mt-2 text-gray-600">Total No-Show Clients</p>
+            </div>
           </div>
-          <div class="bg-white p-4 rounded-lg shadow text-center">
-            <h3 class="text-2xl font-bold">
-              {{ performanceMetrics.totalCheckInsToday }}
-            </h3>
-            <p class="text-gray-600">Total No-Show Clients</p>
-          </div>
-          <div class="bg-white p-4 rounded-lg shadow text-center col-span-2">
-            <h3 class="text-2xl font-bold">
-              {{ performanceMetrics.averageTimeService }}
-            </h3>
-            <p class="text-gray-600">Average Service Time</p>
+          <div class="bg-white p-6 rounded-lg shadow-md text-center">
+            <h3 class="text-3xl font-bold text-[#283c1c]">{{ performanceMetrics.averageTimeService }}</h3>
+            <p class="mt-2 text-gray-600">Average Service Time</p>
           </div>
         </div>
       </div>
-      <div class="mt-8">
-        <h3 class="text-lg font-semibold mb-4">Service Time Distribution</h3>
+
+      <!-- Service Time Distribution -->
+      <div class="mt-12">
+        <h3 class="text-2xl font-semibold text-[#283c1c] mb-4">Service Time Distribution</h3>
         <div class="space-y-4">
+          <!-- Distribution Bars -->
           <div class="flex items-center">
-            <span class="w-24 text-sm text-gray-600">5-10 mins</span>
-            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+            <span class="w-32 text-sm text-gray-600">5-10 mins</span>
+            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
               <div
-                class="h-4 bg-blue-500 rounded-full"
+                class="h-4 bg-[#283c1c] rounded-full"
                 style="width: 75%"
               ></div>
             </div>
+            <span class="text-sm text-gray-600">75%</span>
           </div>
           <div class="flex items-center">
-            <span class="w-24 text-sm text-gray-600">10-15 mins</span>
-            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+            <span class="w-32 text-sm text-gray-600">10-15 mins</span>
+            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
               <div
-                class="h-4 bg-blue-500 rounded-full"
+                class="h-4 bg-[#283c1c] rounded-full"
                 style="width: 60%"
               ></div>
             </div>
+            <span class="text-sm text-gray-600">60%</span>
           </div>
           <div class="flex items-center">
-            <span class="w-24 text-sm text-gray-600">15-20 mins</span>
-            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+            <span class="w-32 text-sm text-gray-600">15-20 mins</span>
+            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
               <div
-                class="h-4 bg-blue-500 rounded-full"
+                class="h-4 bg-[#283c1c] rounded-full"
                 style="width: 45%"
               ></div>
             </div>
+            <span class="text-sm text-gray-600">45%</span>
           </div>
           <div class="flex items-center">
-            <span class="w-24 text-sm text-gray-600">20+ mins</span>
-            <div class="flex-1 h-4 bg-blue-200 rounded-full">
+            <span class="w-32 text-sm text-gray-600">20+ mins</span>
+            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
               <div
-                class="h-4 bg-blue-500 rounded-full"
+                class="h-4 bg-[#283c1c] rounded-full"
                 style="width: 30%"
               ></div>
             </div>
+            <span class="text-sm text-gray-600">30%</span>
           </div>
         </div>
       </div>

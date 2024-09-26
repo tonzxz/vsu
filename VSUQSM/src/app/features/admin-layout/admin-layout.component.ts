@@ -9,4 +9,6 @@ import { SidebarComponent } from "../../shared/sidebar/sidebar.component";
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css']
 })
-export class AdminLayoutComponent {}
+export class AdminLayoutComponent {
+  // Removed isSidebarOpen and toggleSidebar()
+}

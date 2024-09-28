@@ -1,135 +1,162 @@
-<!-- Counter Selection Screen -->
-<div *ngIf="!selectedCounter" class="bg-[#f0f4f0] min-h-screen text-[#283c1c] p-6">
-  <header class="bg-[#283c1c] text-white p-4 rounded-lg shadow-md mb-6">
-    <h1 class="text-2xl font-bold">Select a Counter</h1>
-  </header>
+<div class="bg-gradient-to-br from-[#f0f4f0] to-[#d0e0d0] min-h-screen text-[#283c1c] p-6">
+  <!-- Counter Selection Screen -->
+  <div *ngIf="!selectedCounter">
+    <header class="bg-[#283c1c] text-white p-6 rounded-lg shadow-md mb-8">
+      <h1 class="text-3xl font-bold text-center">Select a Counter</h1>
+    </header>
 
-  <main class="container mx-auto">
-    <section class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold mb-4">Available Counters:</h2>
-      <div class="flex flex-wrap gap-4">
-        <button *ngFor="let counter of counters"
-                mat-raised-button
-                class="px-6 py-3 rounded-md font-medium bg-[#a3b5a3] text-[#283c1c] hover:bg-[#283c1c] hover:text-white transition-colors"
-                (click)="selectCounter(counter)">
-          Counter {{ counter }}
-        </button>
-      </div>
-    </section>
-  </main>
-</div>
+    <main class="container mx-auto">
+      <section class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-semibold mb-6 text-center">Available Counters:</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <button *ngFor="let counter of counters"
+                  class="counter-button"
+                  (click)="selectCounter(counter)">
+            <div class="monitor-box">
+              <div class="monitor-screen">
+                <!-- test counter numbners -->
+                <!-- <span class="counter-number">{{ counter }}</span> -->
+              </div>
+            </div>
+            <span class="monitor-label">Counter {{ counter }}</span>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
 
-<!-- Terminal Management Screen -->
-<div *ngIf="selectedCounter" class="bg-[#f0f4f0] min-h-screen text-[#283c1c] p-6">
-  <header class="bg-[#283c1c] text-white p-4 rounded-lg shadow-md mb-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Registrar Terminal Management - Counter {{ selectedCounter }}</h1>
-      <div>
-        <button mat-icon-button (click)="resetCounter()" class="bg-[#4a6940] p-2 rounded-full hover:bg-[#32482a] transition-colors mr-2">
+  <!-- Terminal Management Screen -->
+  <div *ngIf="selectedCounter">
+    <header class="bg-[#283c1c] text-white p-4 rounded-lg shadow-md mb-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Registrar Terminal Management - Counter {{ selectedCounter }}</h1>
+        <button mat-icon-button (click)="resetCounter()" class="bg-[#4a6940] p-2 rounded-full hover:bg-[#32482a] transition-colors">
           <mat-icon>swap_horiz</mat-icon>
         </button>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="container mx-auto">
-    <!-- Counter Information Section -->
-    <section class="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div class="grid grid-cols-3 gap-6">
-        <div class="text-center bg-[#e8f0e8] p-4 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2">Current Number</h3>
-          <p class="text-5xl font-bold text-[#283c1c]">{{ currentNumber }}</p>
-        </div>
-        <div class="text-center bg-[#e8f0e8] p-4 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2">Last Called</h3>
-          <p class="text-5xl font-bold text-[#283c1c]">{{ lastCalledNumber }}</p>
-        </div>
-        <div class="text-center bg-[#e8f0e8] p-4 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2">Timer</h3>
-          <p class="text-5xl font-bold text-[#283c1c]">{{ timer }}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Main Content Section -->
-    <div class="flex gap-6">
-      <!-- Sidebar with Action Buttons -->
-      <section class="w-1/3">
-        <div class="bg-white rounded-lg shadow-md p-4">
-          <h2 class="text-xl font-semibold mb-4">Actions</h2>
-          <nav class="space-y-2">
-            <button mat-button (click)="nextClient()" 
-                    [ngClass]="{'bg-[#283c1c] text-white': isNextClientActive, 'bg-[#e8f0e8] text-[#283c1c]': !isNextClientActive}"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-              <mat-icon class="mr-3">navigate_next</mat-icon>
-              <span>Next Client</span>
-            </button>
-            <button mat-button (click)="clientDone()"
-                    [ngClass]="{'bg-[#283c1c] text-white': isClientDoneActive, 'bg-[#e8f0e8] text-[#283c1c]': !isClientDoneActive}"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-              <mat-icon class="mr-3">done</mat-icon>
-              <span>Client Done</span>
-            </button>
-            <button mat-button (click)="callNumber()"
-                    [ngClass]="{'bg-[#283c1c] text-white': isCallNumberActive, 'bg-[#e8f0e8] text-[#283c1c]': !isCallNumberActive}"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-              <mat-icon class="mr-3">phone</mat-icon>
-              <span>Call Number</span>
-            </button>
-            <button mat-button (click)="manualSelect()"
-                    [ngClass]="{'bg-[#283c1c] text-white': isManualSelectActive, 'bg-[#e8f0e8] text-[#283c1c]': !isManualSelectActive}"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-              <mat-icon class="mr-3">edit</mat-icon>
-              <span>Manual Select</span>
-            </button>
-            <button mat-button (click)="returnTop()"
-                    [ngClass]="{'bg-[#283c1c] text-white': isReturnTopActive, 'bg-[#e8f0e8] text-[#283c1c]': !isReturnTopActive}"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-              <mat-icon class="mr-3">arrow_upward</mat-icon>
-              <span>Return Top</span>
-            </button>
-            <button mat-button (click)="returnBottom()"
-                    [ngClass]="{'bg-[#283c1c] text-white': isReturnBottomActive, 'bg-[#e8f0e8] text-[#283c1c]': !isReturnBottomActive}"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-              <mat-icon class="mr-3">arrow_downward</mat-icon>
-              <span>Return Bottom</span>
-            </button>
-            <button mat-button (click)="noShow()"
-                    class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
-              <mat-icon class="mr-3">highlight_off</mat-icon>
-              <span>No Show</span>
-            </button>
-          </nav>
-        </div>
-      </section>
-
-      <!-- Queue Section -->
-      <section class="w-2/3">
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-semibold">Queue</h2>
-            <p class="text-[#4a6940] font-medium">{{ currentDate }}</p>
+    <main class="container mx-auto">
+      <!-- Counter Information Section -->
+      <section class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center bg-[#e8f0e8] p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">Current Number</h3>
+            <p class="text-5xl font-bold text-[#283c1c]">{{ currentNumber }}</p>
           </div>
-          <table class="w-full border-collapse">
-            <thead>
-              <tr class="bg-[#e8f0e8] text-[#283c1c]">
-                <th class="p-3 text-left font-semibold">Number</th>
-                <th class="p-3 text-left font-semibold">Date & Time</th>
-                <th class="p-3 text-left font-semibold">Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let ticket of tickets" class="border-b border-[#e8f0e8] hover:bg-[#f0f4f0]">
-                <td class="p-3">{{ ticket.number }}</td>
-                <td class="p-3">{{ ticket.datetime }}</td>
-                <td class="p-3" [ngClass]="{ 'text-red-600 font-semibold': ticket.type === 'Priority', 'text-green-600 font-semibold': ticket.type === 'Regular' }">
-                  {{ ticket.type }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="text-center bg-[#e8f0e8] p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">Last Called</h3>
+            <p class="text-5xl font-bold text-[#283c1c]">{{ lastCalledNumber }}</p>
+          </div>
+          <div class="text-center bg-[#e8f0e8] p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">Timer</h3>
+            <p class="text-5xl font-bold text-[#283c1c]">{{ timer }}</p>
+          </div>
         </div>
       </section>
-    </div>
-  </main>
+
+      <!-- Main Content Section -->
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- Sidebar with Action Buttons -->
+        <section class="w-full md:w-1/3">
+          <div class="bg-white rounded-lg shadow-md p-4">
+            <h2 class="text-xl font-semibold mb-4">Actions</h2>
+            <nav class="space-y-2">
+              <button mat-button (click)="nextClient()" 
+                      [ngClass]="{'bg-[#283c1c] text-white': isNextClientActive, 'bg-[#e8f0e8] text-[#283c1c]': !isNextClientActive}"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
+                <mat-icon class="mr-3">navigate_next</mat-icon>
+                <span>Next Client</span>
+              </button>
+              <button mat-button (click)="clientDone()"
+                      [ngClass]="{'bg-[#283c1c] text-white': isClientDoneActive, 'bg-[#e8f0e8] text-[#283c1c]': !isClientDoneActive}"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
+                <mat-icon class="mr-3">done</mat-icon>
+                <span>Client Done</span>
+              </button>
+              <button mat-button (click)="callNumber()"
+                      [ngClass]="{'bg-[#283c1c] text-white': isCallNumberActive, 'bg-[#e8f0e8] text-[#283c1c]': !isCallNumberActive}"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
+                <mat-icon class="mr-3">phone</mat-icon>
+                <span>Call Number</span>
+              </button>
+              <button mat-button (click)="manualSelect()"
+                      [ngClass]="{'bg-[#283c1c] text-white': isManualSelectActive, 'bg-[#e8f0e8] text-[#283c1c]': !isManualSelectActive}"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
+                <mat-icon class="mr-3">edit</mat-icon>
+                <span>Manual Select</span>
+              </button>
+              <button mat-button (click)="returnTop()"
+                      [ngClass]="{'bg-[#283c1c] text-white': isReturnTopActive, 'bg-[#e8f0e8] text-[#283c1c]': !isReturnTopActive}"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
+                <mat-icon class="mr-3">arrow_upward</mat-icon>
+                <span>Return Top</span>
+              </button>
+              <button mat-button (click)="returnBottom()"
+                      [ngClass]="{'bg-[#283c1c] text-white': isReturnBottomActive, 'bg-[#e8f0e8] text-[#283c1c]': !isReturnBottomActive}"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
+                <mat-icon class="mr-3">arrow_downward</mat-icon>
+                <span>Return Bottom</span>
+              </button>
+              <button mat-button (click)="noShow()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                <mat-icon class="mr-3">highlight_off</mat-icon>
+                <span>No Show</span>
+              </button>
+            </nav>
+          </div>
+        </section>
+
+        <!-- Queue and Client Details Tabs -->
+        <section class="w-full md:w-2/3">
+          <mat-tab-group animationDuration="0ms" class="bg-white rounded-lg shadow-md">
+            <mat-tab label="Queue">
+              <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-2xl font-semibold">Queue</h2>
+                  <p class="text-[#4a6940] font-medium">{{ currentDate }}</p>
+                </div>
+                <table class="w-full border-collapse">
+                  <thead>
+                    <tr class="bg-[#e8f0e8] text-[#283c1c]">
+                      <th class="p-3 text-left font-semibold">Number</th>
+                      <th class="p-3 text-left font-semibold">Date & Time</th>
+                      <th class="p-3 text-left font-semibold">Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let ticket of tickets" class="border-b border-[#e8f0e8] hover:bg-[#f0f4f0]">
+                      <td class="p-3">{{ ticket.number }}</td>
+                      <td class="p-3">{{ ticket.datetime }}</td>
+                      <td class="p-3" [ngClass]="{ 'text-red-600 font-semibold': ticket.type === 'Priority', 'text-green-600 font-semibold': ticket.type === 'Regular' }">
+                        {{ ticket.type }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </mat-tab>
+            <mat-tab label="Client Details">
+              <div class="p-6">
+                <h2 class="text-2xl font-semibold mb-4">Client Details</h2>
+                <div *ngIf="currentClientDetails; else noClient">
+                  <p><strong>Name:</strong> {{ currentClientDetails.name }}</p>
+                  <p><strong>Date:</strong> {{ currentClientDetails.date }}</p>
+                  <h3 class="text-xl font-semibold mt-4 mb-2">Services:</h3>
+                  <ul class="list-disc pl-5">
+                    <li *ngFor="let service of currentClientDetails.services" class="mb-2">
+                      <strong>{{ service.name }}</strong>: {{ service.description }}
+                    </li>
+                  </ul>
+                </div>
+                <ng-template #noClient>
+                  <p>No client selected</p>
+                </ng-template>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </section>
+      </div>
+    </main>
+  </div>
 </div>

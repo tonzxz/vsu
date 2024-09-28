@@ -1,14 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 
 interface Ticket {
   number: number;
@@ -28,23 +22,18 @@ interface ClientDetails {
 @Component({
   selector: 'app-da-terminalmgmt',
   templateUrl: './da-terminalmgmt.component.html',
+  styleUrls: ['./da-terminalmgmt.component.css'],
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    MatToolbarModule,
-    MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatListModule,
-    MatTableModule,
-    MatButtonToggleModule,
-    MatSnackBarModule,
-  ],
+    MatTabsModule
+  ]
 })
 export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   selectedCounter: number | null = null;
-  counters: number[] = [1, 2, 3, 4];
+  counters: number[] = [1, 2, 3, 4, 5];
   currentNumber: number = 110;
   lastCalledNumber: string = 'N/A';
   currentDate: string = '';
@@ -65,7 +54,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     { number: 123, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
   ];
 
-  currentClientDetails: ClientDetails = {
+  currentClientDetails: ClientDetails | null = {
     name: 'Jhielo A. Gonzales',
     date: 'August 20, 2023 - 8:21 AM',
     services: [
@@ -84,7 +73,6 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     ],
   };
 
-  showClientDetails: boolean = false;
   isNextClientActive: boolean = true;
   isClientDoneActive: boolean = false;
   isCallNumberActive: boolean = false;
@@ -112,15 +100,10 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   selectCounter(counter: number): void {
     this.selectedCounter = counter;
-    // You might want to initialize or fetch data specific to this counter here
-  }
-  resetCounter(): void {
-    this.selectedCounter = null;
-    // Reset any other necessary state
   }
 
-  toggleView(showDetails: boolean): void {
-    this.showClientDetails = showDetails;
+  resetCounter(): void {
+    this.selectedCounter = null;
   }
 
   nextClient(): void {
@@ -183,10 +166,6 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       this.tickets.shift();
       this.currentNumber = this.tickets[0]?.number || 0;
     }
-  }
-
-  exit(): void {
-    console.log('Exit clicked');
   }
 
   private startTimer(): void {

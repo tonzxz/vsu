@@ -1,5 +1,14 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 interface Ticket {
   number: number;
@@ -21,7 +30,17 @@ interface ClientDetails {
   templateUrl: './da-terminalmgmt.component.html',
   styleUrls: ['./da-terminalmgmt.component.css'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatTableModule,
+    MatButtonToggleModule,
+    MatSnackBarModule,
+  ],
 })
 export class DaTerminalmgmtComponent implements OnInit {
   counter1: number = 110;
@@ -50,15 +69,15 @@ export class DaTerminalmgmtComponent implements OnInit {
     services: [
       {
         name: 'Request Documents',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in.',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       },
       {
         name: 'File Documents',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in.',
+        description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       },
       {
         name: 'Make Payment',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in.',
+        description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
       },
     ],
   };
@@ -103,13 +122,11 @@ export class DaTerminalmgmtComponent implements OnInit {
   }
 
   callNumber(): void {
-    // Implement call number logic (e.g., show a notification or play a sound)
     console.log(`Calling number ${this.counter1}`);
     this.isCallNumberActive = false;
   }
 
   manualSelect(): void {
-    // Implement manual select logic (e.g., open a dialog to select a ticket)
     console.log('Manual select clicked');
     this.isManualSelectActive = !this.isManualSelectActive;
   }
@@ -141,13 +158,12 @@ export class DaTerminalmgmtComponent implements OnInit {
 
   noShow(): void {
     if (this.tickets.length > 0) {
-      this.tickets.shift(); // Remove the current ticket
+      this.tickets.shift();
       this.counter1 = this.tickets[0]?.number || 0;
     }
   }
 
   exit(): void {
-    // Implement exit logic (e.g., navigate to a different page or show a confirmation dialog)
     console.log('Exit clicked');
   }
 
@@ -169,3 +185,4 @@ export class DaTerminalmgmtComponent implements OnInit {
     });
   }
 }
+

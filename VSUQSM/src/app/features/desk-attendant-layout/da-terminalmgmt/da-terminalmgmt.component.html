@@ -1,79 +1,127 @@
-<section class="container">
-    <div class="header">
-      <div class="logo-container">
-        <img src="path_to_your_logo.png" alt="Logo" class="logo">
-        <div class="registrar-label">Registrar</div>
-      </div>
-      <div class="counter-container">
-        <div class="counter">
-          <button class="counter-button">Counter 1</button>
-          <div class="counter-value">{{ counter1 }}</div>
+<mat-toolbar color="primary" class="mb-4">
+  <span>Registrar Terminal Management</span>
+  <span class="flex-grow"></span>
+  <button mat-icon-button (click)="exit()">
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="container mx-auto px-4">
+  <!-- Counter Information Section -->
+  <mat-card class="mb-4">
+    <mat-card-content>
+      <div class="flex justify-between items-center">
+        <div>
+          <mat-card-subtitle>Counter 1</mat-card-subtitle>
+          <mat-card-title class="text-2xl font-bold">{{ counter1 }}</mat-card-title>
         </div>
-        <div class="counter">
-          <button class="counter-button">Counter 2</button>
-          <div class="counter-value">{{ counter2 }}</div>
+        <div>
+          <mat-card-subtitle>Counter 2</mat-card-subtitle>
+          <mat-card-title class="text-2xl font-bold">{{ counter2 }}</mat-card-title>
+        </div>
+        <div>
+          <mat-card-subtitle>Timer</mat-card-subtitle>
+          <mat-card-title class="text-2xl font-bold">{{ timer }}</mat-card-title>
         </div>
       </div>
-      <div class="info-container">
-        <div class="info-box">
-          <div class="info-title">Counter 2</div>
-          <div class="info-value">{{ counter2 }}</div>
-          <div class="info-timer">{{ timer }}</div>
-        </div>
-      </div>
-    </div>
-  
-    <div class="main-content">
-      <div class="sidebar">
-        <button [class.active]="isNextClientActive" (click)="nextClient()">Next Client</button>
-        <button [class.active]="isClientDoneActive" (click)="clientDone()">Client Done</button>
-        <button [class.active]="isCallNumberActive" (click)="callNumber()">Call Number</button>
-        <button [class.active]="isManualSelectActive" (click)="manualSelect()">Manual Select</button>
-        <button [class.active]="isReturnTopActive" (click)="returnTop()">Return Top</button>
-        <button [class.active]="isReturnBottomActive" (click)="returnBottom()">Return Bottom</button>
-        <button class="no-show" (click)="noShow()">No Show</button>
-      </div>
-  
-      <div class="content">
-        <div class="content-header">
-          <button [class.active]="!showClientDetails" (click)="toggleView(false)">Queue</button>
-          <button [class.active]="showClientDetails" (click)="toggleView(true)">Client Details</button>
-          <div class="date">{{ currentDate }}</div>
-          <button class="exit" (click)="exit()">
-            <img src="path_to_exit_icon.png" alt="Exit Icon">
-            Exit
-          </button>
-        </div>
-  
-        <div class="content-body" [ngClass]="{'show-queue': !showClientDetails, 'show-details': showClientDetails}">
-          <table *ngIf="!showClientDetails" class="queue-table">
-            <thead>
-              <tr>
-                <th>Upcoming</th>
-                <th>Ticket Date & Time</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let ticket of tickets; let i = index" [class.odd]="i % 2 !== 0">
-                <td>{{ ticket.number }}</td>
-                <td>{{ ticket.datetime }}</td>
-                <td [class.priority]="ticket.type === 'Priority'" [class.regular]="ticket.type === 'Regular'">
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Main Content Section -->
+  <div class="flex gap-4">
+    <!-- Sidebar with Action Buttons -->
+    <mat-card class="w-1/4">
+      <mat-card-content>
+        <mat-nav-list>
+          <a mat-list-item (click)="nextClient()" [class.active]="isNextClientActive">
+            <mat-icon matListIcon>navigate_next</mat-icon>
+            <span matLine>Next Client</span>
+          </a>
+          <a mat-list-item (click)="clientDone()" [class.active]="isClientDoneActive">
+            <mat-icon matListIcon>done</mat-icon>
+            <span matLine>Client Done</span>
+          </a>
+          <a mat-list-item (click)="callNumber()" [class.active]="isCallNumberActive">
+            <mat-icon matListIcon>phone</mat-icon>
+            <span matLine>Call Number</span>
+          </a>
+          <a mat-list-item (click)="manualSelect()" [class.active]="isManualSelectActive">
+            <mat-icon matListIcon>edit</mat-icon>
+            <span matLine>Manual Select</span>
+          </a>
+          <a mat-list-item (click)="returnTop()" [class.active]="isReturnTopActive">
+            <mat-icon matListIcon>arrow_upward</mat-icon>
+            <span matLine>Return Top</span>
+          </a>
+          <a mat-list-item (click)="returnBottom()" [class.active]="isReturnBottomActive">
+            <mat-icon matListIcon>arrow_downward</mat-icon>
+            <span matLine>Return Bottom</span>
+          </a>
+          <a mat-list-item (click)="noShow()" class="text-red-500">
+            <mat-icon matListIcon>highlight_off</mat-icon>
+            <span matLine>No Show</span>
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Queue and Client Details Section -->
+    <mat-card class="w-3/4">
+      <mat-card-header>
+        <mat-card-title-group>
+          <mat-card-title>
+            <mat-button-toggle-group [value]="showClientDetails" (change)="toggleView($event.value)">
+              <mat-button-toggle [value]="false">Queue</mat-button-toggle>
+              <mat-button-toggle [value]="true">Client Details</mat-button-toggle>
+            </mat-button-toggle-group>
+          </mat-card-title>
+          <mat-card-subtitle>{{ currentDate | date: 'medium' }}</mat-card-subtitle>
+        </mat-card-title-group>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Queue Table -->
+        <ng-container *ngIf="!showClientDetails">
+          <div class="overflow-auto">
+            <table mat-table [dataSource]="tickets" class="w-full">
+              <!-- Number Column -->
+              <ng-container matColumnDef="number">
+                <th mat-header-cell *matHeaderCellDef>Upcoming</th>
+                <td mat-cell *matCellDef="let ticket">{{ ticket.number }}</td>
+              </ng-container>
+              <!-- DateTime Column -->
+              <ng-container matColumnDef="datetime">
+                <th mat-header-cell *matHeaderCellDef>Ticket Date & Time</th>
+                <td mat-cell *matCellDef="let ticket">{{ ticket.datetime | date: 'short' }}</td>
+              </ng-container>
+              <!-- Type Column -->
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let ticket" [ngClass]="{ 'text-red-500 font-bold': ticket.type === 'Priority', 'text-green-500 font-bold': ticket.type === 'Regular' }">
                   {{ ticket.type }}
                 </td>
-              </tr>
-            </tbody>
-          </table>
-  
-          <div *ngIf="showClientDetails" class="client-details">
-            <h2>{{ currentClientDetails.name }}</h2>
-            <p>{{ currentClientDetails.date }}</p>
-            <div *ngFor="let service of currentClientDetails.services" class="service">
-              <h3>{{ service.name }}</h3>
-              <p>{{ service.description }}</p>
-            </div>
+              </ng-container>
+
+              <!-- Header and Row Declarations -->
+              <tr mat-header-row *matHeaderRowDef="['number', 'datetime', 'type']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['number', 'datetime', 'type']"></tr>
+            </table>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+        </ng-container>
+
+        <!-- Client Details Section -->
+        <ng-container *ngIf="showClientDetails">
+          <div class="client-details">
+            <h2 class="text-xl font-bold mb-2">{{ currentClientDetails.name }}</h2>
+            <p class="text-gray-600 mb-4">{{ currentClientDetails.date | date: 'medium' }}</p>
+            <mat-list>
+              <mat-list-item *ngFor="let service of currentClientDetails.services">
+                <h3 matListItemTitle>{{ service.name }}</h3>
+                <p matListItemLine>{{ service.description }}</p>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

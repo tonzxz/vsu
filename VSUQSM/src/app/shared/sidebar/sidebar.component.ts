@@ -23,7 +23,7 @@ export class SidebarComponent implements OnInit {
   isMobile = false;
 
   private router = inject(Router);
-
+  
   menuItems: MenuItem[] = [
     { title: 'Dashboard', route: '/admin/dashboard', active: true, icon: 'dashboard' },
     { title: 'Content Management', route: '/admin/content-management', active: false, icon: 'content_paste' },

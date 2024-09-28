@@ -1,41 +1,102 @@
-<div class="flex h-screen bg-[#22381F]">
-    <!-- Sidebar -->
-    <div class="fixed top-0 left-0 bottom-0 w-[300px] border-l-[5px] border-[#22381F] bg-[#22381F] transition-all duration-500 overflow-x-hidden flex flex-col">
-      <!-- Logo and Title -->
-      <div class="p-4 flex items-center space-x-4 border-b border-white/10">
-        <div class="w-20 h-20 bg-white rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden">
-          <img src="assets/logo/vsu.png" alt="Logo" class="w-full h-full object-contain">
-        </div>
-        <h1 class="text-white text-lg font-bold flex-1">{{ appTitle }}</h1>
+<!-- Sidebar -->
+<div
+  class="h-full bg-[#22381F] text-white transition-all duration-500 ease-in-out flex flex-col shadow-lg overflow-hidden"
+  [ngClass]="{
+    'w-64': isExpanded,
+    'w-16': !isExpanded && !isMobile,
+    'fixed z-50 left-0 top-0 bottom-0': isMobile,
+    '-left-64': !isExpanded && isMobile,
+    'left-0': isExpanded && isMobile
+  }"
+>
+  <!-- Sidebar Header with fixed height -->
+  <div class="p-4 flex items-center justify-between border-b border-white/10 h-16">
+    <div class="flex items-center space-x-3">
+      <!-- Logo (hide when collapsed, header height fixed) -->
+      <div
+        class="bg-white rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden transition-all duration-500 ease-in-out"
+        [ngClass]="{
+          'w-10 h-10': isExpanded,
+          'w-0 h-0 opacity-0': !isExpanded
+        }"
+      >
+        <img
+          src="assets/logo/vsu.png"
+          alt="Logo"
+          class="w-full h-full object-contain"
+        />
       </div>
-  
-      <!-- Navigation Items -->
-      <ul class="w-full pl-[5px] mt-6 pt-5 flex-grow overflow-y-auto">
-        <li *ngFor="let item of menuItems; let i = index" 
-            class="relative list-none w-full rounded-tl-[20px] rounded-bl-[20px] mb-2" 
-            [class.bg-white]="item.active">
-          <b class="absolute top-[-20px] h-5 w-full bg-white" [class.hidden]="!item.active">
-            <span class="absolute top-0 left-0 w-full h-full rounded-br-[20px] bg-[#22381F]"></span>
-          </b>
-          <b class="absolute bottom-[-20px] h-5 w-full bg-white" [class.hidden]="!item.active">
-            <span class="absolute bottom-0 left-0 w-full h-full rounded-tr-[20px] bg-[#22381F]"></span>
-          </b>
-          <a class="relative w-full flex items-center no-underline cursor-pointer py-3 px-4 font-bold" 
-             [class.text-[#22381F]]="item.active" 
-             [class.text-[#2F4A2C]]="item.active" 
-             (click)="setActiveItem(i)">
-            <span class="flex items-center justify-center min-w-[40px] h-[40px] mr-3" [innerHTML]="item.svgIcon"></span>
-            <span [class.text-[#2F4A2C]]="item.active" class="whitespace-nowrap">
-              {{ item.title }}
-            </span>
-          </a>
-        </li>
-      </ul>
-      <div class="p-4">
-        <button (click)="logout()" class="w-full py-3 px-4 bg-[#2F4A2C] text-white font-bold rounded-md hover:bg-[#1F3419]">
-          <i class="fas fa-sign-out-alt mr-2"></i> Logout
-        </button>
-      </div>
+      <!-- App Title (smooth transition, but header size stays consistent) -->
+      <h1
+        class="text-sm font-semibold leading-tight whitespace-nowrap transition-all duration-500 ease-in-out"
+        [ngClass]="{
+          'opacity-100 max-w-full': isExpanded,
+          'opacity-0 max-w-0': !isExpanded
+        }"
+        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+      >
+        {{ appTitle }}
+      </h1>
     </div>
+    <!-- Hamburger Menu Toggle Button (Fixed position) -->
+    <button
+      (click)="toggleSidebar()"
+      class="text-white focus:outline-none"
+      aria-label="Toggle Sidebar"
+    >
+      <span class="material-icons text-2xl">menu</span>
+    </button>
   </div>
-  
+
+  <!-- Navigation Items -->
+  <ul class="flex-grow mt-4 overflow-y-auto">
+    <li *ngFor="let item of menuItems; let i = index" class="mb-2 px-3">
+      <a
+        class="flex items-center py-2 px-3 rounded-lg transition-all duration-500 ease-in-out cursor-pointer hover:bg-[#2F4A2C]"
+        [ngClass]="{ 'bg-[#2F4A2C] shadow-md': item.active }"
+        (click)="setActiveItem(i)"
+      >
+        <span
+          class="material-icons flex items-center justify-center w-6 h-6 transition-all duration-500 ease-in-out"
+          [ngClass]="{
+            'text-green-400': item.active,
+            'text-white': !item.active
+          }"
+        >
+          {{ item.icon }}
+        </span>
+        <span
+          class="ml-3 whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out"
+          [ngClass]="{
+            'opacity-100 max-w-xs': isExpanded,
+            'opacity-0 max-w-0': !isExpanded,
+            'font-semibold': item.active
+          }"
+        >
+          {{ item.title }}
+        </span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Logout Button -->
+  <div class="p-4">
+    <button
+      (click)="logout()"
+      class="w-full py-2 px-3 bg-[#2F4A2C] text-white font-bold rounded-lg transition-all duration-500 ease-in-out hover:bg-[#1F3419] flex items-center justify-center"
+    >
+      <span class="material-icons" [ngClass]="{ 'mr-2': isExpanded }">
+        logout
+      </span>
+      <span
+        class="whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out"
+        [ngClass]="{
+          'opacity-100 max-w-xs': isExpanded,
+          'opacity-0 max-w-0': !isExpanded
+        }"
+      >
+        Logout
+      </span>
+    </button>
+  </div>
+</div>

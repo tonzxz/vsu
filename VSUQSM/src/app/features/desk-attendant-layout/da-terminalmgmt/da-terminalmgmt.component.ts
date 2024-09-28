@@ -1,6 +1,6 @@
-
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,10 +28,10 @@ interface ClientDetails {
 @Component({
   selector: 'app-da-terminalmgmt',
   templateUrl: './da-terminalmgmt.component.html',
-  styleUrls: ['./da-terminalmgmt.component.css'],
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatToolbarModule,
     MatCardModule,
     MatButtonModule,
@@ -42,10 +42,12 @@ interface ClientDetails {
     MatSnackBarModule,
   ],
 })
-export class DaTerminalmgmtComponent implements OnInit {
-  counter1: number = 110;
-  counter2: string = 'N/A';
-  currentDate: string = 'Aug 20, 2024 - 7:32 AM';
+export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
+  selectedCounter: number = 1;
+  counters: number[] = [1, 2, 3, 4];
+  currentNumber: number = 110;
+  lastCalledNumber: string = 'N/A';
+  currentDate: string = '';
   timer: string = '00:00:00';
 
   tickets: Ticket[] = [
@@ -90,11 +92,26 @@ export class DaTerminalmgmtComponent implements OnInit {
   isReturnTopActive: boolean = false;
   isReturnBottomActive: boolean = false;
 
-  constructor() {}
+  private timerInterval: any;
+  private dateInterval: any;
 
   ngOnInit(): void {
     this.startTimer();
     this.updateCurrentDate();
+    this.dateInterval = setInterval(() => this.updateCurrentDate(), 60000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    if (this.dateInterval) {
+      clearInterval(this.dateInterval);
+    }
+  }
+
+  selectCounter(counter: number): void {
+    this.selectedCounter = counter;
   }
 
   toggleView(showDetails: boolean): void {
@@ -105,7 +122,7 @@ export class DaTerminalmgmtComponent implements OnInit {
     if (this.tickets.length > 0) {
       const nextTicket = this.tickets.shift();
       if (nextTicket) {
-        this.counter1 = nextTicket.number;
+        this.currentNumber = nextTicket.number;
         this.isNextClientActive = false;
         this.isClientDoneActive = true;
         this.isCallNumberActive = true;
@@ -117,12 +134,12 @@ export class DaTerminalmgmtComponent implements OnInit {
     this.isClientDoneActive = false;
     this.isNextClientActive = true;
     this.isCallNumberActive = false;
-    this.counter2 = this.counter1.toString();
-    this.counter1 = this.tickets[0]?.number || 0;
+    this.lastCalledNumber = this.currentNumber.toString();
+    this.currentNumber = this.tickets[0]?.number || 0;
   }
 
   callNumber(): void {
-    console.log(`Calling number ${this.counter1}`);
+    console.log(`Calling number ${this.currentNumber}`);
     this.isCallNumberActive = false;
   }
 
@@ -135,11 +152,11 @@ export class DaTerminalmgmtComponent implements OnInit {
     if (this.tickets.length > 0) {
       const topTicket = this.tickets[0];
       this.tickets.unshift({
-        number: this.counter1,
+        number: this.currentNumber,
         datetime: new Date().toLocaleString(),
         type: 'Regular',
       });
-      this.counter1 = topTicket.number;
+      this.currentNumber = topTicket.number;
       this.isReturnTopActive = false;
     }
   }
@@ -147,11 +164,11 @@ export class DaTerminalmgmtComponent implements OnInit {
   returnBottom(): void {
     if (this.tickets.length > 0) {
       this.tickets.push({
-        number: this.counter1,
+        number: this.currentNumber,
         datetime: new Date().toLocaleString(),
         type: 'Regular',
       });
-      this.counter1 = this.tickets[0].number;
+      this.currentNumber = this.tickets[0].number;
       this.isReturnBottomActive = false;
     }
   }
@@ -159,7 +176,7 @@ export class DaTerminalmgmtComponent implements OnInit {
   noShow(): void {
     if (this.tickets.length > 0) {
       this.tickets.shift();
-      this.counter1 = this.tickets[0]?.number || 0;
+      this.currentNumber = this.tickets[0]?.number || 0;
     }
   }
 
@@ -168,7 +185,7 @@ export class DaTerminalmgmtComponent implements OnInit {
   }
 
   private startTimer(): void {
-    setInterval(() => {
+    this.timerInterval = setInterval(() => {
       const now = new Date();
       this.timer = now.toTimeString().split(' ')[0];
     }, 1000);
@@ -185,4 +202,3 @@ export class DaTerminalmgmtComponent implements OnInit {
     });
   }
 }
-

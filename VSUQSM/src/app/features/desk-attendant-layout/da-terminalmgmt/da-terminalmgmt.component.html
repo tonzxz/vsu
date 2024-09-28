@@ -1,28 +1,38 @@
-<div class="bg-[#f0f4f0] min-h-screen text-[#283c1c] p-6">
+<!-- Counter Selection Screen -->
+<div *ngIf="!selectedCounter" class="bg-[#f0f4f0] min-h-screen text-[#283c1c] p-6">
   <header class="bg-[#283c1c] text-white p-4 rounded-lg shadow-md mb-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Registrar Terminal Management</h1>
-      <button mat-icon-button (click)="exit()" class="bg-[#4a6940] p-2 rounded-full hover:bg-[#32482a] transition-colors">
-        <mat-icon>exit_to_app</mat-icon>
-      </button>
-    </div>
+    <h1 class="text-2xl font-bold">Select a Counter</h1>
   </header>
 
   <main class="container mx-auto">
-    <!-- Counter Selection -->
-    <section class="mb-6">
-      <h2 class="text-xl font-semibold mb-3">Select Counter:</h2>
-      <div class="flex space-x-3">
+    <section class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Available Counters:</h2>
+      <div class="flex flex-wrap gap-4">
         <button *ngFor="let counter of counters"
                 mat-raised-button
-                [ngClass]="{'bg-[#283c1c] text-white': selectedCounter === counter, 'bg-[#a3b5a3] text-[#283c1c]': selectedCounter !== counter}"
-                class="px-6 py-3 rounded-md font-medium transition-colors"
+                class="px-6 py-3 rounded-md font-medium bg-[#a3b5a3] text-[#283c1c] hover:bg-[#283c1c] hover:text-white transition-colors"
                 (click)="selectCounter(counter)">
           Counter {{ counter }}
         </button>
       </div>
     </section>
+  </main>
+</div>
 
+<!-- Terminal Management Screen -->
+<div *ngIf="selectedCounter" class="bg-[#f0f4f0] min-h-screen text-[#283c1c] p-6">
+  <header class="bg-[#283c1c] text-white p-4 rounded-lg shadow-md mb-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Registrar Terminal Management - Counter {{ selectedCounter }}</h1>
+      <div>
+        <button mat-icon-button (click)="resetCounter()" class="bg-[#4a6940] p-2 rounded-full hover:bg-[#32482a] transition-colors mr-2">
+          <mat-icon>swap_horiz</mat-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto">
     <!-- Counter Information Section -->
     <section class="bg-white rounded-lg shadow-md p-6 mb-6">
       <div class="grid grid-cols-3 gap-6">

@@ -43,7 +43,7 @@ interface ClientDetails {
   ],
 })
 export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
-  selectedCounter: number = 1;
+  selectedCounter: number | null = null;
   counters: number[] = [1, 2, 3, 4];
   currentNumber: number = 110;
   lastCalledNumber: string = 'N/A';
@@ -112,6 +112,11 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   selectCounter(counter: number): void {
     this.selectedCounter = counter;
+    // You might want to initialize or fetch data specific to this counter here
+  }
+  resetCounter(): void {
+    this.selectedCounter = null;
+    // Reset any other necessary state
   }
 
   toggleView(showDetails: boolean): void {

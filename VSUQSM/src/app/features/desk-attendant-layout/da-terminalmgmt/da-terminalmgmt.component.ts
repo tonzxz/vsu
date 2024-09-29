@@ -54,24 +54,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     { number: 123, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
   ];
 
-  currentClientDetails: ClientDetails | null = {
-    name: 'Jhielo A. Gonzales',
-    date: 'August 20, 2023 - 8:21 AM',
-    services: [
-      {
-        name: 'Request Documents',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      },
-      {
-        name: 'File Documents',
-        description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      },
-      {
-        name: 'Make Payment',
-        description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-      },
-    ],
-  };
+  currentClientDetails: ClientDetails | null = null;
 
   isNextClientActive: boolean = true;
   isClientDoneActive: boolean = false;
@@ -114,6 +97,27 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         this.isNextClientActive = false;
         this.isClientDoneActive = true;
         this.isCallNumberActive = true;
+        this.isManualSelectActive = false;
+        
+        // Set current client details
+        this.currentClientDetails = {
+          name: 'Jhielo A. Gonzales',
+          date: nextTicket.datetime,
+          services: [
+            {
+              name: 'Request Documents',
+              description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            },
+            {
+              name: 'File Documents',
+              description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+            },
+            {
+              name: 'Make Payment',
+              description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+            },
+          ],
+        };
       }
     }
   }
@@ -122,8 +126,10 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.isClientDoneActive = false;
     this.isNextClientActive = true;
     this.isCallNumberActive = false;
+    this.isManualSelectActive = true;
     this.lastCalledNumber = this.currentNumber.toString();
     this.currentNumber = this.tickets[0]?.number || 0;
+    this.currentClientDetails = null;
   }
 
   callNumber(): void {

@@ -38,20 +38,21 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   lastCalledNumber: string = 'N/A';
   currentDate: string = '';
   timer: string = '00:00:00';
+  timerStartTime: number | null = null;
 
   tickets: Ticket[] = [
-    { number: 112, datetime: 'August 20, 2023 - 8:21 AM', type: 'Priority' },
-    { number: 113, datetime: 'August 20, 2023 - 8:21 AM', type: 'Priority' },
-    { number: 114, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 115, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 116, datetime: 'August 20, 2023 - 8:21 AM', type: 'Priority' },
-    { number: 117, datetime: 'August 20, 2023 - 8:21 AM', type: 'Priority' },
-    { number: 118, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 119, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 120, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 121, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 122, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
-    { number: 123, datetime: 'August 20, 2023 - 8:21 AM', type: 'Regular' },
+    { number: 112, datetime: '9/29/2024, 9:13:24 PM', type: 'Priority' },
+    { number: 113, datetime: '9/29/2024, 9:13:24 PM', type: 'Priority' },
+    { number: 114, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 115, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 116, datetime: '9/29/2024, 9:13:24 PM', type: 'Priority' },
+    { number: 117, datetime: '9/29/2024, 9:13:24 PM', type: 'Priority' },
+    { number: 118, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 119, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 120, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 121, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 122, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
+    { number: 123, datetime: '9/29/2024, 9:13:24 PM', type: 'Regular' },
   ];
 
   currentClientDetails: ClientDetails | null = null;
@@ -67,7 +68,6 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   private dateInterval: any;
 
   ngOnInit(): void {
-    this.startTimer();
     this.updateCurrentDate();
     this.dateInterval = setInterval(() => this.updateCurrentDate(), 60000);
   }
@@ -87,6 +87,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   resetCounter(): void {
     this.selectedCounter = null;
+    this.stopTimer();
   }
 
   nextClient(): void {
@@ -98,7 +99,9 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         this.isClientDoneActive = true;
         this.isCallNumberActive = true;
         this.isManualSelectActive = false;
-        
+        this.isReturnTopActive = true;
+        this.isReturnBottomActive = true;
+
         // Set current client details
         this.currentClientDetails = {
           name: 'Jhielo A. Gonzales',
@@ -118,6 +121,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
             },
           ],
         };
+
+        this.startTimer();
       }
     }
   }
@@ -127,9 +132,12 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.isNextClientActive = true;
     this.isCallNumberActive = false;
     this.isManualSelectActive = true;
+    this.isReturnTopActive = false;
+    this.isReturnBottomActive = false;
     this.lastCalledNumber = this.currentNumber.toString();
     this.currentNumber = this.tickets[0]?.number || 0;
     this.currentClientDetails = null;
+    this.stopTimer();
   }
 
   callNumber(): void {
@@ -143,52 +151,67 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   }
 
   returnTop(): void {
-    if (this.tickets.length > 0) {
-      const topTicket = this.tickets[0];
-      this.tickets.unshift({
+    if (this.currentClientDetails) {
+      const currentTicket: Ticket = {
         number: this.currentNumber,
         datetime: new Date().toLocaleString(),
         type: 'Regular',
-      });
-      this.currentNumber = topTicket.number;
-      this.isReturnTopActive = false;
+      };
+      this.tickets.unshift(currentTicket);
+      this.nextClient();
     }
   }
 
   returnBottom(): void {
-    if (this.tickets.length > 0) {
-      this.tickets.push({
+    if (this.currentClientDetails) {
+      const currentTicket: Ticket = {
         number: this.currentNumber,
         datetime: new Date().toLocaleString(),
         type: 'Regular',
-      });
-      this.currentNumber = this.tickets[0].number;
-      this.isReturnBottomActive = false;
+      };
+      this.tickets.push(currentTicket);
+      this.nextClient();
     }
   }
 
   noShow(): void {
     if (this.tickets.length > 0) {
-      this.tickets.shift();
-      this.currentNumber = this.tickets[0]?.number || 0;
+      this.nextClient();
     }
   }
 
   private startTimer(): void {
+    this.timerStartTime = Date.now();
     this.timerInterval = setInterval(() => {
-      const now = new Date();
-      this.timer = now.toTimeString().split(' ')[0];
+      const elapsedTime = Date.now() - this.timerStartTime!;
+      const hours = Math.floor(elapsedTime / 3600000);
+      const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+      const seconds = Math.floor((elapsedTime % 60000) / 1000);
+      this.timer = `${this.padZero(hours)}:${this.padZero(minutes)}:${this.padZero(seconds)}`;
     }, 1000);
+  }
+
+  private stopTimer(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timer = '00:00:00';
+      this.timerStartTime = null;
+    }
+  }
+
+  private padZero(num: number): string {
+    return num.toString().padStart(2, '0');
   }
 
   private updateCurrentDate(): void {
     const now = new Date();
     this.currentDate = now.toLocaleDateString('en-PH', {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      month: 'long', // Full month name
+      day: 'numeric', // Day as a number
     });
   }
-}
+  
+  };
+  
+

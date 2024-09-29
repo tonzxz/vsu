@@ -1,24 +1,18 @@
 <div class="bg-gradient-to-br from-[#f0f4f0] to-[#d0e0d0] min-h-screen text-[#283c1c] p-6">
   <!-- Counter Selection Screen -->
   <div *ngIf="!selectedCounter">
-    <header class="bg-[#283c1c] text-white p-6 rounded-lg shadow-md mb-8">
+    <header class="bg-[#283c1c] text-white p-4 rounded-lg shadow-md mb-8">
       <h1 class="text-3xl font-bold text-center">Select a Counter</h1>
     </header>
 
     <main class="container mx-auto">
       <section class="bg-white rounded-lg shadow-lg p-8">
         <h2 class="text-2xl font-semibold mb-6 text-center">Available Counters:</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          <button *ngFor="let counter of counters"
-                  class="counter-button"
+        <div class="flex flex-wrap justify-center gap-4">
+          <button *ngFor="let counter of [1, 2, 3, 4, 5]"
+                  class="counter-button bg-[#4a6940] text-white text-xl font-bold py-3 px-6 rounded-full hover:bg-[#3a5330] transition-colors"
                   (click)="selectCounter(counter)">
-            <div class="monitor-box">
-              <div class="monitor-screen">
-                <!-- test counter numbners -->
-                <!-- <span class="counter-number">{{ counter }}</span> -->
-              </div>
-            </div>
-            <span class="monitor-label">Counter {{ counter }}</span>
+            Counter {{ counter }}
           </button>
         </div>
       </section>
@@ -63,37 +57,43 @@
             <h2 class="text-xl font-semibold mb-4">Actions</h2>
             <nav class="space-y-2">
               <button mat-button (click)="nextClient()" 
-                      [ngClass]="{'bg-[#283c1c] text-white': isNextClientActive, 'bg-[#e8f0e8] text-[#283c1c]': !isNextClientActive}"
+                      [disabled]="!isNextClientActive"
+                      [ngClass]="{'bg-[#283c1c] text-white': isNextClientActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isNextClientActive}"
                       class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
                 <mat-icon class="mr-3">navigate_next</mat-icon>
                 <span>Next Client</span>
               </button>
               <button mat-button (click)="clientDone()"
-                      [ngClass]="{'bg-[#283c1c] text-white': isClientDoneActive, 'bg-[#e8f0e8] text-[#283c1c]': !isClientDoneActive}"
+                      [disabled]="!isClientDoneActive"
+                      [ngClass]="{'bg-[#283c1c] text-white': isClientDoneActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isClientDoneActive}"
                       class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
                 <mat-icon class="mr-3">done</mat-icon>
                 <span>Client Done</span>
               </button>
               <button mat-button (click)="callNumber()"
-                      [ngClass]="{'bg-[#283c1c] text-white': isCallNumberActive, 'bg-[#e8f0e8] text-[#283c1c]': !isCallNumberActive}"
+                      [disabled]="!isCallNumberActive"
+                      [ngClass]="{'bg-[#283c1c] text-white': isCallNumberActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isCallNumberActive}"
                       class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
                 <mat-icon class="mr-3">phone</mat-icon>
                 <span>Call Number</span>
               </button>
               <button mat-button (click)="manualSelect()"
-                      [ngClass]="{'bg-[#283c1c] text-white': isManualSelectActive, 'bg-[#e8f0e8] text-[#283c1c]': !isManualSelectActive}"
+                      [disabled]="!isManualSelectActive"
+                      [ngClass]="{'bg-[#283c1c] text-white': isManualSelectActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isManualSelectActive}"
                       class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
                 <mat-icon class="mr-3">edit</mat-icon>
                 <span>Manual Select</span>
               </button>
               <button mat-button (click)="returnTop()"
-                      [ngClass]="{'bg-[#283c1c] text-white': isReturnTopActive, 'bg-[#e8f0e8] text-[#283c1c]': !isReturnTopActive}"
+                      [disabled]="!isReturnTopActive"
+                      [ngClass]="{'bg-[#283c1c] text-white': isReturnTopActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isReturnTopActive}"
                       class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
                 <mat-icon class="mr-3">arrow_upward</mat-icon>
                 <span>Return Top</span>
               </button>
               <button mat-button (click)="returnBottom()"
-                      [ngClass]="{'bg-[#283c1c] text-white': isReturnBottomActive, 'bg-[#e8f0e8] text-[#283c1c]': !isReturnBottomActive}"
+                      [disabled]="!isReturnBottomActive"
+                      [ngClass]="{'bg-[#283c1c] text-white': isReturnBottomActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isReturnBottomActive}"
                       class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
                 <mat-icon class="mr-3">arrow_downward</mat-icon>
                 <span>Return Bottom</span>
@@ -136,7 +136,7 @@
                 </table>
               </div>
             </mat-tab>
-            <mat-tab label="Client Details">
+            <mat-tab label="Client Details" [disabled]="!currentClientDetails">
               <div class="p-6">
                 <h2 class="text-2xl font-semibold mb-4">Client Details</h2>
                 <div *ngIf="currentClientDetails; else noClient">
@@ -150,7 +150,7 @@
                   </ul>
                 </div>
                 <ng-template #noClient>
-                  <p>No client selected</p>
+                  <p>No client selected. Press "Next Client" to view details.</p>
                 </ng-template>
               </div>
             </mat-tab>

@@ -55,52 +55,53 @@
         <section class="w-full md:w-1/3">
           <div class="bg-white rounded-lg shadow-md p-4">
             <h2 class="text-xl font-semibold mb-4">Actions</h2>
-            <nav class="space-y-2">
-              <button mat-button (click)="nextClient()" 
-                      [disabled]="!isNextClientActive"
-                      [ngClass]="{'bg-[#283c1c] text-white': isNextClientActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isNextClientActive}"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-                <mat-icon class="mr-3">navigate_next</mat-icon>
+            <nav class="space-y-3">
+              <button *ngIf="isNextClientActive"
+                      (click)="nextClient()" 
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="Next Client">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">navigate_next</mat-icon>
                 <span>Next Client</span>
               </button>
-              <button mat-button (click)="clientDone()"
-                      [disabled]="!isClientDoneActive"
-                      [ngClass]="{'bg-[#283c1c] text-white': isClientDoneActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isClientDoneActive}"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-                <mat-icon class="mr-3">done</mat-icon>
+              <button *ngIf="isClientDoneActive"
+                      (click)="clientDone()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-green-600 text-white hover:bg-green-700 active:bg-green-800 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="Client Done">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">done</mat-icon>
                 <span>Client Done</span>
               </button>
-              <button mat-button (click)="callNumber()"
-                      [disabled]="!isCallNumberActive"
-                      [ngClass]="{'bg-[#283c1c] text-white': isCallNumberActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isCallNumberActive}"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-                <mat-icon class="mr-3">phone</mat-icon>
+              <button *ngIf="isCallNumberActive"
+                      (click)="callNumber()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="Call Number">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">phone</mat-icon>
                 <span>Call Number</span>
               </button>
-              <button mat-button (click)="manualSelect()"
-                      [disabled]="!isManualSelectActive"
-                      [ngClass]="{'bg-[#283c1c] text-white': isManualSelectActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isManualSelectActive}"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-                <mat-icon class="mr-3">edit</mat-icon>
+              <button *ngIf="isManualSelectActive"
+                      (click)="manualSelect()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-yellow-500 text-gray-900 hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="Manual Select">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">edit</mat-icon>
                 <span>Manual Select</span>
               </button>
-              <button mat-button (click)="returnTop()"
-                      [disabled]="!isReturnTopActive"
-                      [ngClass]="{'bg-[#283c1c] text-white': isReturnTopActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isReturnTopActive}"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-                <mat-icon class="mr-3">arrow_upward</mat-icon>
+              <button *ngIf="isReturnTopActive"
+                      (click)="returnTop()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="Return Top">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">arrow_upward</mat-icon>
                 <span>Return Top</span>
               </button>
-              <button mat-button (click)="returnBottom()"
-                      [disabled]="!isReturnBottomActive"
-                      [ngClass]="{'bg-[#283c1c] text-white': isReturnBottomActive, 'bg-[#e8f0e8] text-[#283c1c] opacity-50 cursor-not-allowed': !isReturnBottomActive}"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium transition-colors">
-                <mat-icon class="mr-3">arrow_downward</mat-icon>
+              <button *ngIf="isReturnBottomActive"
+                      (click)="returnBottom()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="Return Bottom">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">arrow_downward</mat-icon>
                 <span>Return Bottom</span>
               </button>
-              <button mat-button (click)="noShow()"
-                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
-                <mat-icon class="mr-3">highlight_off</mat-icon>
+              <button (click)="noShow()"
+                      class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-red-600 text-white hover:bg-red-700 active:bg-red-800 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
+                      aria-label="No Show">
+                <mat-icon class="mr-3 transition-transform duration-200 group-hover:scale-110">highlight_off</mat-icon>
                 <span>No Show</span>
               </button>
             </nav>

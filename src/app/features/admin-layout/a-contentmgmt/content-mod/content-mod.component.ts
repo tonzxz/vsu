@@ -1,3 +1,4 @@
+// content-mod.component.ts
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SafeUrlPipe } from '../safe-url.pipe';
@@ -11,6 +12,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   styleUrls: ['./content-mod.component.css']
 })
 export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
+  // Input Properties for Content Customization
   @Input() logoUrl: string = 'path/to/default/logo.png';
   @Input() backgroundType: 'photo' | 'color' = 'photo';
   @Input() backgroundColor: string = '#283c1c';
@@ -19,6 +21,12 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() announcementText: string = '';
   @Input() notesText: string = '';
   @Input() tabName: string = 'Registrar';
+
+  // New Input Properties for Color Customization
+  @Input() textColor: string = '#000000';
+  @Input() widgetsBackgroundColor: string = '#ffffff';
+  @Input() processingContainerColor: string = '#283c1c';
+  @Input() processingTextColor: string = '#ffffff';
 
   @Input() widgets: {
     weather: boolean;
@@ -32,6 +40,7 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
 
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
+  // State Variables
   currentDate: string = '';
   timer: string = '00:00:00';
   isPlaying: boolean = false;
@@ -39,7 +48,7 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   youtubeSafeUrl: SafeResourceUrl | null = null;
 
   showAnnouncement: boolean = true;
-  marqueeDuration: number = 10; // Base duration for one cycle of the announcement
+  marqueeDuration: number = 10; // Duration for one cycle of the announcement in seconds
   notesDuration: number = 5; // Duration to display notes in seconds
   marqueeSpeed: number = 50; // Pixels per second
 
@@ -57,11 +66,18 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['announcementText']) {
+    if (changes['announcementText'] || changes['textColor']) {
       this.updateMarqueeDuration();
+    }
+    if (changes['videoUrl']) {
+      this.updateVideoSource();
     }
   }
 
+  /**
+   * Update content based on the settings received from the parent component
+   * @param update - Object containing all the settings
+   */
   updateContent(update: {
     logoUrl: string;
     backgroundType: 'photo' | 'color';
@@ -71,6 +87,10 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     announcementText: string;
     notesText: string;
     tabName: string;
+    textColor: string;
+    widgetsBackgroundColor: string;
+    processingContainerColor: string;
+    processingTextColor: string;
     widgets: {
       weather: boolean;
       timeAndDate: boolean;
@@ -85,6 +105,10 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     this.announcementText = update.announcementText;
     this.notesText = update.notesText;
     this.tabName = update.tabName;
+    this.textColor = update.textColor;
+    this.widgetsBackgroundColor = update.widgetsBackgroundColor;
+    this.processingContainerColor = update.processingContainerColor;
+    this.processingTextColor = update.processingTextColor;
     this.widgets = update.widgets;
 
     this.isPlaying = false;
@@ -94,6 +118,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     this.resetContentCycle();
   }
 
+  /**
+   * Update the video source based on whether it's a YouTube URL or a direct video file
+   */
   updateVideoSource(): void {
     if (this.isYoutubeUrl(this.videoUrl)) {
       const videoId = this.getYouTubeVideoId(this.videoUrl!);
@@ -104,6 +131,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  /**
+   * Toggle play/pause for the video
+   */
   togglePlay(): void {
     if (this.videoPlayer && this.videoPlayer.nativeElement) {
       if (this.isPlaying) {
@@ -115,6 +145,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  /**
+   * Toggle looping for the video
+   */
   toggleLoop(): void {
     this.isLooping = !this.isLooping;
     if (this.videoPlayer && this.videoPlayer.nativeElement) {
@@ -122,6 +155,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  /**
+   * Restart the video from the beginning
+   */
   restartVideo(): void {
     if (this.videoPlayer && this.videoPlayer.nativeElement) {
       this.videoPlayer.nativeElement.currentTime = 0;
@@ -130,6 +166,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  /**
+   * Handle video ended event
+   */
   onVideoEnded(): void {
     this.isPlaying = false;
     if (this.isLooping) {
@@ -143,6 +182,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  /**
+   * Start the announcement and notes cycle
+   */
   startContentCycle(): void {
     const cycleContent = () => {
       this.showAnnouncement = true;
@@ -157,15 +199,28 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     cycleContent();
   }
 
+  /**
+   * Reset the announcement and notes cycle
+   */
   resetContentCycle(): void {
     this.showAnnouncement = true;
     this.startContentCycle();
   }
 
+  /**
+   * Check if the provided URL is a YouTube URL
+   * @param url - The URL to check
+   * @returns True if it's a YouTube URL, else False
+   */
   isYoutubeUrl(url: string | null): boolean {
     return !!url && (url.includes('youtube.com') || url.includes('youtu.be'));
   }
 
+  /**
+   * Extract YouTube video ID from the URL
+   * @param url - The YouTube URL
+   * @returns The video ID
+   */
   getYouTubeVideoId(url: string): string {
     let videoId = '';
     if (url.includes('youtube.com/watch?v=')) {
@@ -180,10 +235,18 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     return videoId;
   }
 
+  /**
+   * Sanitize URLs for safe embedding
+   * @param url - The URL to sanitize
+   * @returns The sanitized URL
+   */
   getSafeUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
+  /**
+   * Continuously update the current date every second
+   */
   private updateCurrentDate(): void {
     setInterval(() => {
       const now = new Date();
@@ -195,6 +258,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }, 1000);
   }
 
+  /**
+   * Continuously update the current time every second
+   */
   private startTimer(): void {
     setInterval(() => {
       const now = new Date();
@@ -202,9 +268,12 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     }, 1000);
   }
 
+  /**
+   * Calculate the duration for the marquee animation based on text length and speed
+   */
   private updateMarqueeDuration(): void {
     const containerWidth = 1000; // Assume a default container width of 1000px
-    const textWidth = this.announcementText.length * 10; // Rough estimate of text width
+    const textWidth = this.announcementText.length * 10; // Rough estimate of text width in pixels
     const totalDistance = containerWidth + textWidth;
     this.marqueeDuration = totalDistance / this.marqueeSpeed;
   }

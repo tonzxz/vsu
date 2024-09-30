@@ -1,49 +1,47 @@
+<!-- content-mod.component.html -->
 <section class="flex flex-col p-6 max-h-screen">
   <div class="flex flex-col justify-center w-full overflow-hidden mt-4">
     <div
       class="relative flex flex-col w-full min-h-[500px] bg-cover rounded-lg shadow-lg"
       [ngStyle]="{
-        'background-color':
-          backgroundType === 'color' ? backgroundColor : '#283c1c',
-        'background-image':
-          backgroundType === 'photo' && backgroundPhotoUrl
-            ? 'url(' + backgroundPhotoUrl + ')'
-            : 'none'
+        'background-color': backgroundType === 'color' ? backgroundColor : '#283c1c',
+        'background-image': backgroundType === 'photo' && backgroundPhotoUrl
+          ? 'url(' + backgroundPhotoUrl + ')'
+          : 'none'
       }"
     >
-    
       <!-- Content Containers -->
       <div class="relative flex flex-col lg:flex-row gap-3 p-4 mt-4">
-        <!-- Info -->
+        <!-- Info Section -->
         <div
           class="flex items-center lg:w-1/2 w-full bg-white rounded-2xl p-3 shadow-lg"
+          [ngStyle]="{'color': textColor}"
         >
           <img
             [src]="logoUrl || '/assets/placeholder-logo.png'"
             [alt]="tabName + ' logo'"
             class="object-contain w-[60px] h-[60px] rounded-full border-2 border-[#F2F2F2] mr-3"
           />
-          <h2 class="text-2xl font-bold text-black">{{ tabName }}</h2>
+          <h2 class="text-2xl font-bold">
+            {{ tabName }}
+          </h2>
         </div>
 
         <!-- Widget Section -->
-        <div
-          class="flex lg:w-1/2 w-full gap-3 items-center justify-end flex-wrap"
-        >
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full lg:w-1/2">
           <!-- Time and Date Widget -->
           <div
             *ngIf="widgets.timeAndDate"
-            class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
-            style="width: 100%; max-width: 110px; height: 110px;"
+            class="widget-card rounded-2xl shadow-lg transition-transform transform hover:scale-105"
+            [ngStyle]="{'background-color': widgetsBackgroundColor}"
           >
-            <div class="flex flex-col items-center text-center h-full justify-center">
-              <!-- Font Awesome Calendar Icon -->
-              <i class="fas fa-calendar-day text-xl md:text-2xl"></i>
-              <time class="text-xs md:text-sm font-semibold mt-1">
+            <div class="flex flex-col items-center text-center h-full justify-center p-4">
+              <i class="fas fa-calendar-day text-4xl mb-3" [ngStyle]="{'color': textColor}"></i>
+              <time class="text-md font-semibold" [ngStyle]="{'color': textColor}">
                 {{ currentDate }}
               </time>
-              <div class="text-xs text-gray-500">
-                <i class="far fa-clock"></i> {{ timer }}
+              <div class="text-sm mt-1" [ngStyle]="{'color': textColor}">
+                <i class="far fa-clock mr-1"></i>{{ timer }}
               </div>
             </div>
           </div>
@@ -51,29 +49,26 @@
           <!-- Weather Widget -->
           <div
             *ngIf="widgets.weather"
-            class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
-            style="width: 100%; max-width: 110px; height: 110px;"
+            class="widget-card rounded-2xl shadow-lg transition-transform transform hover:scale-105"
+            [ngStyle]="{'background-color': widgetsBackgroundColor}"
           >
-            <div class="flex flex-col items-center text-center h-full justify-center">
-              <!-- Font Awesome Weather Icon -->
-              <i class="fas fa-cloud-sun text-xl md:text-2xl"></i>
-              <span class="text-xs md:text-sm font-bold mt-1">25°C</span>
-              <!-- Optional: Additional Weather Info -->
-              <span class="text-xs text-gray-500">Sunny</span>
+            <div class="flex flex-col items-center text-center h-full justify-center p-4">
+              <i class="fas fa-cloud-sun text-4xl mb-3" [ngStyle]="{'color': textColor}"></i>
+              <span class="text-md font-bold" [ngStyle]="{'color': textColor}">25°C</span>
+              <span class="text-sm mt-1" [ngStyle]="{'color': textColor}">Sunny</span>
             </div>
           </div>
           
           <!-- Currency Converter Widget -->
           <div
             *ngIf="widgets.currencyConverter"
-            class="bg-white rounded-3xl shadow-lg p-3 flex-shrink-0"
-            style="width: 100%; max-width: 110px; height: 110px;"
+            class="widget-card rounded-2xl shadow-lg transition-transform transform hover:scale-105"
+            [ngStyle]="{'background-color': widgetsBackgroundColor}"
           >
-            <div class="flex flex-col items-center text-center h-full justify-center">
-              <!-- Font Awesome Exchange Icon -->
-              <i class="fas fa-exchange-alt text-xl md:text-2xl"></i>
-              <span class="text-xs md:text-sm font-bold mt-1">USD</span>
-              <span class="text-xs text-gray-500">90.62₽</span>
+            <div class="flex flex-col items-center text-center h-full justify-center p-4">
+              <i class="fas fa-exchange-alt text-4xl mb-3" [ngStyle]="{'color': textColor}"></i>
+              <span class="text-md font-bold" [ngStyle]="{'color': textColor}">USD</span>
+              <span class="text-sm mt-1" [ngStyle]="{'color': textColor}">90.62₽</span>
             </div>
           </div>
         </div>
@@ -82,29 +77,34 @@
       <!-- Now Serving and Video Section -->
       <div class="relative flex flex-col lg:flex-row gap-5 mt-6 p-6">
         <div
-          class="bg-white border border-neutral-800 rounded-3xl p-5 w-full"
+          class="rounded-3xl p-5 w-full"
+          [ngStyle]="{
+            'background-color': processingContainerColor,
+            'color': processingTextColor
+          }"
           [ngClass]="{ 'lg:w-1/2': videoUrl }"
         >
           <h3
-            class="text-2xl font-bold text-white bg-neutral-800 text-center rounded-lg py-3"
+            class="text-2xl font-bold text-center rounded-lg py-3"
+            [ngStyle]="{'color': processingTextColor}"
           >
             Processing
           </h3>
           <div class="flex justify-around mt-4">
             <div class="text-center">
-              <h4 class="text-3xl">Now Serving</h4>
+              <h4 class="text-3xl" [ngStyle]="{'color': processingTextColor}">Now Serving</h4>
               <ul class="list-none p-0 mt-2">
-                <li class="text-2xl">1</li>
-                <li class="text-2xl">2</li>
-                <li class="text-2xl">3</li>
+                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">1</li>
+                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">2</li>
+                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">3</li>
               </ul>
             </div>
             <div class="text-center">
-              <h4 class="text-3xl">Counter</h4>
+              <h4 class="text-3xl" [ngStyle]="{'color': processingTextColor}">Counter</h4>
               <ul class="list-none p-0 mt-2">
-                <li class="text-2xl">R1</li>
-                <li class="text-2xl">R2</li>
-                <li class="text-2xl">R3</li>
+                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">R1</li>
+                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">R2</li>
+                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">R3</li>
               </ul>
             </div>
           </div>
@@ -133,20 +133,20 @@
             >
               <button
                 (click)="togglePlay()"
-                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold"
+                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300"
               >
                 {{ isPlaying ? 'Pause' : 'Play' }}
               </button>
               <button
                 (click)="restartVideo()"
-                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold"
+                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300"
               >
                 Restart
               </button>
               <button
                 (click)="toggleLoop()"
-                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold"
-                [class.bg-green-500]="isLooping"
+                class="px-4 py-2 bg-white text-gray-800 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300"
+                [ngClass]="{'bg-green-500': isLooping}"
               >
                 {{ isLooping ? 'Looping' : 'Loop' }}
               </button>

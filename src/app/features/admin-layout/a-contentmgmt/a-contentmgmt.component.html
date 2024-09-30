@@ -1,27 +1,22 @@
-  <main class="container mx-auto max-w-7xl p-6 bg-white-100 min-h-screen">
+<!-- a-contentmgmt.component.html -->
+<main class="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
+  <div class="max-w-7xl mx-auto">
     <!-- Header Section -->
     <header class="mb-8">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 text-center md:text-left">
-        Content Management
-      </h1>
+      <h1 class="text-3xl font-bold text-gray-900">Content Management</h1>
     </header>
 
     <!-- Main Card Container -->
-    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-      
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
       <!-- Tabs Navigation -->
-      <nav class="flex border-b border-gray-200 bg-gray-50">
+      <nav class="flex" role="tablist">
         <button
           *ngFor="let tab of ['Registrar', 'Cash Division', 'Accounting Office']"
           (click)="onTabClick(tab)"
-          [ngClass]="{
-            'bg-[#283c1c] text-white': selectedTab === tab,
-            'bg-gray-100 text-gray-700 hover:bg-[#3c4c3a]': selectedTab !== tab
-          }"
-          class="flex-1 py-3 text-sm font-medium transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
-          tabindex="0"
-          role="tab"
+          [class]="selectedTab === tab ? 'bg-[#283c1c] text-white' : 'bg-gray-100 text-gray-700 hover:bg-[#3c4c3a] hover:text-white'"
+          class="flex-1 py-3 px-4 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
           [attr.aria-selected]="selectedTab === tab"
+          role="tab"
         >
           {{ tab }}
         </button>
@@ -29,35 +24,38 @@
 
       <!-- Content Area -->
       <div class="p-6">
-        
-        <!-- Preview and Edit Section -->
-        <section class="mb-8">
-          <div class="flex flex-col md:flex-row justify-between items-center mb-4">
-            <h2 class="text-2xl font-semibold text-gray-700">Preview</h2>
+        <!-- Preview Section -->
+        <section class="mb-8" aria-labelledby="preview-heading">
+          <div class="flex justify-between items-center mb-4">
+            <h2 id="preview-heading" class="text-2xl font-semibold text-gray-800">Preview</h2>
             <button
-              class="flex items-center px-4 py-2 bg-[#283c1c] text-white rounded-md hover:bg-[#3c4c3a] transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
               (click)="editContent()"
+              class="px-4 py-2 bg-[#283c1c] text-white rounded-md hover:bg-[#3c4c3a] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
             >
-              <i class="fas fa-edit mr-2"></i> Edit Content
+              Edit Content
             </button>
           </div>
           <div
-            class="p-4 rounded-lg shadow-inner bg-gray-50 transition-all duration-500 ease-in-out"
+            class="p-4 rounded-lg shadow-inner bg-gray-50 transition-all duration-300"
             [ngClass]="{
-              'max-h-0 opacity-0 overflow-hidden': !contentData[selectedTab],
-              'max-h-full opacity-100': contentData[selectedTab]
+              'h-0 opacity-0 overflow-hidden': !contentData[selectedTab],
+              'h-auto opacity-100': contentData[selectedTab]
             }"
           >
             <app-content-mod
-              [logoUrl]="contentData[selectedTab].logoUrl"
-              [backgroundType]="contentData[selectedTab].backgroundType"
-              [backgroundColor]="contentData[selectedTab].backgroundColor"
-              [backgroundPhotoUrl]="contentData[selectedTab].backgroundPhotoUrl"
-              [videoUrl]="contentData[selectedTab].videoUrl"
-              [announcementText]="contentData[selectedTab].announcementText"
-              [notesText]="contentData[selectedTab].notesText"
+              [logoUrl]="contentData[selectedTab]?.logoUrl"
+              [backgroundType]="contentData[selectedTab]?.backgroundType"
+              [backgroundColor]="contentData[selectedTab]?.backgroundColor"
+              [backgroundPhotoUrl]="contentData[selectedTab]?.backgroundPhotoUrl"
+              [videoUrl]="contentData[selectedTab]?.videoUrl"
+              [announcementText]="contentData[selectedTab]?.announcementText"
+              [notesText]="contentData[selectedTab]?.notesText"
               [tabName]="selectedTab"
-              class="w-full h-auto"
+              [textColor]="contentData[selectedTab]?.textColor"
+              [widgetsBackgroundColor]="contentData[selectedTab]?.widgetsBackgroundColor"
+              [processingContainerColor]="contentData[selectedTab]?.processingContainerColor"
+              [processingTextColor]="contentData[selectedTab]?.processingTextColor"
+              [widgets]="contentData[selectedTab]?.widgets"
             ></app-content-mod>
           </div>
         </section>
@@ -65,48 +63,46 @@
         <!-- Content Settings Section -->
         <section
           #contentSettings
-          class="bg-white rounded-xl p-6 shadow-sm transition-all duration-500 ease-in-out overflow-hidden"
+          class="bg-white rounded-xl p-8 shadow-sm transition-all duration-300"
           [ngClass]="{
-            'max-h-0 opacity-0': !isContentSettingsOpen,
-            'max-h-screen opacity-100 mt-8': isContentSettingsOpen
+            'h-0 opacity-0 overflow-hidden': !isContentSettingsOpen,
+            'h-auto opacity-100 mt-8': isContentSettingsOpen
           }"
+          aria-labelledby="content-settings-heading"
         >
-          <h2 class="text-2xl font-bold text-gray-800 mb-6">Content Settings</h2>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+          <h2 id="content-settings-heading" class="text-2xl font-bold text-gray-800 mb-6">Content Settings</h2>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <!-- Visual Elements -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-              <h3 class="text-xl font-semibold text-gray-700 mb-4">Visual Elements</h3>
-              
+            <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+              <h3 class="text-xl font-semibold text-gray-800 mb-6">Visual Elements</h3>
+
               <!-- Logo Upload -->
-              <div class="mb-6">
-                <label for="logo-upload" class="block text-sm font-medium text-gray-700 mb-2">Upload Logo</label>
-                <div class="flex items-center space-x-4">
-                  <input
-                    type="file"
-                    id="logo-upload"
-                    accept="image/png, image/jpeg"
-                    class="hidden"
-                    (change)="onFileUpload($event, 'Logo')"
-                  />
-                  <label
-                    for="logo-upload"
-                    class="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300"
-                  >
-                    <i class="fas fa-upload mr-2"></i> Choose File
-                  </label>
-                  <span class="text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Logo'), 'text-green-600': isFilePicked('Logo')}">
-                    {{ getFileName('Logo') || 'No file chosen' }}
-                  </span>
-                </div>
+              <div class="mb-8">
+                <label for="logo-upload" class="block text-sm font-medium text-gray-800 mb-2">Upload Logo</label>
+                <input
+                  type="file"
+                  id="logo-upload"
+                  accept="image/png, image/jpeg"
+                  class="hidden"
+                  (change)="onFileUpload($event, 'Logo')"
+                />
+                <label
+                  for="logo-upload"
+                  class="inline-flex items-center px-6 py-3 bg-white border border-gray-300 rounded-md shadow-md text-sm text-gray-800 hover:bg-gray-100 cursor-pointer transition-colors duration-300"
+                >
+                  Choose File
+                </label>
+                <span class="ml-3 text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Logo'), 'text-green-600': isFilePicked('Logo')}">
+                  {{ getFileName('Logo') || 'No file chosen' }}
+                </span>
               </div>
 
               <!-- Background Selection -->
-              <div class="mb-6">
-                <span class="block text-sm font-medium text-gray-700 mb-2">Background</span>
-                <div class="flex items-center space-x-6">
-                  <label class="inline-flex items-center text-sm text-gray-700">
+              <div class="mb-8">
+                <span class="block text-sm font-medium text-gray-800 mb-2">Background</span>
+                <div class="flex items-center space-x-8">
+                  <label class="inline-flex items-center">
                     <input
                       type="radio"
                       class="form-radio text-[#283c1c] transition duration-150 ease-in-out"
@@ -115,9 +111,9 @@
                       (change)="onBackgroundTypeChange('photo')"
                       [checked]="backgroundType === 'photo'"
                     />
-                    <span class="ml-2">Upload Photo</span>
+                    <span class="ml-2 text-sm text-gray-800">Upload Photo</span>
                   </label>
-                  <label class="inline-flex items-center text-sm text-gray-700">
+                  <label class="inline-flex items-center">
                     <input
                       type="radio"
                       class="form-radio text-[#283c1c] transition duration-150 ease-in-out"
@@ -126,54 +122,51 @@
                       (change)="onBackgroundTypeChange('color')"
                       [checked]="backgroundType === 'color'"
                     />
-                    <span class="ml-2">Choose Color</span>
+                    <span class="ml-2 text-sm text-gray-800">Choose Color</span>
                   </label>
                 </div>
               </div>
 
-              <!-- Conditional Background Photo Upload -->
-              <div *ngIf="backgroundType === 'photo'" class="mb-6">
-                <label for="bg-photo-upload" class="block text-sm font-medium text-gray-700 mb-2">Upload Background Photo</label>
-                <div class="flex items-center space-x-4">
-                  <input
-                    type="file"
-                    id="bg-photo-upload"
-                    accept="image/png, image/jpeg, image/jpg"
-                    class="hidden"
-                    (change)="onFileUpload($event, 'Background Photo')"
-                  />
-                  <label
-                    for="bg-photo-upload"
-                    class="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300"
-                  >
-                    <i class="fas fa-upload mr-2"></i> Choose File
-                  </label>
-                  <span class="text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Background Photo'), 'text-green-600': isFilePicked('Background Photo')}">
-                    {{ getFileName('Background Photo') || 'No file chosen' }}
-                  </span>
-                </div>
+              <!-- Conditional Background Upload or Color Picker -->
+              <div *ngIf="backgroundType === 'photo'" class="mb-8">
+                <label for="bg-photo-upload" class="block text-sm font-medium text-gray-800 mb-2">Upload Background Photo</label>
+                <input
+                  type="file"
+                  id="bg-photo-upload"
+                  accept="image/png, image/jpeg, image/jpg"
+                  class="hidden"
+                  (change)="onFileUpload($event, 'Background Photo')"
+                />
+                <label
+                  for="bg-photo-upload"
+                  class="inline-flex items-center px-6 py-3 bg-white border border-gray-300 rounded-md shadow-md text-sm text-gray-800 hover:bg-gray-100 cursor-pointer transition-colors duration-300"
+                >
+                  Choose File
+                </label>
+                <span class="ml-3 text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Background Photo'), 'text-green-600': isFilePicked('Background Photo')}">
+                  {{ getFileName('Background Photo') || 'No file chosen' }}
+                </span>
               </div>
 
-              <!-- Conditional Background Color Picker -->
-              <div *ngIf="backgroundType === 'color'" class="mb-6">
-                <label for="background-color" class="block text-sm font-medium text-gray-700 mb-2">Select Background Color</label>
+              <div *ngIf="backgroundType === 'color'" class="mb-8">
+                <label for="background-color" class="block text-sm font-medium text-gray-800 mb-2">Select Background Color</label>
                 <div class="flex items-center space-x-4">
                   <input
                     type="color"
                     id="background-color"
-                    class="h-8 w-8 rounded-md border border-gray-300 p-1 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                    class="h-10 w-10 rounded-md border border-gray-300 p-1 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
                     [(ngModel)]="backgroundColor"
                     (change)="onBackgroundColorChange($event)"
                   />
-                  <span class="text-sm text-gray-700">{{ backgroundColor }}</span>
+                  <span class="text-sm text-gray-800">{{ backgroundColor }}</span>
                 </div>
               </div>
 
               <!-- Video Input Method Selection -->
-              <div class="mb-6">
-                <span class="block text-sm font-medium text-gray-700 mb-2">Video Input</span>
-                <div class="flex items-center space-x-6">
-                  <label class="inline-flex items-center text-sm text-gray-700">
+              <div class="mb-8">
+                <span class="block text-sm font-medium text-gray-800 mb-2">Video Input</span>
+                <div class="flex items-center space-x-8">
+                  <label class="inline-flex items-center">
                     <input
                       type="radio"
                       class="form-radio text-[#283c1c] transition duration-150 ease-in-out"
@@ -182,9 +175,9 @@
                       (change)="onVideoOptionChange('upload')"
                       [checked]="videoOption === 'upload'"
                     />
-                    <span class="ml-2">Upload Video</span>
+                    <span class="ml-2 text-sm text-gray-800">Upload Video</span>
                   </label>
-                  <label class="inline-flex items-center text-sm text-gray-700">
+                  <label class="inline-flex items-center">
                     <input
                       type="radio"
                       class="form-radio text-[#283c1c] transition duration-150 ease-in-out"
@@ -193,59 +186,71 @@
                       (change)="onVideoOptionChange('url')"
                       [checked]="videoOption === 'url'"
                     />
-                    <span class="ml-2">YouTube URL</span>
+                    <span class="ml-2 text-sm text-gray-800">YouTube URL</span>
                   </label>
                 </div>
               </div>
 
-              <!-- Conditional Video Upload -->
-              <div *ngIf="videoOption === 'upload'" class="mb-6">
-                <label for="video-upload" class="block text-sm font-medium text-gray-700 mb-2">Upload Video</label>
-                <div class="flex items-center space-x-4">
-                  <input
-                    type="file"
-                    id="video-upload"
-                    accept="video/mp4, video/webm, video/ogg"
-                    class="hidden"
-                    (change)="onFileUpload($event, 'Video')"
-                  />
-                  <label
-                    for="video-upload"
-                    class="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300"
-                  >
-                    <i class="fas fa-upload mr-2"></i> Choose File
-                  </label>
-                  <span class="text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Video'), 'text-green-600': isFilePicked('Video')}">
-                    {{ getFileName('Video') || 'No file chosen' }}
-                  </span>
-                </div>
+              <!-- Conditional Video Upload or YouTube URL Input -->
+              <div *ngIf="videoOption === 'upload'" class="mb-8">
+                <label for="video-upload" class="block text-sm font-medium text-gray-800 mb-2">Upload Video</label>
+                <input
+                  type="file"
+                  id="video-upload"
+                  accept="video/mp4, video/webm, video/ogg"
+                  class="hidden"
+                  (change)="onFileUpload($event, 'Video')"
+                />
+                <label
+                  for="video-upload"
+                  class="inline-flex items-center px-6 py-3 bg-white border border-gray-300 rounded-md shadow-md text-sm text-gray-800 hover:bg-gray-100 cursor-pointer transition-colors duration-300"
+                >
+                  Choose File
+                </label>
+                <span class="ml-3 text-sm" [ngClass]="{'text-gray-500': !isFilePicked('Video'), 'text-green-600': isFilePicked('Video')}">
+                  {{ getFileName('Video') || 'No file chosen' }}
+                </span>
               </div>
 
-              <!-- Conditional YouTube URL Input -->
-              <div *ngIf="videoOption === 'url'" class="mb-6">
-                <label for="youtube-url" class="block text-sm font-medium text-gray-700 mb-2">YouTube URL</label>
+              <div *ngIf="videoOption === 'url'" class="mb-8">
+                <label for="youtube-url" class="block text-sm font-medium text-gray-800 mb-2">YouTube URL</label>
                 <input
                   type="url"
                   id="youtube-url"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
                   placeholder="https://www.youtube.com/watch?v=example"
                   [(ngModel)]="youtubeUrl"
                   (input)="onYoutubeUrlChange($event)"
                 />
                 <p class="mt-2 text-xs text-gray-500">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
               </div>
+
+              <!-- Global Text Color Picker -->
+              <div class="mb-8">
+                <label for="text-color" class="block text-sm font-medium text-gray-800 mb-2">Select Global Text Color</label>
+                <div class="flex items-center space-x-4">
+                  <input
+                    type="color"
+                    id="text-color"
+                    class="h-10 w-10 rounded-md border border-gray-300 p-1 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                    [(ngModel)]="textColor"
+                    (change)="onTextColorChange($event)"
+                  />
+                  <span class="text-sm text-gray-800">{{ textColor }}</span>
+                </div>
+              </div>
             </div>
 
             <!-- Content and Widgets -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-              <h3 class="text-xl font-semibold text-gray-700 mb-4">Content & Widgets</h3>
-              
+            <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+              <h3 class="text-xl font-semibold text-gray-800 mb-6">Content & Widgets</h3>
+
               <!-- Announcements -->
-              <div class="mb-6">
-                <label for="announcements" class="block text-sm font-medium text-gray-700 mb-2">Announcements</label>
+              <div class="mb-8">
+                <label for="announcements" class="block text-sm font-medium text-gray-800 mb-2">Announcements</label>
                 <textarea
                   id="announcements"
-                  class="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                  class="w-full px-4 py-3 text-gray-800 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
                   rows="3"
                   [(ngModel)]="announcementText"
                   (input)="onAnnouncementChange($event)"
@@ -258,11 +263,11 @@
               </div>
 
               <!-- Notes -->
-              <div class="mb-6">
-                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+              <div class="mb-8">
+                <label for="notes" class="block text-sm font-medium text-gray-800 mb-2">Notes</label>
                 <textarea
                   id="notes"
-                  class="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                  class="w-full px-4 py-3 text-gray-800 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
                   rows="3"
                   [(ngModel)]="notesText"
                   (input)="onNotesChange($event)"
@@ -275,41 +280,83 @@
               </div>
 
               <!-- Widgets -->
-              <div class="mb-6">
-                <span class="block text-sm font-medium text-gray-700 mb-2">Widgets</span>
+              <div class="mb-8">
+                <span class="block text-sm font-medium text-gray-800 mb-2">Widgets</span>
                 <div class="flex flex-wrap gap-4">
-                  <!-- Weather Widget -->
-                  <label class="inline-flex items-center text-sm text-gray-700">
+                  <label class="inline-flex items-center">
                     <input
                       type="checkbox"
                       class="form-checkbox h-5 w-5 text-[#283c1c] transition duration-150 ease-in-out"
                       [(ngModel)]="widgets.weather"
                       (change)="onWidgetChange()"
                     />
-                    <span class="ml-2">Weather</span>
+                    <span class="ml-2 text-sm text-gray-800">Weather</span>
                   </label>
-                  
-                  <!-- Time and Date Widget -->
-                  <label class="inline-flex items-center text-sm text-gray-700">
+
+                  <label class="inline-flex items-center">
                     <input
                       type="checkbox"
                       class="form-checkbox h-5 w-5 text-[#283c1c] transition duration-150 ease-in-out"
                       [(ngModel)]="widgets.timeAndDate"
                       (change)="onWidgetChange()"
                     />
-                    <span class="ml-2">Time & Date</span>
+                    <span class="ml-2 text-sm text-gray-800">Time & Date</span>
                   </label>
-                  
-                  <!-- Currency Converter Widget -->
-                  <label class="inline-flex items-center text-sm text-gray-700">
+
+                  <label class="inline-flex items-center">
                     <input
                       type="checkbox"
                       class="form-checkbox h-5 w-5 text-[#283c1c] transition duration-150 ease-in-out"
                       [(ngModel)]="widgets.currencyConverter"
                       (change)="onWidgetChange()"
                     />
-                    <span class="ml-2">Currency Converter</span>
+                    <span class="ml-2 text-sm text-gray-800">Currency Converter</span>
                   </label>
+                </div>
+              </div>
+
+              <!-- Widgets Background Color Picker -->
+              <div class="mb-8">
+                <label for="widgets-bg-color" class="block text-sm font-medium text-gray-800 mb-2">Widgets Background Color</label>
+                <div class="flex items-center space-x-4">
+                  <input
+                    type="color"
+                    id="widgets-bg-color"
+                    class="h-10 w-10 rounded-md border border-gray-300 p-1 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                    [(ngModel)]="widgetsBackgroundColor"
+                    (change)="onWidgetsBackgroundColorChange($event)"
+                  />
+                  <span class="text-sm text-gray-800">{{ widgetsBackgroundColor }}</span>
+                </div>
+              </div>
+
+              <!-- Processing Container Color Picker -->
+              <div class="mb-8">
+                <label for="processing-container-color" class="block text-sm font-medium text-gray-800 mb-2">Processing Container Background Color</label>
+                <div class="flex items-center space-x-4">
+                  <input
+                    type="color"
+                    id="processing-container-color"
+                    class="h-10 w-10 rounded-md border border-gray-300 p-1 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                    [(ngModel)]="processingContainerColor"
+                    (change)="onProcessingContainerColorChange($event)"
+                  />
+                  <span class="text-sm text-gray-800">{{ processingContainerColor }}</span>
+                </div>
+              </div>
+
+              <!-- Processing Text Color Picker -->
+              <div class="mb-8">
+                <label for="processing-text-color" class="block text-sm font-medium text-gray-800 mb-2">Processing Container Text Color</label>
+                <div class="flex items-center space-x-4">
+                  <input
+                    type="color"
+                    id="processing-text-color"
+                    class="h-10 w-10 rounded-md border border-gray-300 p-1 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                    [(ngModel)]="processingTextColor"
+                    (change)="onProcessingTextColorChange($event)"
+                  />
+                  <span class="text-sm text-gray-800">{{ processingTextColor }}</span>
                 </div>
               </div>
             </div>
@@ -318,19 +365,20 @@
           <!-- Save and Cancel Buttons -->
           <div class="mt-8 flex justify-end space-x-4">
             <button
-              class="flex items-center px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400"
               (click)="toggleContentSettings()"
+              class="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
-              <i class="fas fa-times mr-2"></i> Cancel
+              Cancel
             </button>
             <button
-              class="flex items-center px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500"
               (click)="saveChanges()"
+              class="px-6 py-3 bg-[#283c1c] text-white rounded-md hover:bg-[#3c4c3a] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
             >
-              <i class="fas fa-save mr-2"></i> Save Changes
+              Save Changes
             </button>
           </div>
         </section>
       </div>
     </div>
-  </main>
+  </div>
+</main>

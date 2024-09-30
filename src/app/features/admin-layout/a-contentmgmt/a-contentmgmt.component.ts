@@ -50,6 +50,12 @@ export class AContentmgmtComponent implements AfterViewInit {
   maxCharCount: number = 200;
   logoUrl: string = 'assets/logo/vsu.png';
 
+  // New Color Settings
+  textColor: string = '#000000';
+  widgetsBackgroundColor: string = '#ffffff';
+  processingContainerColor: string = '#ffffff';
+  processingTextColor: string = '#000000';
+
   // Widgets state
   public widgets = {
     weather: false,
@@ -79,6 +85,10 @@ export class AContentmgmtComponent implements AfterViewInit {
         timeAndDate: false,
         currencyConverter: false,
       },
+      textColor: '#000000',
+      widgetsBackgroundColor: '#ffffff',
+      processingContainerColor: '#ffffff',
+      processingTextColor: '#000000',
     },
     'Cash Division': {
       logoUrl: 'assets/logo/vsu.png',
@@ -93,6 +103,10 @@ export class AContentmgmtComponent implements AfterViewInit {
         timeAndDate: false,
         currencyConverter: false,
       },
+      textColor: '#000000',
+      widgetsBackgroundColor: '#ffffff',
+      processingContainerColor: '#ffffff',
+      processingTextColor: '#000000',
     },
     'Accounting Office': {
       logoUrl: 'assets/logo/vsu.png',
@@ -107,6 +121,10 @@ export class AContentmgmtComponent implements AfterViewInit {
         timeAndDate: false,
         currencyConverter: false,
       },
+      textColor: '#000000',
+      widgetsBackgroundColor: '#ffffff',
+      processingContainerColor: '#ffffff',
+      processingTextColor: '#000000',
     },
   };
 
@@ -164,6 +182,12 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.notesText = tabData.notesText;
     this.widgets = { ...tabData.widgets }; // Copy widgets state
 
+    // Update new color settings
+    this.textColor = tabData.textColor;
+    this.widgetsBackgroundColor = tabData.widgetsBackgroundColor;
+    this.processingContainerColor = tabData.processingContainerColor;
+    this.processingTextColor = tabData.processingTextColor;
+
     // Load existing preview URLs from contentData
     this.previewUrls['Logo'] = tabData.logoUrl;
     this.previewUrls['Background Photo'] = tabData.backgroundPhotoUrl;
@@ -200,6 +224,10 @@ export class AContentmgmtComponent implements AfterViewInit {
         announcementText: this.announcementText,
         notesText: this.notesText,
         tabName: this.selectedTab,
+        textColor: this.textColor,
+        widgetsBackgroundColor: this.widgetsBackgroundColor,
+        processingContainerColor: this.processingContainerColor,
+        processingTextColor: this.processingTextColor,
         widgets: this.widgets,
       });
     }
@@ -470,6 +498,50 @@ export class AContentmgmtComponent implements AfterViewInit {
   }
 
   /**
+   * Handle changes in Text Color Picker
+   * @param event - The input event
+   */
+  onTextColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.textColor = input.value;
+    this.isDirty = true; // Mark as dirty
+    this.updateContentMod();
+  }
+
+  /**
+   * Handle changes in Widgets Background Color Picker
+   * @param event - The input event
+   */
+  onWidgetsBackgroundColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.widgetsBackgroundColor = input.value;
+    this.isDirty = true; // Mark as dirty
+    this.updateContentMod();
+  }
+
+  /**
+   * Handle changes in Processing Container Background Color Picker
+   * @param event - The input event
+   */
+  onProcessingContainerColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.processingContainerColor = input.value;
+    this.isDirty = true; // Mark as dirty
+    this.updateContentMod();
+  }
+
+  /**
+   * Handle changes in Processing Text Color Picker
+   * @param event - The input event
+   */
+  onProcessingTextColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.processingTextColor = input.value;
+    this.isDirty = true; // Mark as dirty
+    this.updateContentMod();
+  }
+
+  /**
    * Save changes made in the Content Settings
    */
   saveChanges(): void {
@@ -479,17 +551,13 @@ export class AContentmgmtComponent implements AfterViewInit {
     console.log('Notes Text:', this.notesText);
     console.log('Selected Files:', this.selectedFiles);
     console.log('Background Type:', this.backgroundType);
-
-    if (this.backgroundType === 'color') {
-      console.log('Background Color:', this.backgroundColor);
-    }
-
-    if (this.videoOption === 'url' && this.youtubeUrl) {
-      console.log('YouTube URL:', this.youtubeUrl);
-    } else if (this.videoOption === 'upload' && this.selectedFiles['Video']) {
-      console.log('Video File:', this.selectedFiles['Video']?.name);
-    }
-
+    console.log('Background Color:', this.backgroundColor);
+    console.log('YouTube URL:', this.youtubeUrl);
+    console.log('Video Option:', this.videoOption);
+    console.log('Text Color:', this.textColor);
+    console.log('Widgets Background Color:', this.widgetsBackgroundColor);
+    console.log('Processing Container Color:', this.processingContainerColor);
+    console.log('Processing Text Color:', this.processingTextColor);
     console.log('Widgets:', this.widgets);
 
     // Update the contentData for the current tab
@@ -507,6 +575,10 @@ export class AContentmgmtComponent implements AfterViewInit {
       announcementText: this.announcementText,
       notesText: this.notesText,
       widgets: { ...this.widgets }, // Save the widgets state
+      textColor: this.textColor,
+      widgetsBackgroundColor: this.widgetsBackgroundColor,
+      processingContainerColor: this.processingContainerColor,
+      processingTextColor: this.processingTextColor,
     };
 
     this.showSuccessMessage('Changes have been saved successfully!');
@@ -534,6 +606,12 @@ export class AContentmgmtComponent implements AfterViewInit {
     this.announcementText = tabData.announcementText;
     this.notesText = tabData.notesText;
     this.widgets = { ...tabData.widgets }; // Copy widgets state
+
+    // Update new color settings
+    this.textColor = tabData.textColor;
+    this.widgetsBackgroundColor = tabData.widgetsBackgroundColor;
+    this.processingContainerColor = tabData.processingContainerColor;
+    this.processingTextColor = tabData.processingTextColor;
 
     // Load existing preview URLs from contentData
     this.previewUrls['Logo'] = tabData.logoUrl;

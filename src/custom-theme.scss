@@ -35,3 +35,9 @@ $VSUQSM-theme: mat.define-light-theme((
 // that you are using.
 @include mat.all-component-themes($VSUQSM-theme);
 
+img {
+  -webkit-user-drag: none; // Chrome, Safari, and Opera
+  -moz-user-drag: none; // Firefox
+  -o-user-drag: none; // Opera
+  // user-drag: none; // Standard
+}

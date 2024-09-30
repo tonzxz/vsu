@@ -39,4 +39,4 @@ import { AppRoutingModule } from './app.routes';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

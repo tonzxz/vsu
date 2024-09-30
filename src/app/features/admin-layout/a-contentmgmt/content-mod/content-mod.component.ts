@@ -1,4 +1,3 @@
-// content-mod.component.ts
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SafeUrlPipe } from '../safe-url.pipe';
@@ -48,9 +47,12 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   youtubeSafeUrl: SafeResourceUrl | null = null;
 
   showAnnouncement: boolean = true;
-  marqueeDuration: number = 10; // Duration for one cycle of the announcement in seconds
-  notesDuration: number = 5; // Duration to display notes in seconds
-  marqueeSpeed: number = 50; // Pixels per second
+  marqueeDuration: number = 0;
+  notesDuration: number = 30; // Duration to display notes in seconds
+  marqueeSpeed: number = 0.5; // Pixels per second (further reduced for better readability)
+  maxCharCount: number = 200;
+  announcementCycleCount: number = 0; // Track the number of announcement cycles
+  announcementCyclesBeforeNotes: number = 3; // Number of announcement cycles before showing notes
 
   constructor(private sanitizer: DomSanitizer) {}
 
@@ -188,11 +190,18 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   startContentCycle(): void {
     const cycleContent = () => {
       this.showAnnouncement = true;
+
       setTimeout(() => {
-        this.showAnnouncement = false;
-        setTimeout(() => {
+        this.announcementCycleCount++;
+        if (this.announcementCycleCount >= this.announcementCyclesBeforeNotes) {
+          this.showAnnouncement = false;
+          setTimeout(() => {
+            this.announcementCycleCount = 0; // Reset cycle count after showing notes
+            cycleContent();
+          }, this.notesDuration * 1000);
+        } else {
           cycleContent();
-        }, this.notesDuration * 1000);
+        }
       }, this.marqueeDuration * 1000);
     };
 
@@ -203,6 +212,7 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
    * Reset the announcement and notes cycle
    */
   resetContentCycle(): void {
+    this.announcementCycleCount = 0; // Reset the count
     this.showAnnouncement = true;
     this.startContentCycle();
   }

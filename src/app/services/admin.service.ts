@@ -18,19 +18,19 @@ export class AdminService {
     
     // Account for Kiosk
     {
-      username: 'A1',
+      username: 'AC1',
       department: 'Accounting Office',
       type: 'Admin',
       password: 'password',
     },
     {
-      username: 'A2',
+      username: 'AC2',
       department: 'Registrar',
       type: 'Admin',
       password: 'password',
     },
     {
-      username: 'A3',
+      username: 'AC3',
       department: 'Cash Division',
       type: 'Admin',
       password: 'password',

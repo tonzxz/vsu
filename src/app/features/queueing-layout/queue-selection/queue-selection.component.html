@@ -1,1 +1,24 @@
-<p>queue-selection works!</p>
+@if(!this.selected) {
+
+    <div  class="flex justify-center gap-x-10 mt-10">
+        <button class="rounded-md bg-gray-700 flex justify-center" (click)="onRoleSelect('Registrar')">
+          <p class="text-white font-semibold px-4 py-2">Login as Registrar</p>
+        </button>
+        <button class="rounded-md bg-gray-700 flex justify-center" (click)="onRoleSelect('Cash Division')">
+          <p class="text-white font-semibold px-4 py-2">Login as Cash Division</p>
+        </button>
+        <button class="rounded-md bg-gray-700 flex justify-center" (click)="onRoleSelect('Accounting Office')">
+          <p class="text-white font-semibold px-4 py-2">Login as Accounting Office</p>
+        </button>
+      </div>
+}
+
+@else {
+  <div class="h-screen" > 
+    <router-outlet></router-outlet>
+  </div>
+
+}
+  
+
+  

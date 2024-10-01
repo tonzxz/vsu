@@ -20,18 +20,18 @@ interface User {
 })
 export class CreateAccountModalComponent {
   @Input() editingUser: User | null = null;
-  @Input() existingUsers: User[] = []; // New input to check for duplicates
+  @Input() existingUsers: User[] = []; 
   @Output() close = new EventEmitter<void>();
   @Output() accountCreated = new EventEmitter<User>();
 
-  username = '';
+  username = ''; 
   fullName = '';
-  type = 'Desk attendant';
-  department = 'Accounting Office';
+  type = '';
+  department = '';
   status: 'Online' | 'Offline' = 'Online';
   password = '';
   passwordVisible = false;
-  randomCode = ''; // Initialize randomCode
+  randomCode = ''; 
 
   types = ['Desk attendant', 'Kiosk', 'Queue Display'];
   departments = ['Accounting Office', 'Registrar', 'Cash Division'];
@@ -48,13 +48,13 @@ export class CreateAccountModalComponent {
       this.department = this.editingUser.department;
       this.status = this.editingUser.status;
       this.password = this.editingUser.password || '';
-
-      // Generate the random code if the editing user is a Kiosk
+   
       if (this.isKiosk()) {
         this.randomCode = this.editingUser.password || this.generateRandomCode();
+        this.generateKioskUsernames(); 
       }
     } else {
-      this.generateRandomCode(); // Generate code for new user
+      this.generateRandomCode(); 
     }
   }
 
@@ -66,12 +66,6 @@ export class CreateAccountModalComponent {
     if (!this.isFormValid()) {
       this.showError = true;
       this.errorMessage = 'Please fill in all required fields.';
-      return;
-    }
-
-    if (this.isDuplicateUser()) {
-      this.showError = true;
-      this.errorMessage = 'A user with this username or full name already exists.';
       return;
     }
 
@@ -98,7 +92,7 @@ export class CreateAccountModalComponent {
       department: this.department,
       type: this.type,
       status: this.status,
-      password: this.isKiosk() ? this.randomCode : this.password, // Use randomCode for Kiosk
+      password: this.isKiosk() ? this.randomCode : this.password, 
     };
 
     this.accountCreated.emit(newUser);
@@ -106,7 +100,14 @@ export class CreateAccountModalComponent {
   }
 
   isFormValid() {
-    return (this.isKiosk() && this.randomCode) || (this.username && this.fullName && this.password);
+    if (this.isKiosk()) {
+      return this.randomCode !== '' && this.department.trim() !== '';
+    } else {
+      return this.username.trim() !== '' && 
+             this.fullName.trim() !== '' && 
+             this.password.trim() !== '' && 
+             this.department.trim() !== ''; 
+    }
   }
 
   isKiosk() {
@@ -118,32 +119,26 @@ export class CreateAccountModalComponent {
   }
 
   generateRandomCode() {
-    // Generate a 6-digit random number
     this.randomCode = Math.floor(100000 + Math.random() * 900000).toString();
-    return this.randomCode; // Optionally return the generated code if needed
+   
+    if (this.isKiosk()) {
+      this.generateKioskUsernames(); 
+    }
+    return this.randomCode; 
   }
 
   onTypeChange() {
     if (this.isKiosk()) {
-      this.generateKioskUsernames(); // Generate new usernames for Kiosk
-      this.randomCode = this.generateRandomCode(); // Generate a new code when type changes to Kiosk
+      this.randomCode = this.generateRandomCode(); 
     } else {
-      this.randomCode = ''; // Clear the random code if not Kiosk
-      this.username = ''; // Clear username when switching from Kiosk
-      this.fullName = ''; // Clear full name when switching from Kiosk
+      this.randomCode = ''; 
+      this.username = ''; 
+      this.fullName = ''; 
     }
   }
 
   generateKioskUsernames() {
-    const departmentCount = this.existingUsers.filter(user => user.department === this.department && user.type === 'Kiosk').length;
-    const count = departmentCount + 1; // Increment counter for new username
-    this.username = `${this.department.replace(/\s+/g, '')}${count}`; // Remove spaces in department name
-    this.fullName = `${this.department} Kiosk User ${count}`; // Generate full name
-  }
-
-  isDuplicateUser() {
-    return this.existingUsers.some(user => 
-      user.username === this.username || user.fullName === this.fullName
-    );
+    this.fullName = `Kiosk User ${this.randomCode}`; 
+    this.username = `kiosk_user_${this.randomCode}`; 
   }
 }

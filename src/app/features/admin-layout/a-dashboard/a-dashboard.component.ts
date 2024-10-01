@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UserService, User } from '../../../services/user.service';
 
 interface Activity {
   action: string;
@@ -15,6 +16,10 @@ interface Activity {
   styleUrls: ['./a-dashboard.component.css']
 })
 export class ADashboardComponent implements OnInit, OnDestroy {
+
+  currentUser: User | null = null;
+  constructor(private userService: UserService) {}
+  
   overallMetrics = [
     { title: 'Total Tickets Today', value: 523, icon: 'ticket', trend: [500, 510, 495, 520, 515, 523], change: '+5%' },
     { title: 'Avg. Wait Time', value: '18 min', icon: 'clock', trend: [20, 19, 18, 19, 18, 17], change: '-2 min' },
@@ -61,11 +66,15 @@ export class ADashboardComponent implements OnInit, OnDestroy {
   private updateInterval: any;
 
   ngOnInit() {
+    this.currentUser = this.userService.getCurrentUser();
+    console.log('Current User Role:', this.currentUser?.role);
+    console.log('Current User Department:', this.currentUser?.department); 
     this.updateInterval = setInterval(() => {
-      this.updateOverallMetrics();
-      this.updateQueueAnalytics();
-    }, 5000); // Update every 5 seconds
-  }
+        this.updateOverallMetrics();
+        this.updateQueueAnalytics();
+    }, 5000); 
+}
+
 
   ngOnDestroy() {
     if (this.updateInterval) {

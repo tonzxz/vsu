@@ -1,137 +1,140 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-// Interface defining the structure of a Counter object
 interface Counter {
-  id: number;          // Unique identifier for the counter
-  name: string;        // Name of the counter
-  isActive: boolean;   // Indicates if the counter is active
+  id: number;
+  name: string;
+  isActive: boolean;
+  hoverState: boolean; // New property to manage hover state
+  assignedCode?: string; // Property to store the assigned code
 }
 
 @Component({
-  selector: 'app-a-kiosk-management',            // Component selector for Angular
-  templateUrl: './a-kiosk-management.component.html',  // HTML template for the component
-  styleUrls: ['./a-kiosk-management.component.css'],   // CSS styles for the component
-  standalone: true,                               // Allows the component to be used independently
-  imports: [CommonModule]                         // Importing CommonModule for common Angular directives
+  selector: 'app-a-kiosk-management',
+  templateUrl: './a-kiosk-management.component.html',
+  styleUrls: ['./a-kiosk-management.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class AKioskManagementComponent implements OnInit {
-  
-  // State variables
-  counters: { [key: string]: Counter[] } = {     // Object to hold counters for each tab
+  counters: { [key: string]: Counter[] } = {
     'Registrar': [],
     'Cash Division': [],
     'Accounting Office': []
   };
 
-  activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Registrar'; // Currently active tab
-  maxCounters: number = 10;                                                       // Maximum allowed counters across all tabs
-  tabs: ('Registrar' | 'Cash Division' | 'Accounting Office')[] = ['Registrar', 'Cash Division', 'Accounting Office'];  // List of available tabs
-  selectedCounter: Counter | null = null;                                         // Currently selected counter
+  activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Registrar';
+  maxCounters: number = 10;
+  tabs: ('Registrar' | 'Cash Division' | 'Accounting Office')[] = ['Registrar', 'Cash Division', 'Accounting Office'];
+  selectedCounter: Counter | null = null;
 
-  // Inject ChangeDetectorRef for manual change detection
+  // New state variable for the confirmation dialog
+  showConfirmationDialog: boolean = false;  
+  counterToDelete: Counter | null = null;  // Holds the counter to delete
+  
+  // New state variable for the code entry dialog
+  showCodeEntryDialog: boolean = false;  
+  codeInput: string = '';  // Holds the code input value
+
   constructor(private cdr: ChangeDetectorRef) {}
 
-  // Lifecycle hook: initializes counters for all tabs on component initialization
   ngOnInit(): void {
     this.tabs.forEach(tab => {
-      this.initializeCounters(tab);  // Initialize counters for each tab
+      this.initializeCounters(tab);
     });
   }
 
-  // Initialize two counters for the specified tab
   private initializeCounters(tab: string): void {
     this.counters[tab] = [
-      { id: 1, name: this.getCounterName(tab, 1), isActive: false },
-      { id: 2, name: this.getCounterName(tab, 2), isActive: false }
+      { id: 1, name: this.getCounterName(tab, 1), isActive: true, hoverState: false }, // Default isActive to true
+      { id: 2, name: this.getCounterName(tab, 2), isActive: true, hoverState: false }  // Default isActive to true
     ];
   }
 
-  // Adds a new counter to the currently active tab if the limit is not exceeded
   addCounter(): void {
-    const countersForTab = this.counters[this.activeTab];  // Get counters for the active tab
-
-    if (this.getTotalCounters() < this.maxCounters) {  // Check if total counters are below the max limit
-      const newId = countersForTab.length + 1;  // New ID for the counter
-      const newCounterName = this.getCounterName(this.activeTab, newId);  // Generate a new counter name
-
-      // Add the new counter to the active tab
+    const countersForTab = this.counters[this.activeTab];
+    if (this.getTotalCounters() < this.maxCounters) {
+      const newId = countersForTab.length + 1;
+      const newCounterName = this.getCounterName(this.activeTab, newId);
       countersForTab.push({
         id: newId,
         name: newCounterName,
-        isActive: false
+        isActive: true, // Set to true to make the counter active by default
+        hoverState: false // Initialize hover state
       });
-
-      this.cdr.detectChanges();  // Trigger change detection to update the view
-    } else {
-      console.log(`Maximum of ${this.maxCounters} counters reached across all tabs`);  // Log message if limit reached
     }
   }
+  
 
-  // Toggle the active/inactive status of a counter
-  toggleCounterStatus(counter: Counter): void {
-    counter.isActive = !counter.isActive;  // Flip the isActive status
-    this.cdr.detectChanges();  // Trigger change detection to update the view
+  getCounterName(tab: string, counterId: number): string {
+    return `${tab} Counter ${counterId}`;
   }
 
-  // Handle tab clicks to change the active tab
-  onTabClick(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
-    this.activeTab = tab;  // Set the active tab
-    this.selectedCounter = null;  // Deselect any counter when changing tabs
-    this.cdr.detectChanges();  // Trigger change detection
-  }
-
-  // Delete a counter by its ID and rename remaining counters
-  deleteCounter(counterId: number): void {
-    // Remove the counter with the specified ID from the active tab
-    this.counters[this.activeTab] = this.counters[this.activeTab].filter(counter => counter.id !== counterId);
-    
-    this.renameCounters(this.activeTab);  // Rename counters to maintain sequential IDs
-
-    // Deselect the counter if it was selected for deletion
-    if (this.selectedCounter && this.selectedCounter.id === counterId) {
-      this.selectedCounter = null;  // Reset selected counter
-    }
-
-    this.cdr.detectChanges();  // Trigger change detection
-  }
-
-  // Renames counters in a specific tab to maintain sequential order after deletion
-  private renameCounters(tab: string): void {
-    this.counters[tab] = this.counters[tab].map((counter, index) => ({
-      ...counter,
-      id: index + 1,  // Assign a new sequential ID
-      name: this.getCounterName(tab, index + 1)  // Update name based on new ID
-    }));
-  }
-
-  // Check if the "Add Counter" button should be shown based on the total counters
-  shouldShowAddButton(): boolean {
-    return this.getTotalCounters() < this.maxCounters;  // Show button if under the maximum limit
-  }
-
-  // Calculate the total number of counters across all tabs
   getTotalCounters(): number {
-    return Object.values(this.counters).reduce((total, tabCounters) => total + tabCounters.length, 0);
+    return Object.values(this.counters).flat().length;
   }
 
-  // Select or deselect a counter
+  shouldShowAddButton(): boolean {
+    return this.getTotalCounters() < this.maxCounters;
+  }
+
+  onTabClick(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
+    this.activeTab = tab;
+  }
+
   selectCounter(counter: Counter): void {
-    this.selectedCounter = this.selectedCounter === counter ? null : counter;  // Toggle selection
-    this.cdr.detectChanges();  // Trigger change detection
+    this.selectedCounter = this.selectedCounter === counter ? null : counter;
   }
 
-  // Deletes the currently selected counter if any
+  toggleCounterStatus(counter: Counter): void {
+    counter.isActive = !counter.isActive;  // Toggle active state
+    counter.hoverState = false; // Reset hover state when clicked
+  }
+
+  changeButtonText(counter: Counter, isHovered: boolean): void {
+    counter.hoverState = isHovered; // Manage hover state
+  }
+  
+
+  confirmDeleteCounter(counter: Counter, event: MouseEvent): void {
+    event.stopPropagation();  // Prevent click event on the card
+    this.showConfirmationDialog = true;
+    this.counterToDelete = counter;
+  }
+
+  cancelDelete(): void {
+    this.showConfirmationDialog = false;
+    this.counterToDelete = null;
+  }
+
   deleteSelectedCounter(): void {
-    if (this.selectedCounter) {
-      this.deleteCounter(this.selectedCounter.id);  // Call deleteCounter with the selected counter's ID
+    if (this.counterToDelete) {
+      const index = this.counters[this.activeTab].indexOf(this.counterToDelete);
+      if (index !== -1) {
+        this.counters[this.activeTab].splice(index, 1);
+      }
+      this.counterToDelete = null;
     }
+    this.showConfirmationDialog = false;
   }
 
-  // Generate a counter name based on the tab and counter ID
-  private getCounterName(tab: string, id: number): string {
-    // Return an empty prefix as there are no specific prefixes defined
-    const prefix = tab === 'Registrar' ? '' : tab === 'Cash Division' ? '' : '';
-    return `${prefix}${id}`;  // Return the formatted counter name
+  openCodeEntryPopup(counter: Counter): void {
+    this.selectedCounter = counter;  // Set the selected counter
+    this.codeInput = '';  // Reset the input
+    this.showCodeEntryDialog = true;  // Show the code entry dialog
+  }
+
+  cancelCodeEntry(): void {
+    this.showCodeEntryDialog = false;  // Close the dialog
+    this.selectedCounter = null;  // Reset selected counter
+  }
+
+  assignCode(): void {
+    if (this.selectedCounter) {
+      this.selectedCounter.assignedCode = this.codeInput;  // Assign the code to the selected counter
+    }
+    this.showCodeEntryDialog = false;  // Close the dialog
+    this.selectedCounter = null;  // Reset selected counter
   }
 }

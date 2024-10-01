@@ -160,3 +160,26 @@ body, html {
     align-items: center;
     box-sizing: border-box;
 }
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+  }
+  
+  h1 {
+    color: #283c1c;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+  }
+  
+  .grid {
+    display: grid;
+    gap: 16px;
+  }
+  

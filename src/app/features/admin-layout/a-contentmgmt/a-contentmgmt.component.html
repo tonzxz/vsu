@@ -362,13 +362,19 @@
             </div>
           </div>
 
-          <!-- Save and Cancel Buttons -->
+          <!-- Save, Reset and Cancel Buttons -->
           <div class="mt-8 flex justify-end space-x-4">
             <button
               (click)="toggleContentSettings()"
               class="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
               Cancel
+            </button>
+            <button
+              (click)="resetToDefault()"
+              class="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+            >
+              Reset to Default
             </button>
             <button
               (click)="saveChanges()"

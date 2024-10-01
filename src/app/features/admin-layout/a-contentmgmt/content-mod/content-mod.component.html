@@ -16,11 +16,14 @@
           class="flex items-center lg:w-1/2 w-full bg-white rounded-2xl p-3 shadow-lg"
           [ngStyle]="{'color': textColor}"
         >
-          <img
-            [src]="logoUrl || '/assets/placeholder-logo.png'"
-            [alt]="tabName + ' logo'"
-            class="object-contain w-[60px] h-[60px] rounded-full border-2 border-[#F2F2F2] mr-3"
-          />
+          <!-- Image Container with overflow-hidden -->
+          <div class="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-[#F2F2F2] mr-3">
+            <img
+              [src]="logoUrl || '/assets/placeholder-logo.png'"
+              [alt]="tabName + ' logo'"
+              class="object-cover w-full h-full"
+            />
+          </div>
           <h2 class="text-2xl font-bold">
             {{ tabName }}
           </h2>

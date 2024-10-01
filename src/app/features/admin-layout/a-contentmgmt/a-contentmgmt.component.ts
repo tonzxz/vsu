@@ -1,12 +1,12 @@
 // a-contentmgmt.component.ts
-import { Component, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContentModComponent } from './content-mod/content-mod.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component'; // Ensure correct path
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-a-contentmgmt',
@@ -22,7 +22,7 @@ import { Observable } from 'rxjs';
   templateUrl: './a-contentmgmt.component.html',
   styleUrls: ['./a-contentmgmt.component.css'],
 })
-export class AContentmgmtComponent implements AfterViewInit {
+export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
   // ViewChild to access ContentModComponent
   @ViewChild(ContentModComponent) contentModComponent!: ContentModComponent;
 
@@ -128,18 +128,33 @@ export class AContentmgmtComponent implements AfterViewInit {
     },
   };
 
+  // Store the default content data to enable reset functionality
+  private defaultContentData: { [key: string]: any };
+
   // Track if there are unsaved changes
   isDirty: boolean = false;
+
+  // Subscription for dialog
+  private dialogSubscription!: Subscription;
 
   constructor(
     private snackBar: MatSnackBar, 
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog
-  ) {}
+  ) {
+    // Deep clone the initial contentData to defaultContentData
+    this.defaultContentData = JSON.parse(JSON.stringify(this.contentData));
+  }
 
   ngAfterViewInit(): void {
     // Initialize the ContentModComponent with the default tab's data
     this.updateContentMod();
+  }
+
+  ngOnDestroy(): void {
+    if (this.dialogSubscription) {
+      this.dialogSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -149,7 +164,7 @@ export class AContentmgmtComponent implements AfterViewInit {
   onTabClick(tab: string): void {
     if (this.selectedTab !== tab) {
       if (this.isDirty) {
-        this.openConfirmationDialog().subscribe((result) => {
+        this.openConfirmationDialog('You have unsaved changes. Do you want to save them before switching tabs?').subscribe((result) => {
           if (result === 'save') {
             this.saveChanges();
             this.switchTab(tab);
@@ -297,18 +312,19 @@ export class AContentmgmtComponent implements AfterViewInit {
    * @param type - The type of file (Logo, Background Photo, Video)
    */
   private generatePreviewUrl(file: File, type: string): void {
+    if (type === 'Video') {
+      // For videos, use the object URL
+      this.previewUrls[type] = URL.createObjectURL(file);
+      this.updateContentMod();
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       this.previewUrls[type] = reader.result as string;
       this.updateContentMod();
     };
-    if (type === 'Video') {
-      // For videos, use the object URL
-      this.previewUrls[type] = URL.createObjectURL(file);
-      this.updateContentMod();
-    } else {
-      reader.readAsDataURL(file);
-    }
+    reader.readAsDataURL(file);
   }
 
   /**
@@ -474,7 +490,7 @@ export class AContentmgmtComponent implements AfterViewInit {
   toggleContentSettings(): void {
     if (this.isContentSettingsOpen && this.isDirty) {
       // User is trying to close while there are unsaved changes
-      this.openConfirmationDialog().subscribe((result) => {
+      this.openConfirmationDialog('You have unsaved changes. Do you want to save them before closing?').subscribe((result) => {
         if (result === 'save') {
           this.saveChanges();
         } else if (result === 'discard') {
@@ -678,16 +694,95 @@ export class AContentmgmtComponent implements AfterViewInit {
 
   /**
    * Open the confirmation dialog and return the user's choice
+   * @param message - The confirmation message to display
    */
-  private openConfirmationDialog(): Observable<'save' | 'discard' | 'cancel'> {
+  private openConfirmationDialog(message: string): Observable<'save' | 'discard' > {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
       data: {
-        title: 'Unsaved Changes',
-        message: 'You have unsaved changes. Do you want to save them before proceeding?',
+        title: 'Changes',
+        message: message,
       },
     });
 
     return dialogRef.afterClosed();
+  }
+
+  /**
+   * Reset the current tab's content to its default layout
+   */
+  resetToDefault(): void {
+    this.openConfirmationDialog('Are you sure you want to reset the layout to its default settings? This action cannot be undone.').subscribe((result) => {
+      if (result === 'save') {
+        this.saveChanges();
+        this.performReset();
+      } else if (result === 'discard') {
+        this.performReset();
+      }
+      // If 'cancel', do nothing
+    });
+  }
+
+  /**
+   * Perform the actual reset to default
+   */
+  private performReset(): void {
+    const defaultData = this.defaultContentData[this.selectedTab];
+    this.contentData[this.selectedTab] = JSON.parse(JSON.stringify(defaultData));
+
+    // Update all form fields based on the default data
+    this.logoUrl = defaultData.logoUrl;
+    this.backgroundType = defaultData.backgroundType;
+    this.backgroundColor = defaultData.backgroundColor;
+    this.youtubeUrl = defaultData.videoUrl || '';
+    this.videoOption = defaultData.videoUrl ? 'url' : 'upload';
+    this.announcementText = defaultData.announcementText;
+    this.notesText = defaultData.notesText;
+    this.widgets = { ...defaultData.widgets };
+
+    // Update new color settings
+    this.textColor = defaultData.textColor;
+    this.widgetsBackgroundColor = defaultData.widgetsBackgroundColor;
+    this.processingContainerColor = defaultData.processingContainerColor;
+    this.processingTextColor = defaultData.processingTextColor;
+
+    // Load existing preview URLs from contentData
+    this.previewUrls['Logo'] = defaultData.logoUrl;
+    this.previewUrls['Background Photo'] = defaultData.backgroundPhotoUrl;
+    this.previewUrls['Video'] = defaultData.videoUrl;
+
+    // Reset file inputs
+    this.selectedFiles['Video'] = null;
+    this.selectedFiles['Logo'] = null;
+    this.selectedFiles['Background Photo'] = null;
+
+    // Update content on ContentModComponent
+    this.updateContentMod();
+
+    // Reset isDirty
+    this.isDirty = false;
+
+    // Notify user
+    this.showSuccessMessage('Layout has been reset to default settings.');
+  }
+
+  /**
+   * Handle the Reset to Default Layout button click
+   */
+  onResetToDefaultClick(): void {
+    if (this.isDirty) {
+      this.openConfirmationDialog('Resetting to default settings will discard all unsaved changes. Do you want to save your changes before proceeding?').subscribe((result) => {
+        if (result === 'save') {
+          this.saveChanges();
+          this.resetToDefault();
+        } else if (result === 'discard') {
+
+          this.resetToDefault();
+        }
+        // If 'cancel', do nothing
+      });
+    } else {
+      this.resetToDefault();
+    }
   }
 }

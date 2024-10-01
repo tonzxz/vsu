@@ -93,22 +93,59 @@
     </div>
   </section>
 
-  <!-- Code Entry Modal -->
-  <div *ngIf="showCodeEntryDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-      <h3 class="text-lg font-semibold mb-4">Enter Code for {{ selectedCounter?.name }}</h3>
-      <input 
-        type="text" 
-        [(ngModel)]="codeInput" 
-        placeholder="Enter code" 
-        class="border border-gray-300 p-2 rounded-lg w-full mb-4"
-      />
-      <div class="mt-4 flex justify-end">
-        <button (click)="cancelCodeEntry()" class="bg-gray-300 px-4 py-2 rounded-lg mr-2">Cancel</button>
-        <button (click)="assignCode()" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Assign Code</button>
-      </div>
+<!-- Code Entry Modal -->
+<div *ngIf="showCodeEntryDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+    <h3 class="text-lg font-semibold mb-4">Enter Code for {{ selectedCounter?.name }}</h3>
+    
+    <!-- Code input field -->
+    <input 
+      type="text" 
+      [(ngModel)]="codeInput" 
+      placeholder="Enter code" 
+      class="border border-gray-300 p-2 rounded-lg w-full mb-4"
+    />
+    
+    <!-- Button container with improved layout -->
+    <div class="mt-4 flex justify-end space-x-2">
+      <button 
+        (click)="cancelCodeEntry()" 
+        class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-300"
+      >
+        Cancel
+      </button>
+      
+      <!-- Unassign Code Button (Visible only if a code is assigned) -->
+      <button 
+        *ngIf="selectedCounter?.assignedCode" 
+        (click)="confirmUnassignCode()" 
+        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300"
+      >
+        Unassign Code
+      </button>
+
+      <button 
+        (click)="assignCode()" 
+        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+      >
+        Assign Code
+      </button>
     </div>
   </div>
+</div>
+
+<!-- Confirmation Modal for Unassigning Code -->
+<div *ngIf="showUnassignCodeDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+    <h3 class="text-lg font-semibold mb-4">Confirm Unassign Code</h3>
+    <p>Are you sure you want to unassign the code for {{ selectedCounter?.name }}?</p>
+    <div class="mt-4 flex justify-end space-x-2">
+      <button (click)="cancelUnassignCode()" class="bg-gray-300 px-4 py-2 rounded-lg">Cancel</button>
+      <button (click)="unassignCodeConfirmed()" class="bg-red-500 text-white px-4 py-2 rounded-lg">Unassign</button>
+    </div>
+  </div>
+</div>
+
 
   <!-- Confirmation Modal -->
   <div *ngIf="showConfirmationDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

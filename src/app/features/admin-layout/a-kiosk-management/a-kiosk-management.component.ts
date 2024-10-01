@@ -6,7 +6,7 @@ interface Counter {
   id: number;
   name: string;
   isActive: boolean;
-  hoverState: boolean; // New property to manage hover state
+  hoverState: boolean; // Property to manage hover state
   assignedCode?: string; // Property to store the assigned code
 }
 
@@ -29,13 +29,14 @@ export class AKioskManagementComponent implements OnInit {
   tabs: ('Registrar' | 'Cash Division' | 'Accounting Office')[] = ['Registrar', 'Cash Division', 'Accounting Office'];
   selectedCounter: Counter | null = null;
 
-  // New state variable for the confirmation dialog
-  showConfirmationDialog: boolean = false;  
-  counterToDelete: Counter | null = null;  // Holds the counter to delete
+  // State variables for dialogs
+  showConfirmationDialog: boolean = false;
+  counterToDelete: Counter | null = null;
+  showCodeEntryDialog: boolean = false;
+  codeInput: string = '';
   
-  // New state variable for the code entry dialog
-  showCodeEntryDialog: boolean = false;  
-  codeInput: string = '';  // Holds the code input value
+  // State for unassign confirmation
+  showUnassignCodeDialog: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -47,8 +48,8 @@ export class AKioskManagementComponent implements OnInit {
 
   private initializeCounters(tab: string): void {
     this.counters[tab] = [
-      { id: 1, name: this.getCounterName(tab, 1), isActive: true, hoverState: false }, // Default isActive to true
-      { id: 2, name: this.getCounterName(tab, 2), isActive: true, hoverState: false }  // Default isActive to true
+      { id: 1, name: this.getCounterName(tab, 1), isActive: true, hoverState: false },
+      { id: 2, name: this.getCounterName(tab, 2), isActive: true, hoverState: false }
     ];
   }
 
@@ -60,12 +61,11 @@ export class AKioskManagementComponent implements OnInit {
       countersForTab.push({
         id: newId,
         name: newCounterName,
-        isActive: true, // Set to true to make the counter active by default
-        hoverState: false // Initialize hover state
+        isActive: true,
+        hoverState: false
       });
     }
   }
-  
 
   getCounterName(tab: string, counterId: number): string {
     return `${tab} Counter ${counterId}`;
@@ -88,17 +88,16 @@ export class AKioskManagementComponent implements OnInit {
   }
 
   toggleCounterStatus(counter: Counter): void {
-    counter.isActive = !counter.isActive;  // Toggle active state
-    counter.hoverState = false; // Reset hover state when clicked
+    counter.isActive = !counter.isActive;
+    counter.hoverState = false;
   }
 
   changeButtonText(counter: Counter, isHovered: boolean): void {
-    counter.hoverState = isHovered; // Manage hover state
+    counter.hoverState = isHovered;
   }
-  
 
   confirmDeleteCounter(counter: Counter, event: MouseEvent): void {
-    event.stopPropagation();  // Prevent click event on the card
+    event.stopPropagation();
     this.showConfirmationDialog = true;
     this.counterToDelete = counter;
   }
@@ -120,21 +119,41 @@ export class AKioskManagementComponent implements OnInit {
   }
 
   openCodeEntryPopup(counter: Counter): void {
-    this.selectedCounter = counter;  // Set the selected counter
-    this.codeInput = '';  // Reset the input
-    this.showCodeEntryDialog = true;  // Show the code entry dialog
+    this.selectedCounter = counter;
+    this.codeInput = '';
+    this.showCodeEntryDialog = true;
   }
 
   cancelCodeEntry(): void {
-    this.showCodeEntryDialog = false;  // Close the dialog
-    this.selectedCounter = null;  // Reset selected counter
+    this.showCodeEntryDialog = false;
+    this.selectedCounter = null;
   }
 
   assignCode(): void {
     if (this.selectedCounter) {
-      this.selectedCounter.assignedCode = this.codeInput;  // Assign the code to the selected counter
+      this.selectedCounter.assignedCode = this.codeInput;
     }
-    this.showCodeEntryDialog = false;  // Close the dialog
-    this.selectedCounter = null;  // Reset selected counter
+    this.showCodeEntryDialog = false;
+    this.selectedCounter = null;
+  }
+
+  // New method to confirm unassigning the code
+  confirmUnassignCode(): void {
+    this.showUnassignCodeDialog = true;
+    this.showCodeEntryDialog = false; // Hide the code entry dialog while confirming
+  }
+
+  cancelUnassignCode(): void {
+    this.showUnassignCodeDialog = false;
+    this.selectedCounter = null;
+  }
+
+  // Method to unassign the code after confirmation
+  unassignCodeConfirmed(): void {
+    if (this.selectedCounter) {
+      this.selectedCounter.assignedCode = undefined; // Clear the assigned code
+    }
+    this.showUnassignCodeDialog = false;
+    this.selectedCounter = null;
   }
 }

@@ -10,3 +10,5 @@ Types:
 - Desk Attendant
 - Kiosk
 - Queue Display (randomly generated or manual input) pin
+
+To do:

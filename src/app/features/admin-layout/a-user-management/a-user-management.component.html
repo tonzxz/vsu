@@ -218,94 +218,10 @@
   </section>
 
   <!-- Create/Edit Account Modal -->
-  <app-create-account-modal
-    *ngIf="showModal"
-    [editingUser]="selectedUser"
-    (close)="closeModal()"
-    (accountCreated)="onAccountCreated($event)"
-  >
+<app-create-account-modal
+  *ngIf="showModal"
+  [editingUser]="selectedUser"
+  [existingUsers]="users"
+  (close)="closeModal()"
+  (accountCreated)="onAccountCreated($event)">
 </app-create-account-modal>
-
-  <!-- User Performance Metrics Section -->
-  <section class="w-full mt-12">
-    <div class="bg-white rounded-2xl shadow-lg p-8">
-      <h2 class="text-3xl font-bold text-[#283c1c] mb-6">User Performance Metrics</h2>
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Daily Customers Served Chart -->
-        <div class="bg-gray-100 p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold mb-4">Daily Customers Served</h3>
-          <div class="bg-gray-200 h-64 rounded flex items-center justify-center">
-           //have the chart on the component
-            <span class="text-gray-500">Chart Placeholder</span>
-          </div>
-        </div>
-
-        <!-- Performance Metrics Stats -->
-        <div class="grid grid-cols-1 gap-6 lg:col-span-2">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow-md text-center">
-              <h3 class="text-3xl font-bold text-[#283c1c]">{{ performanceMetrics.totalCheckIns }}</h3>
-              <p class="mt-2 text-gray-600">Total Clients Served</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center">
-              <h3 class="text-3xl font-bold text-[#283c1c]">{{ performanceMetrics.totalCheckInsToday }}</h3>
-              <p class="mt-2 text-gray-600">Total No-Show Clients</p>
-            </div>
-          </div>
-          <div class="bg-white p-6 rounded-lg shadow-md text-center">
-            <h3 class="text-3xl font-bold text-[#283c1c]">{{ performanceMetrics.averageTimeService }}</h3>
-            <p class="mt-2 text-gray-600">Average Service Time</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Service Time Distribution -->
-      <div class="mt-12">
-        <h3 class="text-2xl font-semibold text-[#283c1c] mb-4">Service Time Distribution</h3>
-        <div class="space-y-4">
-          <!-- Distribution Bars -->
-          <div class="flex items-center">
-            <span class="w-32 text-sm text-gray-600">5-10 mins</span>
-            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
-              <div
-                class="h-4 bg-[#283c1c] rounded-full"
-                style="width: 75%"
-              ></div>
-            </div>
-            <span class="text-sm text-gray-600">75%</span>
-          </div>
-          <div class="flex items-center">
-            <span class="w-32 text-sm text-gray-600">10-15 mins</span>
-            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
-              <div
-                class="h-4 bg-[#283c1c] rounded-full"
-                style="width: 60%"
-              ></div>
-            </div>
-            <span class="text-sm text-gray-600">60%</span>
-          </div>
-          <div class="flex items-center">
-            <span class="w-32 text-sm text-gray-600">15-20 mins</span>
-            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
-              <div
-                class="h-4 bg-[#283c1c] rounded-full"
-                style="width: 45%"
-              ></div>
-            </div>
-            <span class="text-sm text-gray-600">45%</span>
-          </div>
-          <div class="flex items-center">
-            <span class="w-32 text-sm text-gray-600">20+ mins</span>
-            <div class="flex-1 h-4 bg-[#d1d5db] rounded-full mr-4">
-              <div
-                class="h-4 bg-[#283c1c] rounded-full"
-                style="width: 30%"
-              ></div>
-            </div>
-            <span class="text-sm text-gray-600">30%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>

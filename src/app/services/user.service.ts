@@ -12,6 +12,8 @@ export interface User {
 @Injectable({
   providedIn: 'root'
 })
+
+// for Kiosk
 export class UserService {
   private users: User[] = [
     {

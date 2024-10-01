@@ -148,7 +148,8 @@ export class AUserManagementComponent implements OnInit {
         (u) => u.username === this.selectedUser!.username
       );
       if (index !== -1) {
-        // Preserve password if not updated
+        // Preserve status and password if not updated
+        newAccount.status = this.users[index].status;
         if (!newAccount.password) {
           newAccount.password = this.users[index].password;
         }
@@ -159,7 +160,7 @@ export class AUserManagementComponent implements OnInit {
     } else {
       this.users.push({ ...newAccount, selected: false });
     }
-
+  
     this.filteredUsers = [...this.users];
     this.updatePagination();
     this.closeModal();

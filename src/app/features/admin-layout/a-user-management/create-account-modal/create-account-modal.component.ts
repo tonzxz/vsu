@@ -31,6 +31,7 @@ export class CreateAccountModalComponent {
   status: 'Online' | 'Offline' = 'Online';
   password = '';
   passwordVisible = false;
+  randomCode = ''; // Initialize randomCode
 
   types = ['Desk attendant', 'Kiosk', 'Queue Display'];
   departments = ['Accounting Office', 'Registrar', 'Cash Division'];
@@ -47,6 +48,13 @@ export class CreateAccountModalComponent {
       this.department = this.editingUser.department;
       this.status = this.editingUser.status;
       this.password = this.editingUser.password || '';
+
+      // Generate the random code if the editing user is a Kiosk
+      if (this.isKiosk()) {
+        this.randomCode = this.editingUser.password || this.generateRandomCode();
+      }
+    } else {
+      this.generateRandomCode(); // Generate code for new user
     }
   }
 
@@ -87,54 +95,55 @@ export class CreateAccountModalComponent {
     const newUser: User = {
       username: this.username,
       fullName: this.fullName,
-      type: this.type,
       department: this.department,
-      status: this.editingUser ? this.editingUser.status : 'Online',
+      type: this.type,
+      status: this.status,
+      password: this.isKiosk() ? this.randomCode : this.password, // Use randomCode for Kiosk
     };
 
-    if (this.type === 'Kiosk') {
-      newUser.password = this.password || this.generateDepartmentPassword(this.department);
-    }
-
     this.accountCreated.emit(newUser);
-    this.closeModal();
+    this.close.emit();
   }
 
-  isFormValid(): boolean {
-    return this.username.trim() !== '' && 
-           this.fullName.trim() !== '' && 
-           this.type !== '' && 
-           this.department !== '' &&
-           (this.type !== 'Kiosk' || this.password.trim() !== '');
+  isFormValid() {
+    return (this.isKiosk() && this.randomCode) || (this.username && this.fullName && this.password);
   }
 
-  isDuplicateUser(): boolean {
-    return this.existingUsers.some(user => 
-      (user.username.toLowerCase() === this.username.toLowerCase() ||
-       user.fullName.toLowerCase() === this.fullName.toLowerCase()) &&
-      (!this.editingUser || user.username !== this.editingUser.username)
-    );
-  }
-
-  isKiosk(): boolean {
+  isKiosk() {
     return this.type === 'Kiosk';
-  }
-
-  generateRandomPassword() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-    let result = '';
-    for (let i = 0; i < 6; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    this.password = result;
   }
 
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  generateDepartmentPassword(department: string): string {
-    const base = department.toLowerCase().replace(/\s+/g, '-');
-    return `${base}-${Math.random().toString(36).substring(2, 8)}`;
+  generateRandomCode() {
+    // Generate a 6-digit random number
+    this.randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+    return this.randomCode; // Optionally return the generated code if needed
+  }
+
+  onTypeChange() {
+    if (this.isKiosk()) {
+      this.generateKioskUsernames(); // Generate new usernames for Kiosk
+      this.randomCode = this.generateRandomCode(); // Generate a new code when type changes to Kiosk
+    } else {
+      this.randomCode = ''; // Clear the random code if not Kiosk
+      this.username = ''; // Clear username when switching from Kiosk
+      this.fullName = ''; // Clear full name when switching from Kiosk
+    }
+  }
+
+  generateKioskUsernames() {
+    const departmentCount = this.existingUsers.filter(user => user.department === this.department && user.type === 'Kiosk').length;
+    const count = departmentCount + 1; // Increment counter for new username
+    this.username = `${this.department.replace(/\s+/g, '')}${count}`; // Remove spaces in department name
+    this.fullName = `${this.department} Kiosk User ${count}`; // Generate full name
+  }
+
+  isDuplicateUser() {
+    return this.existingUsers.some(user => 
+      user.username === this.username || user.fullName === this.fullName
+    );
   }
 }

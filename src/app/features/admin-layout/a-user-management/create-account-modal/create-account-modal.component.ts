@@ -26,21 +26,25 @@ export class CreateAccountModalComponent {
 
   username = '';
   fullName = '';
-  department = 'Accounting Office';
   type = 'Desk attendant';
+  department = 'Accounting Office';
   status: 'Online' | 'Offline' = 'Online';
   password = '';
-  passwordVisible = false; // Retain the password visibility toggle feature
+  passwordVisible = false;
 
+  types = ['Desk attendant', 'Kiosk', 'Queue Display'];
   departments = ['Accounting Office', 'Registrar', 'Cash Division'];
-  accountTypes = ['Desk attendant', 'Kiosk', 'Queue Display'];
+
+  showError = false;
+  errorMessage = '';
+  showConfirmation = false;
 
   ngOnInit() {
     if (this.editingUser) {
       this.username = this.editingUser.username;
       this.fullName = this.editingUser.fullName;
-      this.department = this.editingUser.department;
       this.type = this.editingUser.type;
+      this.department = this.editingUser.department;
       this.status = this.editingUser.status;
       this.password = this.editingUser.password || '';
     }
@@ -51,12 +55,35 @@ export class CreateAccountModalComponent {
   }
 
   submitForm() {
+    if (!this.isFormValid()) {
+      this.showError = true;
+      this.errorMessage = 'Please fill in both the username and full name.';
+      return;
+    }
+
+    if (this.editingUser) {
+      this.showConfirmation = true;
+    } else {
+      this.createOrUpdateAccount();
+    }
+  }
+
+  confirmEdit() {
+    this.createOrUpdateAccount();
+    this.showConfirmation = false;
+  }
+
+  cancelEdit() {
+    this.showConfirmation = false;
+  }
+
+  createOrUpdateAccount() {
     const newUser: User = {
       username: this.username,
       fullName: this.fullName,
-      department: this.department,
       type: this.type,
-      status: this.status,
+      department: this.department,
+      status: this.editingUser ? this.editingUser.status : 'Online',
     };
 
     if (this.type === 'Kiosk') {
@@ -65,6 +92,14 @@ export class CreateAccountModalComponent {
 
     this.accountCreated.emit(newUser);
     this.closeModal();
+  }
+
+  isFormValid(): boolean {
+    return this.username.trim() !== '' && 
+           this.fullName.trim() !== '' && 
+           this.type !== '' && 
+           this.department !== '' &&
+           (this.type !== 'Kiosk' || this.password.trim() !== '');
   }
 
   isKiosk(): boolean {

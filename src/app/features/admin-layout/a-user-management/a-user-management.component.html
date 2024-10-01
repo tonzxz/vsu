@@ -218,10 +218,10 @@
   </section>
 
   <!-- Create/Edit Account Modal -->
-  <app-create-account-modal
-    *ngIf="showModal"
-    [editingUser]="selectedUser"
-    (close)="closeModal()"
-    (accountCreated)="onAccountCreated($event)"
-  >
+<app-create-account-modal
+  *ngIf="showModal"
+  [editingUser]="selectedUser"
+  [existingUsers]="users"
+  (close)="closeModal()"
+  (accountCreated)="onAccountCreated($event)">
 </app-create-account-modal>

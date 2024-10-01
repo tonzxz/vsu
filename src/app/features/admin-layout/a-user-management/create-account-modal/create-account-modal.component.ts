@@ -100,6 +100,10 @@ export class CreateAccountModalComponent {
   }
 
   isFormValid() {
+    if (this.type.trim() === '') {
+      return false; 
+    }
+  
     if (this.isKiosk()) {
       return this.randomCode !== '' && this.department.trim() !== '';
     } else {
@@ -109,7 +113,7 @@ export class CreateAccountModalComponent {
              this.department.trim() !== ''; 
     }
   }
-
+  
   isKiosk() {
     return this.type === 'Kiosk';
   }

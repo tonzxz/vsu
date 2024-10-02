@@ -8,6 +8,20 @@ interface Activity {
   timestamp: string;
 }
 
+interface StaffMember {
+  name: string;
+  office: string;
+  ticketsServed: number;
+  avgServiceTime: string;
+  customerRating: number;
+  status: string;
+  isExpanded: boolean;
+  dailyPerformance: {
+    date: string;
+    clientsServed: number;
+  }[];
+}
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -16,7 +30,6 @@ interface Activity {
   styleUrls: ['./a-dashboard.component.css']
 })
 export class ADashboardComponent implements OnInit, OnDestroy {
-
   currentUser: User | null = null;
   constructor(private userService: UserService) {}
   
@@ -39,19 +52,19 @@ export class ADashboardComponent implements OnInit, OnDestroy {
     { office: "Accounting Office", currentTicket: 'C028', waitingCount: 18, avgWaitTime: '20 min', status: 'Busy' }
   ];
 
-  staffPerformance = [
-    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active' },
-    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active' },
-    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break' },
-    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active' },
-    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active' },
-    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active' },
-    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break' },
-    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active' },
-    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active' },
-    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active' },
-    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break' },
-    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active' }
+  staffPerformance: StaffMember[] = [
+    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break', isExpanded: false, dailyPerformance: [] },
+    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break', isExpanded: false, dailyPerformance: [] },
+    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active', isExpanded: false, dailyPerformance: [] },
+    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break', isExpanded: false, dailyPerformance: [] },
+    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active', isExpanded: false, dailyPerformance: [] }
   ];
 
   kioskStatus = [
@@ -65,16 +78,33 @@ export class ADashboardComponent implements OnInit, OnDestroy {
 
   private updateInterval: any;
 
+  toggleStaffDetails(staff: StaffMember) {
+    staff.isExpanded = !staff.isExpanded;
+    if (staff.isExpanded && staff.dailyPerformance.length === 0) {
+      staff.dailyPerformance = this.generateDailyPerformance();
+    }
+  }
+
+  private generateDailyPerformance() {
+    const performance = [];
+    for (let i = 1; i <= 7; i++) {
+      performance.push({
+        date: `Jul ${i}`,
+        clientsServed: this.getRandomInt(20, 60)
+      });
+    }
+    return performance;
+  }
+  
   ngOnInit() {
     this.currentUser = this.userService.getCurrentUser();
     console.log('Current User Role:', this.currentUser?.role);
     console.log('Current User Department:', this.currentUser?.department); 
     this.updateInterval = setInterval(() => {
-        this.updateOverallMetrics();
-        this.updateQueueAnalytics();
+      this.updateOverallMetrics();
+      this.updateQueueAnalytics();
     }, 5000); 
-}
-
+  }
 
   ngOnDestroy() {
     if (this.updateInterval) {

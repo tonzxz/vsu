@@ -60,40 +60,75 @@
   
 <!-- Staff Performance -->
 <section class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Staff Performance</h2>
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-gray-700">
-          <thead>
-            <tr class="bg-gray-50 border-b border-gray-200">
-              <th class="px-6 py-3 text-left font-semibold text-gray-600">Name</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600">Office</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600">Tickets Served</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600">Avg. Service Time</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600">Status</th>
+  <h2 class="text-2xl font-semibold text-gray-800 mb-4">Staff Performance</h2>
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Office</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tickets Served</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Service Time</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @for (staff of paginatedStaffPerformance; track staff.name) {
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <button (click)="toggleStaffDetails(staff)" class="text-blue-600 hover:text-blue-800">
+                  {{ staff.name }}
+                </button>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ staff.office }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ staff.ticketsServed }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ staff.avgServiceTime }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 rounded-full text-xs font-medium"
+                      [ngClass]="{
+                        'bg-green-100 text-green-800': staff.status === 'Active',
+                        'bg-yellow-100 text-yellow-800': staff.status === 'On Break',
+                        'bg-red-100 text-red-800': staff.status === 'Offline'
+                      }">
+                  {{ staff.status }}
+                </span>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @for (staff of paginatedStaffPerformance; track staff.name) {
-              <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-150 ease-in-out">
-                <td class="px-6 py-4 whitespace-nowrap">{{ staff.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ staff.office }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ staff.ticketsServed }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ staff.avgServiceTime }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span [ngClass]="{
-                    'bg-green-100 text-green-800': staff.status === 'Active',
-                    'bg-yellow-100 text-yellow-800': staff.status === 'On Break',
-                    'bg-red-100 text-red-800': staff.status === 'Offline'
-                  }" class="px-2 py-1 rounded-full text-xs font-medium">
-                    {{ staff.status }}
-                  </span>
+            @if (staff.isExpanded) {
+              <tr>
+                <td colspan="5" class="px-6 py-4">
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-2">{{ staff.name }}'s Performance Metrics</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <p class="text-sm text-gray-600">Total Clients Served</p>
+                        <p class="text-2xl font-bold">{{ staff.ticketsServed }}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-600">Average Service Time</p>
+                        <p class="text-2xl font-bold">{{ staff.avgServiceTime }}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-600">Customer Rating</p>
+                        <p class="text-2xl font-bold">{{ staff.customerRating.toFixed(1) }}</p>
+                      </div>
+                    </div>
+                    <div class="mt-4">
+                      <h4 class="text-md font-semibold mb-2">Daily Clients Served</h4>
+                      <div class="h-48">
+                        <!-- Placeholder for chart -->
+                        <p class="text-sm text-gray-600">Chart showing daily performance would go here</p>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             }
-          </tbody>
-        </table>
-      </div>
+          }
+        </tbody>
+      </table>
+    </div>
   
       <!-- Pagination Controls -->
       <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">

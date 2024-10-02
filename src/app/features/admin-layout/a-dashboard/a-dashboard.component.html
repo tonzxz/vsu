@@ -65,7 +65,7 @@
     <!-- Staff Performance -->
     <section class="mb-10">
       <h2 class="mb-4 text-2xl font-semibold text-gray-800">Staff Performance</h2>
-      <div class="overflow-hidden bg-white rounded-lg shadow-sm">
+      <div class="w-full overflow-hidden bg-white rounded-lg shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -78,13 +78,9 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              @for (staff of paginatedStaffPerformance; track staff.name) {
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <button (click)="toggleStaffDetails(staff)" class="text-blue-600 hover:text-blue-800">
-                      {{ staff.name }}
-                    </button>
-                  </td>
+              @for (staff of paginatedStaffPerformance; track staff.name; let idx = $index) {
+                <tr (click)="toggleStaffDetails(staff)" class="transition duration-150 ease-in-out cursor-pointer hover:bg-gray-100">
+                  <td class="px-6 py-4 whitespace-nowrap">{{ staff.name }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ staff.office }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ staff.ticketsServed }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ staff.avgServiceTime }}</td>
@@ -102,8 +98,8 @@
                 @if (staff.isExpanded) {
                   <tr>
                     <td colspan="5" class="px-6 py-4">
-                      <div class="p-4 rounded-lg bg-gray-50">
-                        <h3 class="mb-2 text-lg font-semibold">{{ staff.name }}'s Performance Metrics</h3>
+                      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <h3 class="mb-2 text-lg font-semibold text-gray-700">{{ staff.name }}'s Performance Metrics</h3>
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                           <div>
                             <p class="text-sm text-gray-600">Total Clients Served</p>
@@ -118,11 +114,10 @@
                             <p class="text-2xl font-bold">{{ staff.customerRating.toFixed(1) }}</p>
                           </div>
                         </div>
-                        <div class="mt-4">
-                          <h4 class="mb-2 font-semibold text-md">Daily Clients Served</h4>
-                          <div class="h-48">
-                            <!-- Placeholder for chart -->
-                            <p class="text-sm text-gray-600">Chart showing daily performance would go here</p>
+                        <div class="mt-6">
+                          <h4 class="mb-3 font-semibold text-gray-700 text-md">Daily Clients Served</h4>
+                          <div class="relative w-full p-4 bg-gray-100 rounded-lg shadow-md h-60">
+                            <canvas #dailyPerformanceCanvas></canvas>
                           </div>
                         </div>
                       </div>
@@ -133,29 +128,9 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </section>
 
-          <!-- Pagination Controls -->
-          <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <button (click)="goToPreviousPage()" [disabled]="currentPage === 1"
-              class="flex items-center text-[#22381F] disabled:text-gray-300 hover:text-opacity-90 transition duration-150 ease-in-out">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-              Previous
-            </button>
-            <div class="text-sm text-gray-700">
-              Page {{ currentPage }} of {{ totalPages }}
-            </div>
-            <button (click)="goToNextPage()" [disabled]="currentPage === totalPages"
-              class="flex items-center text-[#22381F] disabled:text-gray-300 hover:text-opacity-90 transition duration-150 ease-in-out">
-              Next
-              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </section>
 
 
     <!-- Kiosk Status -->

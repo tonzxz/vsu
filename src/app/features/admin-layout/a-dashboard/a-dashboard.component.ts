@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, QueryList, ViewChildren, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService, User } from '../../../services/user.service';
 import Chart from 'chart.js/auto';
@@ -44,6 +44,9 @@ interface KioskStatus {
 export class ADashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currentUser: User | null = null;
 
+  @ViewChildren('dailyPerformanceCanvas') dailyPerformanceCanvases!: QueryList<ElementRef>;
+
+
   // Mock data for Queue Analytics, Staff Performance, and Kiosk Status
   queueAnalytics: QueueAnalytics[] = [
     { office: 'Main Office', currentTicket: 123, waitingCount: 20, avgWaitTime: '15 min', status: 'Busy' },
@@ -56,15 +59,6 @@ export class ADashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active', isExpanded: false, dailyPerformance: [] },
     { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break', isExpanded: false, dailyPerformance: [] },
     { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active', isExpanded: false, dailyPerformance: [] },
-    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active', isExpanded: false, dailyPerformance: [] },
-    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active', isExpanded: false, dailyPerformance: [] },
-    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break', isExpanded: false, dailyPerformance: [] },
-    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active', isExpanded: false, dailyPerformance: [] },
-    { name: "John Doe", office: "Registrar", ticketsServed: 45, avgServiceTime: "10 min", customerRating: 4.8, status: 'Active', isExpanded: false, dailyPerformance: [] },
-    { name: "Jane Smith", office: "Cash Division", ticketsServed: 52, avgServiceTime: "8 min", customerRating: 4.9, status: 'Active', isExpanded: false, dailyPerformance: [] },
-    { name: "Bob Johnson", office: "Accounting", ticketsServed: 38, avgServiceTime: "12 min", customerRating: 4.7, status: 'On Break', isExpanded: false, dailyPerformance: [] },
-    { name: "Alice Brown", office: "Registrar", ticketsServed: 41, avgServiceTime: "11 min", customerRating: 4.6, status: 'Active', isExpanded: false, dailyPerformance: [] }
-
   ];
 
   kioskStatus: KioskStatus[] = [
@@ -181,10 +175,69 @@ export class ADashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-toggleStaffDetails(staff: StaffPerformance) {
+  toggleStaffDetails(staff: StaffPerformance) {
     staff.isExpanded = !staff.isExpanded;
-    if (staff.isExpanded && staff.dailyPerformance.length === 0) {
-      staff.dailyPerformance = this.generateDailyPerformance();
+    if (staff.isExpanded) {
+      setTimeout(() => {
+        this.initializeDailyPerformanceChart(staff);
+      }, 0); // Wait for the expanded content to render before initializing the chart
+    }
+  }
+
+  initializeDailyPerformanceChart(staff: StaffPerformance) {
+    const canvasRef = this.dailyPerformanceCanvases.find((_, index) => this.paginatedStaffPerformance[index].name === staff.name);
+    if (canvasRef) {
+      const ctx = canvasRef.nativeElement.getContext('2d');
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, 'rgba(34, 193, 195, 1)');
+      gradient.addColorStop(1, 'rgba(253, 187, 45, 0.1)');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          datasets: [{
+            label: 'Daily Clients Served',
+            data: [20, 30, 25, 40, 50, 30, 35], // Replace with relevant data
+            backgroundColor: gradient,
+            borderColor: '#22C1C3',
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#22381F'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(200, 200, 200, 0.2)'
+              },
+              ticks: {
+                color: '#22381F'
+              }
+            }
+          }
+        }
+      });
     }
   }
 

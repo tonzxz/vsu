@@ -24,8 +24,13 @@ export class AKioskManagementComponent implements OnInit {
     'Accounting Office': []
   };
 
+  maxCountersPerTab: { [key: string]: number } = {
+    'Registrar': 10,
+    'Cash Division': 10,
+    'Accounting Office': 10
+  };
+
   activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Registrar';
-  maxCounters: number = 10;
   tabs: ('Registrar' | 'Cash Division' | 'Accounting Office')[] = ['Registrar', 'Cash Division', 'Accounting Office'];
   selectedCounter: Counter | null = null;
 
@@ -34,7 +39,8 @@ export class AKioskManagementComponent implements OnInit {
   counterToDelete: Counter | null = null;
   showCodeEntryDialog: boolean = false;
   codeInput: string = '';
-  
+  codeInputError: string = ''; // Error message for invalid code
+
   // State for unassign confirmation
   showUnassignCodeDialog: boolean = false;
 
@@ -55,7 +61,7 @@ export class AKioskManagementComponent implements OnInit {
 
   addCounter(): void {
     const countersForTab = this.counters[this.activeTab];
-    if (this.getTotalCounters() < this.maxCounters) {
+    if (countersForTab.length < this.maxCountersPerTab[this.activeTab]) {
       const newId = countersForTab.length + 1;
       const newCounterName = this.getCounterName(this.activeTab, newId);
       countersForTab.push({
@@ -71,12 +77,8 @@ export class AKioskManagementComponent implements OnInit {
     return `${tab} Counter ${counterId}`;
   }
 
-  getTotalCounters(): number {
-    return Object.values(this.counters).flat().length;
-  }
-
   shouldShowAddButton(): boolean {
-    return this.getTotalCounters() < this.maxCounters;
+    return this.counters[this.activeTab].length < this.maxCountersPerTab[this.activeTab];
   }
 
   onTabClick(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
@@ -121,6 +123,7 @@ export class AKioskManagementComponent implements OnInit {
   openCodeEntryPopup(counter: Counter): void {
     this.selectedCounter = counter;
     this.codeInput = '';
+    this.codeInputError = ''; // Reset the error message when opening the dialog
     this.showCodeEntryDialog = true;
   }
 
@@ -129,12 +132,23 @@ export class AKioskManagementComponent implements OnInit {
     this.selectedCounter = null;
   }
 
+  // Validation for 6-digit code
+  validateCode(code: string): boolean {
+    const codeRegex = /^\d{6}$/; // Regular expression for 6-digit number
+    return codeRegex.test(code);
+  }
+
   assignCode(): void {
     if (this.selectedCounter) {
-      this.selectedCounter.assignedCode = this.codeInput;
+      if (this.validateCode(this.codeInput)) {
+        this.selectedCounter.assignedCode = this.codeInput;
+        this.codeInputError = ''; // Clear any previous error
+        this.showCodeEntryDialog = false;
+        this.selectedCounter = null;
+      } else {
+        this.codeInputError = 'Please enter a valid 6-digit number.'; // Set error message
+      }
     }
-    this.showCodeEntryDialog = false;
-    this.selectedCounter = null;
   }
 
   // New method to confirm unassigning the code
@@ -155,5 +169,13 @@ export class AKioskManagementComponent implements OnInit {
     }
     this.showUnassignCodeDialog = false;
     this.selectedCounter = null;
+  }
+
+  getTotalCounters(): number {
+    return this.counters[this.activeTab].length;
+  }
+  
+  getMaxCountersForActiveTab(): number {
+    return this.maxCountersPerTab[this.activeTab];
   }
 }

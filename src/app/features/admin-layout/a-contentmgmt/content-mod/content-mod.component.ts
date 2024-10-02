@@ -49,10 +49,11 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   showAnnouncement: boolean = true;
   marqueeDuration: number = 0;
   notesDuration: number = 30; // Duration to display notes in seconds
-  marqueeSpeed: number = 0.5; // Pixels per second (further reduced for better readability)
+  marqueeSpeed: number = 50; // Pixels per second
   maxCharCount: number = 200;
-  announcementCycleCount: number = 0; // Track the number of announcement cycles
-  announcementCyclesBeforeNotes: number = 3; // Number of announcement cycles before showing notes
+  announcementCycleCount: number = 0;
+  announcementCyclesBeforeNotes: number = 2;
+  private contentCycleTimeout: any;
 
   constructor(private sanitizer: DomSanitizer) {}
 
@@ -68,7 +69,7 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['announcementText'] || changes['textColor']) {
+    if (changes['announcementText'] || changes['notesText'] || changes['textColor']) {
       this.updateMarqueeDuration();
     }
     if (changes['videoUrl']) {
@@ -189,33 +190,43 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
    */
   startContentCycle(): void {
     const cycleContent = () => {
-      this.showAnnouncement = true;
-
-      setTimeout(() => {
+      if (this.showAnnouncement) {
         this.announcementCycleCount++;
         if (this.announcementCycleCount >= this.announcementCyclesBeforeNotes) {
+          // Switch to notes
           this.showAnnouncement = false;
-          setTimeout(() => {
-            this.announcementCycleCount = 0; // Reset cycle count after showing notes
+          this.updateMarqueeDuration();
+          this.contentCycleTimeout = setTimeout(() => {
+            this.announcementCycleCount = 0;
+            this.showAnnouncement = true;
+            this.updateMarqueeDuration();
             cycleContent();
-          }, this.notesDuration * 1000);
+          }, this.marqueeDuration * 1000);
         } else {
-          cycleContent();
+          // Continue showing announcement
+          this.contentCycleTimeout = setTimeout(cycleContent, this.marqueeDuration * 1000);
         }
-      }, this.marqueeDuration * 1000);
+      } else {
+        // Notes are currently showing, switch back to announcement
+        this.showAnnouncement = true;
+        this.updateMarqueeDuration();
+        this.contentCycleTimeout = setTimeout(cycleContent, this.marqueeDuration * 1000);
+      }
     };
 
     cycleContent();
   }
 
-  /**
-   * Reset the announcement and notes cycle
-   */
   resetContentCycle(): void {
-    this.announcementCycleCount = 0; // Reset the count
+    if (this.contentCycleTimeout) {
+      clearTimeout(this.contentCycleTimeout);
+    }
+    this.announcementCycleCount = 0;
     this.showAnnouncement = true;
+    this.updateMarqueeDuration();
     this.startContentCycle();
   }
+
 
   /**
    * Check if the provided URL is a YouTube URL
@@ -283,8 +294,9 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
    */
   private updateMarqueeDuration(): void {
     const containerWidth = 1000; // Assume a default container width of 1000px
-    const textWidth = this.announcementText.length * 10; // Rough estimate of text width in pixels
+    const text = this.showAnnouncement ? this.announcementText : this.notesText;
+    const textWidth = text.length * 10; // Rough estimate of text width in pixels
     const totalDistance = containerWidth + textWidth;
-    this.marqueeDuration = totalDistance / this.marqueeSpeed;
+    this.marqueeDuration = Math.max(totalDistance / this.marqueeSpeed, this.notesDuration);
   }
 }

@@ -159,18 +159,9 @@
 
       <!-- Announcement and Notes Section -->
       <div class="bg-neutral-800 text-white py-2 px-4 rounded-lg mt-8 overflow-hidden shadow-lg">
-        <div
-          class="marquee-container"
-          [ngStyle]="{
-            'animation-duration': marqueeDuration + 's'
-          }"
-        >
-          <p class="marquee-text text-xl font-semibold" *ngIf="showAnnouncement">
-            {{ announcementText }}
-          </p>
-          <p class="marquee-text text-xl font-semibold" *ngIf="!showAnnouncement">
-            NOTE: {{ notesText }}
-          </p>
+        <div class="marquee-container" [ngStyle]="{ 'animation-duration': marqueeDuration + 's' }">
+          <p class="marquee-text" *ngIf="showAnnouncement">{{ announcementText }}</p>
+          <p class="marquee-text" *ngIf="!showAnnouncement">NOTE: {{ notesText }}</p>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ interface ClientDetails {
     name: string;
     description: string;
   }[];
-}
+} 
 
 @Component({
   selector: 'app-da-terminalmgmt',

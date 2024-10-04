@@ -1,4 +1,5 @@
 // a-contentmgmt.component.ts
+
 import { Component, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -34,6 +35,12 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
 
   // Control the visibility of Content Settings
   isContentSettingsOpen: boolean = false;
+
+  // Toggle States for Sections
+  isMediaUploadsOpen: boolean = false;
+  isColorSettingsOpen: boolean = false;
+  isContentOpen: boolean = false;
+  isWidgetsOpen: boolean = false;
 
   // Content Settings Form Fields
   announcementText: string = '';
@@ -259,26 +266,14 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
       const file = input.files[0];
 
       // Validate file types
-      if (type === 'Logo') {
+      if (type === 'Logo' || type === 'Background Photo') {
         const validTypes = ['image/jpeg', 'image/png'];
         if (!validTypes.includes(file.type)) {
-          this.snackBar.open('Invalid file type. Only JPG and PNG are allowed for Logo.', 'Close', {
+          this.snackBar.open(`Invalid file type. Only JPG and PNG are allowed for ${type}.`, 'Close', {
             duration: 3000,
           });
-          this.selectedFiles['Logo'] = null;
-          this.previewUrls['Logo'] = null;
-          return;
-        }
-      }
-
-      if (type === 'Background Photo') {
-        const validTypes = ['image/jpeg', 'image/png'];
-        if (!validTypes.includes(file.type)) {
-          this.snackBar.open('Invalid file type. Only JPG and PNG are allowed for Background Photo.', 'Close', {
-            duration: 3000,
-          });
-          this.selectedFiles['Background Photo'] = null;
-          this.previewUrls['Background Photo'] = null;
+          this.selectedFiles[type] = null;
+          this.previewUrls[type] = null;
           return;
         }
       }
@@ -696,7 +691,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
    * Open the confirmation dialog and return the user's choice
    * @param message - The confirmation message to display
    */
-  private openConfirmationDialog(message: string): Observable<'save' | 'discard' > {
+  private openConfirmationDialog(message: string): Observable<'save' | 'discard'> {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
       data: {
@@ -776,13 +771,33 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
           this.saveChanges();
           this.resetToDefault();
         } else if (result === 'discard') {
-
           this.resetToDefault();
         }
         // If 'cancel', do nothing
       });
     } else {
       this.resetToDefault();
+    }
+  }
+
+  /**
+   * Toggle individual sections in Content Settings
+   * @param section - The section to toggle ('mediaUploads', 'colorSettings', 'content', 'widgets')
+   */
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'mediaUploads':
+        this.isMediaUploadsOpen = !this.isMediaUploadsOpen;
+        break;
+      case 'colorSettings':
+        this.isColorSettingsOpen = !this.isColorSettingsOpen;
+        break;
+      case 'content':
+        this.isContentOpen = !this.isContentOpen;
+        break;
+      case 'widgets':
+        this.isWidgetsOpen = !this.isWidgetsOpen;
+        break;
     }
   }
 }

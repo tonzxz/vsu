@@ -20,13 +20,7 @@ import { AppRoutingModule } from './app.routes';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    SidebarComponent,
-    AUserManagementComponent,
-    ATerminalManagementComponent,
-    CreateAccountModalComponent,
-    KioskSelectionComponent,
-    KioskFormsComponent
+
   ],
   imports: [
     BrowserModule,
@@ -37,6 +31,6 @@ import { AppRoutingModule } from './app.routes';
   providers: [
     UserService  // Moved to providers array
   ],
-  bootstrap: [AppComponent],
+
 })
 export class AppModule { }

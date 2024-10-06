@@ -4,27 +4,27 @@
       <div class="flex flex-col self-stretch my-auto max-md:max-w-full">
         <h1 id="login" class="text-4xl font-extrabold text-center text-[#22381F] mb-8 max-md:text-3xl">LOGIN</h1>
 
-        <form (ngSubmit)="onSubmit()">
+        <form >
           <div class="flex flex-col w-full mb-6 max-md:max-w-full">
             <label for="username">Username</label>
             <div class="flex items-center gap-4 px-6 py-4 rounded-full border border-gray-300">
-              <input id="username" type="text" [(ngModel)]="username" name="username" required class="w-full">
+              <uswagon-auth-input  type="text"  [name]="'identifier'" [aliases]="['username']" [required]="true" class="w-full"/>
             </div>
           </div>
 
           <div class="flex flex-col w-full mb-8 max-md:max-w-full">
             <label for="password">Password</label>
             <div class="flex items-center gap-4 px-6 py-4 rounded-full border border-gray-300">
-              <input id="password" type="password" [(ngModel)]="password" name="password" required class="w-full">
+              <uswagon-auth-input  type="password"  [name]="'password'" [required]="true" class="w-full"/>
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-[#22381F] text-white py-2 rounded-full">Login</button>
+          <uswagon-login-button  class="w-full bg-[#22381F] text-white py-2 rounded-full">Login</uswagon-login-button>
         </form>
-
-        <div *ngIf="errorMessage" class="mt-4 p-2 bg-red-100 text-red-700 rounded">
-          {{ errorMessage }}
-        </div>
+  
+        <uswagon-auth-snackbar-container [timer]="4000"> 
+          <uswagon-auth-snackbar-content class="mt-2 py-2 rounded-lg shadow-sm px-4" errorClass="bg-red-100 text-red-700" successClass="bg-green-100 text-green-700"/>
+        </uswagon-auth-snackbar-container>
       </div>
     </div>
 

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { UswagonAuthService } from 'uswagon-auth';
 
 @Component({
   selector: 'app-login-layout',
@@ -8,18 +9,28 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './login-layout.component.html',
   styleUrls: ['./login-layout.component.css']
 })
-export class LoginLayoutComponent {
+export class LoginLayoutComponent implements OnInit {
   username: string = '';
   password: string = '';
   roles: any[] = [
-    { name: 'Admin', route: '/login-as', role: 'ADMIN', tabindex: 0 },
-    { name: 'Kiosk', route: '/kiosk-selection', role: 'KIOSK', tabindex: 1 },
-    { name: 'Desk Attendant', route: '/login-as', role: 'DESK ATTENDANT', tabindex: 2 },
-    { name: 'Queue Display', route: '/queueing-selection', role: 'QUEUE_DISPLAY', tabindex: 3 }
+    { name: 'Admin', route: '/login-as', role: 'admin', tabindex: 0 },
+    { name: 'Kiosk', route: '/kiosk-selection', role: 'kiosk', tabindex: 1 },
+    { name: 'Desk Attendant', route: '/login-as', role: 'desk_attendant', tabindex: 2 },
+    { name: 'Queue Display', route: '/queueing-selection', role: 'queue_display', tabindex: 3 }
   ];
   selectedRole: any;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private auth:UswagonAuthService) {}
+
+  ngOnInit(): void {
+    const userole = this.auth.getUser().role;
+    if(userole == 'admin'){
+      this.router.navigate(['/admin/dashboard']);
+    }
+    if(userole == 'desk_attendant'){
+      this.router.navigate(['/desk-attendant/dashboard']);
+    }
+  }
 
   updateRole(roleName: string): void {
     const role = this.roles.find(r => r.name === roleName);

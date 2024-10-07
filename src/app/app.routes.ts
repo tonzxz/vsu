@@ -26,6 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'login', component: LoginLayoutComponent,
+  
   },
   {
     path: 'login-as', component: LoginAsComponent,
@@ -34,8 +35,9 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminLayoutComponent,
     canActivate: [AuthGuard],
-    data: { requiredRole: 'Admin' },
+    data: { requiredRole: 'admin' },
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: ADashboardComponent },
       { path: 'content-management', component: AContentmgmtComponent },
       { path: 'user-management', component: AUserManagementComponent },
@@ -53,8 +55,9 @@ export const routes: Routes = [
     path: 'desk-attendant',
     component: DeskAttendantLayoutComponent,
     canActivate: [AuthGuard],
-    data: { requiredRole: 'Desk Attendant' },
+    data: { requiredRole: 'desk_attendant' },
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DaDashboardComponent },
       { path: 'contentmgmt', component: DaContentmanagementComponent },
       { path: 'terminalmgmt', component: DaTerminalmgmtComponent }

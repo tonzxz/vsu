@@ -34,16 +34,13 @@ export class LoginAsComponent implements OnInit {
     this.selectedRole = this.route.snapshot.queryParams['role'] || '';
     this.auth.initialize({api:environment.api, apiKey: environment.apiKey, loginTable:['users'],
       app:environment.app, 
-        redirect:{
-          'admin': '/admin',
-          'desk_attendant': '/desk_attendant',
-        }
+        redirect: this.selectedRole == 'admin' ? {'admin': '/admin/dashboard'} : {'desk_attendant': '/desk-attendant/dashboard',}
+
     });
 
 
   }
   getLoginAs(): string {
-
     return this.selectedRole.charAt(0).toUpperCase() + this.selectedRole.slice(1);
   }
 }

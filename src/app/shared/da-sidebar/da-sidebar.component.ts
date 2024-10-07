@@ -3,6 +3,7 @@ import { Component, Input, Output, EventEmitter, HostListener, OnInit } from '@a
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { UswagonAuthModule } from 'uswagon-auth';
 
 interface MenuItem {
   title: string;
@@ -14,7 +15,7 @@ interface MenuItem {
 @Component({
   selector: 'app-da-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,UswagonAuthModule],
   templateUrl: './da-sidebar.component.html',
   styleUrls: ['./da-sidebar.component.css']
 })

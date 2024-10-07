@@ -24,11 +24,12 @@ export class LoginLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     const userole = this.auth.getUser().role;
-    if(userole == 'admin'){
-      this.router.navigate(['/admin/dashboard']);
-    }
+
     if(userole == 'desk_attendants'){
       this.router.navigate(['/desk-attendant/dashboard']);
+    }
+    if(userole != null){
+      this.router.navigate(['/admin/dashboard']);
     }
   }
 

@@ -15,7 +15,7 @@ export class LoginLayoutComponent implements OnInit {
   roles: any[] = [
     { name: 'Admin', route: '/login-as', role: 'admin', tabindex: 0 },
     { name: 'Kiosk', route: '/kiosk-selection', role: 'kiosk', tabindex: 1 },
-    { name: 'Desk Attendant', route: '/login-as', role: 'desk_attendant', tabindex: 2 },
+    { name: 'Desk Attendant', route: '/login-as', role: 'desk_attendants', tabindex: 2 },
     { name: 'Queue Display', route: '/queueing-selection', role: 'queue_display', tabindex: 3 }
   ];
   selectedRole: any;
@@ -27,7 +27,7 @@ export class LoginLayoutComponent implements OnInit {
     if(userole == 'admin'){
       this.router.navigate(['/admin/dashboard']);
     }
-    if(userole == 'desk_attendant'){
+    if(userole == 'desk_attendants'){
       this.router.navigate(['/desk-attendant/dashboard']);
     }
   }

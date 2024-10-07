@@ -4,9 +4,9 @@ export const environment = {
     socket: 'wss://quanbylab.com:3002',
     nodeserver: 'https://quanbylab.com:3002',
     server: 'https://quanbylab.com/public/',
-    // api: 'http://localhost:8080/api/api.php',
-    // socket: 'ws://localhost:3002',
-    // nodeserver: 'http://localhost:3002',
-    // server: 'http://localhost:8080/api/public',
+    // api: 'http://192.168.10.2:85/api.php',
+    // socket: 'ws://192.168.10.2:3000',
+    // nodeserver: 'http://192.168.10.2:3000',
+    // server: 'http://192.168.10.2/public',
     app: 'vsu'
 }

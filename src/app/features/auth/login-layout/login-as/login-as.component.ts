@@ -27,20 +27,57 @@ export class LoginAsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private auth:UswagonAuthService,
+    private API:UswagonCoreService,
   ) {}
 
   ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.selectedRole = this.route.snapshot.queryParams['role'] || '';
-    this.auth.initialize({api:environment.api, apiKey: environment.apiKey, loginTable:['users'],
-      app:environment.app, 
-        redirect: this.selectedRole == 'admin' ? {'admin': '/admin/dashboard'} : {'desk_attendant': '/desk-attendant/dashboard',}
-
-    });
+    if(this.selectedRole ==  'desk_attendants'){
+      this.auth.initialize({api:environment.api, apiKey: environment.apiKey, loginTable:['desk_attendants'],
+        app:environment.app, 
+          redirect:  {'desk_attendants': '/desk-attendant/dashboard',}
+  
+      });
+    }else{
+      this.auth.initialize({api:environment.api, apiKey: environment.apiKey, loginTable:['administrators'],
+        app:environment.app, 
+          redirect:{
+            'superadmin': '/admin/dashboard',
+            'registrar': '/admin/dashboard',
+            'accountant': '/admin/dashboard',
+            'cashier': '/admin/dashboard',
+          } 
+  
+      });
+    }
+    
 
 
   }
   getLoginAs(): string {
     return this.selectedRole.charAt(0).toUpperCase() + this.selectedRole.slice(1);
+  }
+
+  async test(){
+    // INITIALIZE CORE FORM
+    this.API.initializeForm(['lastname','password'])
+    // PLACE VALUE TO FORM
+    this.API.handleFormValue('lastname', 'Belga');
+    this.API.handleFormValue('password', 'test');
+    // QUERY
+    const data = await  this.API.read({
+      selectors: ['*'],
+      tables: 'users',
+      conditions:`WHERE lastname='${this.API.coreForm['lastname']}'`
+    })
+    // SUCCESS ERROR HANDLING
+    if(data.success){
+      // OUTPUT
+      for(let row of data.output){
+          alert(JSON.stringify(`${row.firstname} ${row.lastname}`));
+      }
+    }
+
   }
 }

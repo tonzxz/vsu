@@ -16,7 +16,6 @@ export class AuthGuard implements CanActivate {
     
     const currentUser = this.auth.accountLoggedIn();
     const requiredRole = route.data['requiredRole'] ?? 'root' ;
-
     
     if (!currentUser) {
       this.router.navigate(['/login']);
@@ -24,6 +23,9 @@ export class AuthGuard implements CanActivate {
     }
 
     
+    if(requiredRole == 'admin'){
+      return ['cashier','registrar','accountant','superadmin'].includes(currentUser);
+    }
 
     if (this.checkUserRole(currentUser, requiredRole)) {
       return true;

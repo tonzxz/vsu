@@ -55,7 +55,7 @@ export const routes: Routes = [
     path: 'desk-attendant',
     component: DeskAttendantLayoutComponent,
     canActivate: [AuthGuard],
-    data: { requiredRole: 'desk_attendant' },
+    data: { requiredRole: 'desk_attendants' },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DaDashboardComponent },

@@ -64,10 +64,10 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'queueing-selection', component: QueueSelectionComponent,
-    children: [
-      { path: 'display/:role', component: QueueDisplayComponent }, 
-    ]
+    path: 'queueing-display', component: QueueDisplayComponent,
+    // children: [
+    //   { path: 'display/:role', component: QueueDisplayComponent }, 
+    // ]
   }
 ];
 

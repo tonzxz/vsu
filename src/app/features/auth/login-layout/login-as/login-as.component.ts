@@ -30,7 +30,8 @@ export class LoginAsComponent implements OnInit {
     private API:UswagonCoreService,
   ) {}
 
-  ngOnInit() {
+ ngOnInit() {
+
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.selectedRole = this.route.snapshot.queryParams['role'] || '';
     if(this.selectedRole ==  'desk_attendants'){

@@ -1,9 +1,11 @@
 //kiosk-forms.components.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import jsPDF from 'jspdf';
+import { UswagonCoreService } from 'uswagon-core';
 
 @Component({
   selector: 'app-kiosk-forms',
@@ -32,14 +34,38 @@ export class KioskFormsComponent implements OnInit {
   selectedServices: string[] = [];
   selectedType: string = '';
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private kenAPI: UswagonCoreService) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.departmentName = params['department'] || 'Department Name';
-    });
+    }
+    
+  );
 
+
+  this.kenAPI.initializeForm(
+    ['role', 'password'])
+  
+  this.kenAPI.handleFormValue('role', 'desk_attendant');
+  this.kenAPI.handleFormValue('password','test'); 
+
+  const data = await this.kenAPI.read({
+    selectors: ['*'],
+    tables: 'users',
+    conditions: `WHERE role='${this.kenAPI.coreForm['role']}'`
+  })
+
+  if(data.success) {
+    for(let user of data.output){
+      alert(JSON.stringify(`${user.firstname}  `));
+      console.log('hehe', user.role);
+    }
+  }  
+ 
+  
     this.resetQueueNumberIfNewDay();
+    this.kenAPI.addSocketListener
   }
 
   handleButtonClick(type: string): void {
@@ -124,5 +150,22 @@ export class KioskFormsComponent implements OnInit {
     doc.text(new Date().toLocaleDateString() + ' - ' + new Date().toLocaleTimeString(), 40, 40, { align: 'center' });
   
     doc.save(`queue_ticket_${this.queueNumber}.pdf`);
+  }
+
+
+  async kenButton() {
+
+    const data = await this.kenAPI.read({
+      selectors: ['*'],
+      tables: 'users',
+      conditions: `WHERE role='${this.kenAPI.coreForm['role']}'`
+    })
+
+    if(data.success) {
+      for(let user of data.output){
+        alert(JSON.stringify(`${user.firstname}  `));
+        console.log('hehe', user.role);
+      }
+    }
   }
 }

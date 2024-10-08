@@ -1,28 +1,5 @@
 <main class="flex flex-col p-8 bg-white-100 min-h-screen">
-  <header class="bg-white rounded-xl shadow-lg p-6 mb-8 transform hover:scale-102 transition-all duration-300">
-    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-      <h1 class="text-3xl md:text-4xl font-bold text-[#283c1c]">Kiosk Management</h1>
-      <div class="flex items-center space-x-6">
-        <!-- Animated Terminal Indicator -->
-        <div class="flex items-center bg-[#283c1c] bg-opacity-20 rounded-full px-4 py-2 transform hover:scale-105 transition-all duration-300">
-          <span class="text-lg font-medium text-[#283c1c]">
-            {{ getTotalCounters() }}/{{ getMaxCountersForActiveTab() }}
-          </span>
-          <svg class="w-6 h-6 ml-2 text-[#283c1c]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-          </svg>
-        </div>
-        <!-- Enhanced Add Counter Button -->
-        <button
-          *ngIf="shouldShowAddButton()"
-          (click)="addCounter()"
-          class="bg-[#283c1c] text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-[#3c4c3a] focus:outline-none focus:ring-2 focus:ring-[#283c1c] focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
-        >
-          <i class="fas fa-plus mr-2"></i> Add Counter
-        </button>
-      </div>
-    </div>
-  </header>
+
 
   <section class="bg-white rounded-3xl shadow-lg overflow-hidden transform hover:shadow-xl transition-all duration-300">
     <nav class="flex border-b border-gray-200 bg-gray-50">

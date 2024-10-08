@@ -1,20 +1,258 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 .queue-display {
   position: relative;
   width: 100%;
   height: 100vh; /* Full viewport height */
-  background-image: url('/assets/queue-display/background.png'); /* Path to your image */
+  background-image: url('/assets/queue-display/background.png'); 
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: poppins;
+}
 
-  .overlay-text {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: bold;
-    background-color: rgba(0, 0, 0, 0.5); /* Slight background to make text more readable */
-    padding: 10px;
-  }
+.queue-content {
+  display: flex;
+  justify-content: space-between;
+  width: 90%; 
+}
+
+/* Left Section */
+.left-section {
+  position: absolute;
+  top: 50px; 
+  left: 50px; 
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 200px; 
+  margin-right: 20px;
+}
+
+.title h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fff;
+  padding: 0;
+  margin: 0;
+  line-height: 1; /* Adjust line-height for tighter spacing */
+}
+
+.title h2 {
+  font-size: 30px;
+  font-weight: bold;
+  color: #fff;
+  padding: 0;
+  margin: 0;
+  line-height: 1; /* Adjust line-height for tighter spacing */
+}
+
+.serving-section {
+  margin-top: 20px;
+  color: #fff;
+}
+
+.serving-section h3 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.counters {
+  display: flex;
+  flex-direction: column; 
+  gap: 20px; 
+}
+
+.counter {
+  background-color: #FBDF30;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  width: 550px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.counter-label {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 10px; 
+  color: #fff !important;
+  width: 100%;
+}
+
+.counter-info {
+  background-color: white;
+  border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2e4d;
+}
+
+.person-name {
+  font-size: 1.5rem;
+  color: #212529;
+}
+/* Right Section */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between; /* Distribute widgets and the "Up Next" table */
+  gap: 20px;
+  width: 45%; 
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  height: calc(100% - 100px); /* Adjust height based on top and bottom padding */
+}
+
+/* Centered Widgets (Currency, Time, and Weather) */
+.centered-widgets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Vertically center within the right section */
+  width: 100%;
+  height: auto; /* Remove fixed height */
+}
+
+/* Header Info (Currency and Time) */
+.header-info {
+  display: flex;
+  flex-direction: row; 
+  gap: 10px; /* Reduce gap */
+  justify-content: center;
+  width: 100%;
+}
+
+.currency-info, .time-info {
+  background-color: white;
+  color: #212529;
+  padding: 10px 15px; 
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+  min-width: 150px; 
+}
+
+.currency-info {
+  background-color: white;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  padding: 15px 20px; /* Adjust padding for spacing */
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 1.5rem; /* Text size for the value */
+  min-width: 250px; /* Adjust the width as necessary */
+}
+
+.currency-icon img {
+  width: 30px; /* Icon size */
+  height: 30px;
+  margin-right: 15px; /* Space between icon and value */
+}
+
+.currency-value {
+  display: flex;
+  flex-direction: column;
+}
+
+.currency-value span:first-child {
+  font-weight: bold;
+  color: #212529;
+}
+
+.currency-value .change {
+  color: green; /* Change text color */
+  font-size: 1rem; /* Smaller font size for the percentage */
+}
+
+
+/* Weather Section */
+.weather-section {
+  display: flex;
+  justify-content: center; 
+  width: 100%;
+}
+
+.weather-info {
+  display: flex;
+  gap: 10px; /* Reduce gap */
+}
+
+.weather-item {
+  background-color: white;
+  padding: 8px 15px; /* Reduce padding */
+  font-size: 1rem;
+  font-weight: bold;
+  color: #212529;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Up Next Section */
+.up-next-section {
+  width:90%;
+  background-color: #fff; /* Dark background for the table */
+  border-radius: 10px; /* Rounded corners */
+  padding: 15px 20px; /* Padding inside the table */
+  color: #000; /* White text color */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 2.5rem;
+}
+/* Up Next List Items */
+.up-next-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Add space between rows */
+}
+
+.up-next-item {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.avatar {
+  width: 50px; /* Avatar size */
+  height: 50px;
+  margin-right: 15px;
+}
+
+.up-next-ticket-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2e4d; /* Dark text for ticket number */
+  margin-right: 40px; /* Add space between ticket number and name */
+}
+
+.up-next-person-name {
+  font-size: 1.5rem;
+  color: #212529;
 }

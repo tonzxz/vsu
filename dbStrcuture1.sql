@@ -56,6 +56,12 @@ CREATE TABLE terminals (
     FOREIGN KEY (desk_attendant_id) REFERENCES desk_attendants(id) ON DELETE CASCADE
 );
 
+-- update terminal to is_online
+
+ALTER TABLE terminals
+RENAME COLUMN in_maintenance TO is_online;
+
+
 
 
 -- contents

@@ -1,14 +1,9 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { SafeUrlPipe } from '../../admin-layout/a-contentmgmt/safe-url.pipe';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, ParamMap } from '@angular/router'; // Ensure ActivatedRoute is imported
-
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
-  selector: 'app-queue-selection',
-  standalone: true,
-  imports: [CommonModule, SafeUrlPipe],
+  selector: 'app-queue-display',
   templateUrl: './queue-display.component.html',
   styleUrls: ['./queue-display.component.css']
 })

@@ -16,7 +16,7 @@ export class LoginLayoutComponent implements OnInit {
     { name: 'Admin', route: '/login-as', role: 'admin', tabindex: 0 },
     { name: 'Kiosk', route: '/kiosk-selection', role: 'kiosk', tabindex: 1 },
     { name: 'Desk Attendant', route: '/login-as', role: 'desk_attendants', tabindex: 2 },
-    { name: 'Queue Display', route: '/queueing-selection', role: 'queue_display', tabindex: 3 }
+    { name: 'Queue Display', route: '/queueing-display', role: 'queue_display', tabindex: 3 }
   ];
   selectedRole: any;
 

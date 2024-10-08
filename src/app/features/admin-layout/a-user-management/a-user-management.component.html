@@ -1,227 +1,122 @@
-<main class="container mx-auto px-20 py-10 flex flex-col items-start bg-gray-50 min-h-screen">
-  <!-- Header -->
-  <header class="w-full">
-    <h1 class="text-5xl font-extrabold text-[#283c1c]">User Management</h1>
-  </header>
-
-  <!-- User Actions and Search -->
-  <section class="w-full mt-8">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-      <!-- Create New Account Button -->
-      <button
-        (click)="openModal()"
-        class="flex items-center px-5 py-3 bg-[#283c1c] text-white font-semibold rounded-lg shadow-md hover:bg-[#3a532c] transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3a532c]"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 mr-3"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          />
-        </svg>
-        Create New Account
-      </button>
-
-      <!-- Edit and Delete Buttons -->
-      <div class="flex gap-3 mt-4 md:mt-0" *ngIf="selectedUsers.length > 0">
-        <!-- Edit Button (Visible only when one user is selected) -->
-        <button
-          *ngIf="selectedUsers.length === 1"
-          (click)="editSelectedUser()"
-          class="flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Edit
-        </button>
-        <!-- Delete Button -->
-        <button
-          (click)="deleteSelectedUsers()"
-          class="flex items-center px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        >
-          Delete
-        </button>
+<main class="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 px-14 py-6">
+  <div class=" mx-auto space-y-6">
+    <div class="h-48 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-3xl shadow-xl overflow-hidden relative">
+      <img src="path_to_visayas_state_university_image.jpg" alt="Visayas State University" class="w-full h-full object-cover mix-blend-overlay opacity-60">
+      <div class="absolute inset-0 flex items-center justify-center">
       </div>
     </div>
 
-    <!-- Search Form -->
-    <div class="bg-white rounded-2xl shadow-lg p-8">
-      <form class="mb-8">
-        <div class="relative">
-          <input
-            [(ngModel)]="searchQuery"
-            (input)="searchUsers()"
-            [ngModelOptions]="{ standalone: true }"
-            type="text"
-            id="searchUser"
-            placeholder="Search for a user"
-            class="w-full pl-12 pr-4 py-3 text-gray-700 bg-gray-100 border border-transparent rounded-lg focus:border-[#283c1c] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition duration-300"
-          />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="absolute top-3 left-4 h-6 w-6 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+    <div class="flex space-x-6">
+      <div class="w-2/6 bg-white rounded-3xl shadow-xl p-6 border border-gray-100">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-2">Performance Metrics</h2>
+        
+        <div *ngIf="currentUser" class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl shadow-md p-4 flex items-center space-x-4 mb-6 border border-blue-200">
+          <div class="w-16 h-16 bg-blue-500 rounded-full overflow-hidden border-4 border-white shadow-inner">
+            <img src="assets/logo/bini.jpg" alt="{{ currentUser.fullname }}" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 text-lg">{{ currentUser.fullname }}</p>
+            <p class="text-sm text-gray-600">{{ currentUser.division }}</p>
+          </div>
         </div>
-      </form>
-
-      <!-- Users Table -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-[#283c1c]">
-            <tr>
-              <!-- Select All Checkbox -->
-              <th class="px-6 py-4 text-left text-sm font-semibold text-white">
-                <input
-                  type="checkbox"
-                  (change)="toggleSelectAll($event)"
-                  class="form-checkbox h-5 w-5 text-white"
-                  aria-label="Select All Users"
-                />
-              </th>
-              <!-- Table Headers -->
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
-              >
-                Username
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
-              >
-                Department
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
-              >
-                Type
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wide"
-              >
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              *ngFor="let user of paginatedUsers"
-              (click)="toggleRowSelection(user)"
-              [ngClass]="{ 'bg-gray-100': user.selected }"
-              class="cursor-pointer hover:bg-gray-50"
-            >
-              <!-- User Selection Checkbox -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <input
-                  type="checkbox"
-                  [(ngModel)]="user.selected"
-                  (change)="updateSelectedUsers(user)"
-                  class="form-checkbox h-5 w-5 text-[#283c1c]"
-                  aria-label="Select User"
-                />
-              </td>
-              <!-- User Details -->
-              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.fullName }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.username }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.department }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ user.type }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="px-3 py-1 inline-flex text-xs font-semibold rounded-full"
-                  [ngClass]="{
-                    'bg-green-100 text-green-800': user.status === 'Online',
-                    'bg-red-100 text-red-800': user.status === 'Offline'
-                  }"
-                >
-                  {{ user.status }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <p class="text-sm font-medium text-gray-500 mb-1">Total Check-ins</p>
+            <p class="text-2xl font-bold text-gray-800">43,212</p>
+          </div>
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <p class="text-sm font-medium text-gray-500 mb-1">Avg Check-in Time</p>
+            <p class="text-2xl font-bold text-gray-800">43,212</p>
+          </div>
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <p class="text-sm font-medium text-gray-500 mb-1">Today's Check-ins</p>
+            <p class="text-2xl font-bold text-gray-800">1,345</p>
+          </div>
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <p class="text-sm font-medium text-gray-500 mb-1">This Week's Check-ins</p>
+            <p class="text-2xl font-bold text-gray-800">12,124</p>
+          </div>
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <p class="text-sm font-medium text-gray-500 mb-1">Avg Service Time</p>
+            <p class="text-2xl font-bold text-gray-800">7:30 mins</p>
+          </div>
+          <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <p class="text-sm font-medium text-gray-500 mb-1">Rating</p>
+            <div class="flex items-center">
+              <p class="text-2xl font-bold text-gray-800 mr-2">4</p>
+              <div class="flex text-yellow-400">
+                <span *ngFor="let star of [1,2,3,4,5]">★</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Pagination Controls -->
-      <nav
-        class="flex items-center justify-center mt-6"
-        aria-label="Pagination"
-      >
-        <ul class="inline-flex items-center -space-x-px">
-          <!-- Previous Page Button -->
-          <li>
-            <button
-              (click)="previousPage()"
-              [disabled]="currentPage === 1"
-              class="px-4 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
-              aria-label="Previous Page"
+      <div class="w-4/6 bg-white rounded-3xl shadow-xl p-6 border border-gray-100">
+        <div class="flex justify-between items-center mb-6">
+          <div class="relative w-64">
+            <input 
+              type="text" 
+              [(ngModel)]="searchQuery"
+              (input)="searchUsers()"
+              placeholder="Search a user..." 
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
             >
-              &laquo; Prev
-            </button>
-          </li>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <button (click)="createNewAccount()" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-2 rounded-full transition-all duration-300 flex items-center shadow-md hover:shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Create New Account
+          </button>
+        </div>
 
-          <!-- Page Number Buttons -->
-          <li>
-            <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
-                <button
-                  (click)="goToPage(i + 1)"
-                  class="px-4 py-2 leading-tight border border-gray-300 hover:bg-[#283c1c] hover:text-white transition duration-300"
-                  [ngClass]="{
-                    'bg-[#283c1c] text-white': currentPage === i + 1,
-                    'text-gray-700': currentPage !== i + 1
-                  }"
-                  [attr.aria-label]="'Page ' + (i + 1)"
-                >
-                  {{ i + 1 }}
-                </button>
-            </ng-container>
-          </li>
-
-          <!-- Next Page Button -->
-          <li>
-            <button
-              (click)="nextPage()"
-              [disabled]="currentPage === totalPages"
-              class="px-4 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
-              aria-label="Next Page"
-            >
-              Next &raquo;
-            </button>
-          </li>
-        </ul>
-      </nav>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+          <table class="w-full">
+            <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+              <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="p-3">Username</th>
+                <th class="p-3">Location</th>
+                <th class="p-3">Type</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let user of filteredUsers" 
+                  class="hover:bg-gray-50 transition-colors duration-200">
+                <td class="p-3">{{ user.username }}</td>
+                <td class="p-3">{{ user.division }}</td>
+                <td class="p-3">Desk attendant</td>
+                <td class="p-3">
+                  <span [ngClass]="{'bg-green-100 text-green-800': user.is_online, 'bg-red-100 text-red-800': !user.is_online}"
+                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                    {{ user.is_online ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="p-3 flex space-x-2">
+                  <button (click)="deleteUser(user)" class="text-red-600 hover:text-red-800 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <button (click)="viewUserDetails(user)" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </section>
-
-  <!-- Create/Edit Account Modal -->
-<app-create-account-modal
-  *ngIf="showModal"
-  [editingUser]="selectedUser"
-  [existingUsers]="users"
-  (close)="closeModal()"
-  (accountCreated)="onAccountCreated($event)">
-</app-create-account-modal>
+  </div>
+</main>

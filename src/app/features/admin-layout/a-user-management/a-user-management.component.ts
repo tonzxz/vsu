@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CreateAccountModalComponent } from './create-account-modal/create-account-modal.component';
+import { AdminService } from '../../../services/admin.service';
 
 // User interface with a selected property for checkbox functionality
 interface User {
@@ -23,7 +24,14 @@ interface User {
   standalone: true,
   imports: [CommonModule, FormsModule, CreateAccountModalComponent],
 })
+
+
 export class AUserManagementComponent implements OnInit {
+
+
+  constructor(private adminService: AdminService) {
+
+  }
   // Complete list of users
   users: User[] = [];
 
@@ -61,52 +69,15 @@ export class AUserManagementComponent implements OnInit {
     averageTimeService: '7:30 mins',
   };
 
-  ngOnInit() {
-    // Initialize the users list (this could be replaced with a service call)
-    this.users = [
-      {
-        username: 'Carlo',
-        fullName: 'Carlo Batumbakal',
-        department: 'Cash Division',
-        type: 'Desk Attendant',
-        status: 'Online',
-      },
-      {
-        username: 'Jhielo',
-        fullName: 'Jhielo Gonzales',
-        department: 'Accounting Office',
-        type: 'Kiosk',
-        status: 'Online',
-        password: '111111',
-      },
-      {
-        username: 'Orlan',
-        fullName: 'Jan Orlan Cardona',
-        department: 'Registrar',
-        type: 'Kiosk',
-        status: 'Offline',
-        password: '222222',
-      },
-      {
-        username: 'Sean',
-        fullName: 'Sean Palacay',
-        department: 'Cash Division',
-        type: 'Kiosk',
-        status: 'Online',
-        password: '333333',
-      },
-      // Add more users as needed
-    ];
 
-    // Initially, all users are displayed
+  ngOnInit() {  
+    
+    this.adminService.fetchUsers();
     this.filteredUsers = [...this.users];
     this.updatePagination();
   }
 
-  /**
-   * Filters users based on the search query.
-   * Currently filters by username and fullName.
-   */
+
   searchUsers() {
     const query = this.searchQuery.trim().toLowerCase();
     if (query) {
@@ -121,18 +92,14 @@ export class AUserManagementComponent implements OnInit {
     this.updatePagination();
   }
 
-  /**
-   * Opens the modal for creating a new account.
-   */
+  
   openModal() {
     this.showModal = true;
     this.isEditing = false;
     this.selectedUser = null;
   }
 
-  /**
-   * Closes the modal and resets the selectedUser.
-   */
+  
   closeModal() {
     this.showModal = false;
     this.selectedUser = null;

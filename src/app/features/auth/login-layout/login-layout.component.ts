@@ -23,7 +23,7 @@ export class LoginLayoutComponent implements OnInit {
   constructor(private router: Router, private auth:UswagonAuthService) {}
 
   ngOnInit(): void {
-    const userole = this.auth.getUser().role;
+    const userole = this.auth.accountLoggedIn();
 
     if(userole == 'desk_attendants'){
       this.router.navigate(['/desk-attendant/dashboard']);

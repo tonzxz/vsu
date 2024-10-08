@@ -3,7 +3,7 @@
     <div
       class="relative flex flex-col w-full min-h-[500px] bg-cover rounded-lg shadow-lg"
       [ngStyle]="{
-        'background-color': backgroundType === 'color' ? backgroundColor : '#283c1c',
+        'background-color': backgroundType === 'color' ? backgroundColor : colors['primary_bg'],
         'background-image': backgroundType === 'photo' && backgroundPhotoUrl
           ? 'url(' + backgroundPhotoUrl + ')'
           : 'none'
@@ -14,7 +14,7 @@
         <!-- Info Section -->
         <div
           class="flex items-center lg:w-1/2 w-full bg-white rounded-2xl p-3 shadow-lg"
-          [ngStyle]="{'color': textColor}"
+          [ngStyle]="{'color': colors['tertiary_text']}"
         >
           <!-- Image Container with overflow-hidden -->
           <div class="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-[#F2F2F2] mr-3">
@@ -33,16 +33,16 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full lg:w-1/2">
           <!-- Time and Date Widget -->
           <div
-            *ngIf="widgets.timeAndDate"
+            *ngIf="widgets.time"
             class="rounded-2xl shadow-lg transition-transform transform hover:scale-105"
-            [ngStyle]="{'background-color': widgetsBackgroundColor}"
+            [ngStyle]="{'background-color': colors['tertiary_bg']}"
           >
             <div class="flex flex-col items-center text-center h-full justify-center p-4">
-              <i class="fas fa-calendar-day text-4xl mb-3" [ngStyle]="{'color': textColor}"></i>
-              <time class="text-md font-semibold" [ngStyle]="{'color': textColor}">
+              <i class="fas fa-calendar-day text-4xl mb-3" [ngStyle]="{'color': colors['primary_text']}"></i>
+              <time class="text-md font-semibold" [ngStyle]="{'color': colors['primary_text']}">
                 {{ currentDate }}
               </time>
-              <div class="text-sm mt-1" [ngStyle]="{'color': textColor}">
+              <div class="text-sm mt-1" [ngStyle]="{'color': colors['primary_text']}">
                 <i class="far fa-clock mr-1"></i>{{ timer }}
               </div>
             </div>
@@ -52,25 +52,25 @@
           <div
             *ngIf="widgets.weather"
             class="rounded-2xl shadow-lg transition-transform transform hover:scale-105"
-            [ngStyle]="{'background-color': widgetsBackgroundColor}"
+            [ngStyle]="{'background-color': colors['tertiary_bg']}"
           >
             <div class="flex flex-col items-center text-center h-full justify-center p-4">
-              <i class="fas fa-cloud-sun text-4xl mb-3" [ngStyle]="{'color': textColor}"></i>
-              <span class="text-md font-bold" [ngStyle]="{'color': textColor}">25°C</span>
-              <span class="text-sm mt-1" [ngStyle]="{'color': textColor}">Sunny</span>
+              <i class="fas fa-cloud-sun text-4xl mb-3" [ngStyle]="{'color': colors['primary_text']}"></i>
+              <span class="text-md font-bold" [ngStyle]="{'color': colors['primary_text']}">25°C</span>
+              <span class="text-sm mt-1" [ngStyle]="{'color': colors['primary_text']}">Sunny</span>
             </div>
           </div>
 
           <!-- Currency Converter Widget -->
           <div
-            *ngIf="widgets.currencyConverter"
+            *ngIf="widgets.currency"
             class="rounded-2xl shadow-lg transition-transform transform hover:scale-105"
-            [ngStyle]="{'background-color': widgetsBackgroundColor}"
+            [ngStyle]="{'background-color': colors['tertiary_bg']}"
           >
             <div class="flex flex-col items-center text-center h-full justify-center p-4">
-              <i class="fas fa-exchange-alt text-4xl mb-3" [ngStyle]="{'color': textColor}"></i>
-              <span class="text-md font-bold" [ngStyle]="{'color': textColor}">USD</span>
-              <span class="text-sm mt-1" [ngStyle]="{'color': textColor}">90.62₽</span>
+              <i class="fas fa-exchange-alt text-4xl mb-3" [ngStyle]="{'color': colors['primary_text']}"></i>
+              <span class="text-md font-bold" [ngStyle]="{'color': colors['primary_text']}">USD</span>
+              <span class="text-sm mt-1" [ngStyle]="{'color': colors['primary_text']}">90.62₽</span>
             </div>
           </div>
         </div>
@@ -81,32 +81,32 @@
         <div
           class="rounded-3xl p-5 w-full"
           [ngStyle]="{
-            'background-color': processingContainerColor,
-            'color': processingTextColor
+            'background-color': colors['secondary_bg'],
+            'color': colors['secondary_text']
           }"
           [ngClass]="{ 'lg:w-1/2': videoUrl }"
         >
           <h3
             class="text-2xl font-bold text-center rounded-lg py-3"
-            [ngStyle]="{'color': processingTextColor}"
+            [ngStyle]="{'color': colors['secondary_text']}"
           >
             Processing
           </h3>
           <div class="flex justify-around mt-4">
             <div class="text-center">
-              <h4 class="text-3xl" [ngStyle]="{'color': processingTextColor}">Now Serving</h4>
+              <h4 class="text-3xl" [ngStyle]="{'color': colors['secondary_text']}">Now Serving</h4>
               <ul class="list-none p-0 mt-2">
-                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">1</li>
-                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">2</li>
-                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">3</li>
+                <li class="text-2xl" [ngStyle]="{'color': colors['secondary_text']}">1</li>
+                <li class="text-2xl" [ngStyle]="{'color': colors['secondary_text']}">2</li>
+                <li class="text-2xl" [ngStyle]="{'color': colors['secondary_text']}">3</li>
               </ul>
             </div>
             <div class="text-center">
-              <h4 class="text-3xl" [ngStyle]="{'color': processingTextColor}">Counter</h4>
+              <h4 class="text-3xl" [ngStyle]="{'color': colors['secondary_text']}">Counter</h4>
               <ul class="list-none p-0 mt-2">
-                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">R1</li>
-                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">R2</li>
-                <li class="text-2xl" [ngStyle]="{'color': processingTextColor}">R3</li>
+                <li class="text-2xl" [ngStyle]="{'color': colors['secondary_text']}">R1</li>
+                <li class="text-2xl" [ngStyle]="{'color': colors['secondary_text']}">R2</li>
+                <li class="text-2xl" [ngStyle]="{'color': colors['secondary_text']}">R3</li>
               </ul>
             </div>
           </div>

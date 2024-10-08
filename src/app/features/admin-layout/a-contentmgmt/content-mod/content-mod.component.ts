@@ -22,20 +22,28 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() tabName: string = 'Registrar';
 
   // New Input Properties for Color Customization
-  @Input() textColor: string = '#000000';
-  @Input() widgetsBackgroundColor: string = '#ffffff';
-  @Input() processingContainerColor: string = '#283c1c';
-  @Input() processingTextColor: string = '#ffffff';
+  // @Input() textColor: string = '#000000';
+  // @Input() widgetsBackgroundColor: string = '#ffffff';
+  // @Input() processingContainerColor: string = '#283c1c';
+  // @Input() processingTextColor: string = '#ffffff';
 
   @Input() widgets: {
     weather: boolean;
-    timeAndDate: boolean;
-    currencyConverter: boolean;
+    time: boolean;
+    currency: boolean;
   } = {
     weather: false,
-    timeAndDate: false,
-    currencyConverter: false,
+    time: false,
+    currency: false,
   };
+  @Input()  colors:{[key:string]:string} = {
+    'primary_text':'#000000',
+    'secondary_text':'#000000',
+    'tertiary_text':'#000000',
+    'primary_bg': '#ffffff',
+    'secondary_bg': '#ffffff',
+    'tertiary_bg': '#ffffff',
+  }
 
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
@@ -90,14 +98,11 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     announcementText: string;
     notesText: string;
     tabName: string;
-    textColor: string;
-    widgetsBackgroundColor: string;
-    processingContainerColor: string;
-    processingTextColor: string;
+    colors: {[key:string]:string};
     widgets: {
       weather: boolean;
-      timeAndDate: boolean;
-      currencyConverter: boolean;
+      time: boolean;
+      currency: boolean;
     };
   }): void {
     this.logoUrl = update.logoUrl;
@@ -108,10 +113,7 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
     this.announcementText = update.announcementText;
     this.notesText = update.notesText;
     this.tabName = update.tabName;
-    this.textColor = update.textColor;
-    this.widgetsBackgroundColor = update.widgetsBackgroundColor;
-    this.processingContainerColor = update.processingContainerColor;
-    this.processingTextColor = update.processingTextColor;
+    this.colors = update.colors;
     this.widgets = update.widgets;
 
     this.isPlaying = false;
@@ -183,7 +185,7 @@ export class ContentModComponent implements OnInit, AfterViewInit, OnChanges {
         }
       }, 500);
     }
-  }
+  };
 
   /**
    * Start the announcement and notes cycle

@@ -58,7 +58,6 @@ export class QueueDisplayComponent  implements OnInit, AfterViewInit, OnChanges 
 
   constructor(private sanitizer: DomSanitizer, private route: ActivatedRoute) {} 
   
-  
   ngOnInit(): void {
     // Retrieve the role parameter from the route and set it to tabName
     this.route.paramMap.subscribe((params: ParamMap) => {

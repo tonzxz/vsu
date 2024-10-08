@@ -9,9 +9,9 @@
     <!-- Main Card Container -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
       <!-- Tabs Navigation -->
-      <nav class="flex" role="tablist">
+      <nav *ngIf="isSuperAdmin" class="flex" role="tablist">
         <button
-          *ngFor="let tab of ['Registrar', 'Cash Division', 'Accounting Office']"
+          *ngFor="let tab of ['registrar', 'cashier', 'accountant']"
           (click)="onTabClick(tab)"
           [ngClass]="{
             'bg-[#283c1c] text-white': selectedTab === tab,
@@ -21,7 +21,7 @@
           [attr.aria-selected]="selectedTab === tab"
           role="tab"
         >
-          {{ tab }}
+          {{ contentData[tab].title }}
         </button>
       </nav>
 
@@ -53,11 +53,8 @@
               [videoUrl]="contentData[selectedTab]?.videoUrl"
               [announcementText]="contentData[selectedTab]?.announcementText"
               [notesText]="contentData[selectedTab]?.notesText"
-              [tabName]="selectedTab"
-              [textColor]="contentData[selectedTab]?.textColor"
-              [widgetsBackgroundColor]="contentData[selectedTab]?.widgetsBackgroundColor"
-              [processingContainerColor]="contentData[selectedTab]?.processingContainerColor"
-              [processingTextColor]="contentData[selectedTab]?.processingTextColor"
+              [tabName]="contentData[selectedTab]?.title"
+              [colors]="contentData[selectedTab]?.colors"
               [widgets]="contentData[selectedTab]?.widgets"
             ></app-content-mod>
           </div>
@@ -107,7 +104,7 @@
                         id="logo-upload"
                         accept="image/png, image/jpeg"
                         class="hidden"
-                        (change)="onFileUpload($event, 'Logo')"
+                        (change)="onFileUpload($event, 'logo')"
                       />
                       <label
                         for="logo-upload"
@@ -131,54 +128,26 @@
                       <span
                         class="ml-2 text-sm"
                         [ngClass]="{
-                          'text-gray-500': !isFilePicked('Logo'),
-                          'text-green-600': isFilePicked('Logo')
+                          'text-gray-500': !isFilePicked('logo'),
+                          'text-green-600': isFilePicked('logo')
                         }"
                       >
-                        {{ getFileName('Logo') || 'No file chosen' }}
+                        {{ getFileName('logo') || 'No file chosen' }}
                       </span>
                     </div>
                   </div>
 
-                  <!-- Background Selection -->
-                  <div>
-                    <span class="block text-sm font-medium text-gray-800 mb-1">Background</span>
-                    <div class="flex items-center space-x-4">
-                      <label class="inline-flex items-center">
-                        <input
-                          type="radio"
-                          class="form-radio h-4 w-4 text-[#283c1c] transition duration-150 ease-in-out"
-                          name="backgroundType"
-                          value="photo"
-                          (change)="onBackgroundTypeChange('photo')"
-                          [checked]="backgroundType === 'photo'"
-                        />
-                        <span class="ml-1 text-sm text-gray-800">Upload Photo</span>
-                      </label>
-                      <label class="inline-flex items-center">
-                        <input
-                          type="radio"
-                          class="form-radio h-4 w-4 text-[#283c1c] transition duration-150 ease-in-out"
-                          name="backgroundType"
-                          value="color"
-                          (change)="onBackgroundTypeChange('color')"
-                          [checked]="backgroundType === 'color'"
-                        />
-                        <span class="ml-1 text-sm text-gray-800">Choose Color</span>
-                      </label>
-                    </div>
-                  </div>
-
+  
                   <!-- Conditional Background Upload or Color Picker -->
                   <div *ngIf="backgroundType === 'photo'">
-                    <label for="bg-photo-upload" class="block text-sm font-medium text-gray-800 mb-1">Upload Background Photo</label>
+                    <label for="bg-photo-upload" class="block text-sm font-medium text-gray-800 mb-1">Background Photo</label>
                     <div class="flex items-center">
                       <input
                         type="file"
                         id="bg-photo-upload"
                         accept="image/png, image/jpeg, image/jpg"
                         class="hidden"
-                        (change)="onFileUpload($event, 'Background Photo')"
+                        (change)="onFileUpload($event, 'background')"
                       />
                       <label
                         for="bg-photo-upload"
@@ -202,11 +171,11 @@
                       <span
                         class="ml-2 text-sm"
                         [ngClass]="{
-                          'text-gray-500': !isFilePicked('Background Photo'),
-                          'text-green-600': isFilePicked('Background Photo')
+                          'text-gray-500': !isFilePicked('background'),
+                          'text-green-600': isFilePicked('background')
                         }"
                       >
-                        {{ getFileName('Background Photo') || 'No file chosen' }}
+                        {{ getFileName('background') || 'No file chosen' }}
                       </span>
                     </div>
                   </div>
@@ -263,7 +232,7 @@
                         id="video-upload"
                         accept="video/mp4, video/webm, video/ogg"
                         class="hidden"
-                        (change)="onFileUpload($event, 'Video')"
+                        (change)="onFileUpload($event, 'video')"
                       />
                       <label
                         for="video-upload"
@@ -287,11 +256,11 @@
                       <span
                         class="ml-2 text-sm"
                         [ngClass]="{
-                          'text-gray-500': !isFilePicked('Video'),
-                          'text-green-600': isFilePicked('Video')
+                          'text-gray-500': !isFilePicked('video'),
+                          'text-green-600': isFilePicked('video')
                         }"
                       >
-                        {{ getFileName('Video') || 'No file chosen' }}
+                        {{ getFileName('video') || 'No file chosen' }}
                       </span>
                     </div>
                   </div>
@@ -388,66 +357,24 @@
                 </div>
 
                 <div *ngIf="isColorSettingsOpen" class="mt-4 space-y-4">
-                  <!-- Global Text Color Picker -->
-                  <div>
-                    <label for="text-color" class="block text-sm font-medium text-gray-800 mb-1">Global Text Color</label>
-                    <div class="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        id="text-color"
-                        class="h-8 w-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
-                        [(ngModel)]="textColor"
-                        (change)="onTextColorChange($event)"
-                      />
-                      <span class="text-sm text-gray-800">{{ textColor }}</span>
-                    </div>
-                  </div>
 
-                  <!-- Widgets Background Color Picker -->
-                  <div>
-                    <label for="widgets-bg-color" class="block text-sm font-medium text-gray-800 mb-1">Widgets Background Color</label>
-                    <div class="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        id="widgets-bg-color"
-                        class="h-8 w-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
-                        [(ngModel)]="widgetsBackgroundColor"
-                        (change)="onWidgetsBackgroundColorChange($event)"
-                      />
-                      <span class="text-sm text-gray-800">{{ widgetsBackgroundColor }}</span>
+                  <ng-container *ngFor="let key of colorKeys" >
+                    <div>
+                      <label for="text-color" class="block text-sm font-medium text-gray-800 mb-1">{{colorTitle[key]}}</label>
+                      <div class="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          id="text-color"
+                          class="h-8 w-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
+                          [(ngModel)]="colors[key]"
+                          (change)="onColorChange(key,$event)"
+                        />
+                        <span class="text-sm text-gray-800">{{ colors[key] }}</span>
+                      </div>
                     </div>
+                  </ng-container>
+   
                   </div>
-
-                  <!-- Processing Container Color Picker -->
-                  <div>
-                    <label for="processing-container-color" class="block text-sm font-medium text-gray-800 mb-1">Processing Container Background Color</label>
-                    <div class="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        id="processing-container-color"
-                        class="h-8 w-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
-                        [(ngModel)]="processingContainerColor"
-                        (change)="onProcessingContainerColorChange($event)"
-                      />
-                      <span class="text-sm text-gray-800">{{ processingContainerColor }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Processing Text Color Picker -->
-                  <div>
-                    <label for="processing-text-color" class="block text-sm font-medium text-gray-800 mb-1">Processing Container Text Color</label>
-                    <div class="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        id="processing-text-color"
-                        class="h-8 w-8 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#283c1c] transition-colors duration-300"
-                        [(ngModel)]="processingTextColor"
-                        (change)="onProcessingTextColorChange($event)"
-                      />
-                      <span class="text-sm text-gray-800">{{ processingTextColor }}</span>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <!-- Widgets -->
@@ -487,7 +414,7 @@
                         <input
                           type="checkbox"
                           class="form-checkbox h-4 w-4 text-[#283c1c] transition duration-150 ease-in-out"
-                          [(ngModel)]="widgets.timeAndDate"
+                          [(ngModel)]="widgets.time"
                           (change)="onWidgetChange()"
                         />
                         <span class="ml-1 text-sm text-gray-800">Time & Date</span>
@@ -497,7 +424,7 @@
                         <input
                           type="checkbox"
                           class="form-checkbox h-4 w-4 text-[#283c1c] transition duration-150 ease-in-out"
-                          [(ngModel)]="widgets.currencyConverter"
+                          [(ngModel)]="widgets.currency"
                           (change)="onWidgetChange()"
                         />
                         <span class="ml-1 text-sm text-gray-800">Currency Converter</span>

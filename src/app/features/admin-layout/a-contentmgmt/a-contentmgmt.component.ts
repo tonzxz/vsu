@@ -1,13 +1,16 @@
 // a-contentmgmt.component.ts
 
-import { Component, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ViewChild, AfterViewInit, ElementRef, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContentModComponent } from './content-mod/content-mod.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component'; // Ensure correct path
 import { Observable, Subscription } from 'rxjs';
+import { UswagonAuthService } from 'uswagon-auth';
+import { UswagonCoreService } from 'uswagon-core';
+import { ContentService } from '../../../services/content.service';
 
 @Component({
   selector: 'app-a-contentmgmt',
@@ -23,7 +26,7 @@ import { Observable, Subscription } from 'rxjs';
   templateUrl: './a-contentmgmt.component.html',
   styleUrls: ['./a-contentmgmt.component.css'],
 })
-export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
+export class AContentmgmtComponent implements AfterViewInit, OnDestroy, OnInit {
   // ViewChild to access ContentModComponent
   @ViewChild(ContentModComponent) contentModComponent!: ContentModComponent;
 
@@ -48,9 +51,9 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
   backgroundType: 'photo' | 'color' = 'photo';
   backgroundColor: string = '#283c1c';
   selectedFiles: { [key: string]: File | null } = {
-    Logo: null,
-    'Background Photo': null,
-    Video: null,
+    logo: null,
+    background: null,
+    video: null,
   };
   youtubeUrl: string = '';
   videoOption: 'upload' | 'url' = 'upload';
@@ -58,28 +61,50 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
   logoUrl: string = 'assets/logo/vsu.png';
 
   // New Color Settings
-  textColor: string = '#000000';
-  widgetsBackgroundColor: string = '#ffffff';
-  processingContainerColor: string = '#ffffff';
-  processingTextColor: string = '#000000';
+  // textColor: string = '#000000';
+  // widgetsBackgroundColor: string = '#ffffff';
+  // processingContainerColor: string = '#ffffff';
+  // processingTextColor: string = '#000000';
+  
+  public colors:{[key:string]:string} = {
+    'primary_text':'#000000',
+    'secondary_text':'#000000',
+    'tertiary_text':'#000000',
+    'primary_bg': '#ffffff',
+    'secondary_bg': '#ffffff',
+    'tertiary_bg': '#ffffff',
+  }
+
+  colorTitle:{[key:string]:string} = {
+    'primary_text':'Primary Text Color',
+    'secondary_text':'Secondary Text Color',
+    'tertiary_text':'Tertiary Text Color',
+    'primary_bg': 'Primary Background Color',
+    'secondary_bg': 'Secondary Background Color',
+    'tertiary_bg': 'Tertiary Background Color',
+  }
+
+
+  colorKeys = Object.keys(this.colors);
 
   // Widgets state
   public widgets = {
     weather: false,
-    timeAndDate: false,
-    currencyConverter: false,
+    time: false,
+    currency: false,
   };
 
   // Preview URLs for uploaded images/videos
   previewUrls: { [key: string]: string | null } = {
-    Logo: null,
-    'Background Photo': null,
-    Video: null,
+    logo: null,
+    background: null,
+    video: null,
   };
 
   // Default content for each tab
   contentData: { [key: string]: any } = {
-    Registrar: {
+    registrar: {
+      title:'Registrar Division',
       logoUrl: 'assets/logo/vsu.png',
       backgroundType: 'photo',
       backgroundColor: '#283c1c',
@@ -89,15 +114,13 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
       notesText: 'Registrar Notes',
       widgets: {
         weather: false,
-        timeAndDate: false,
-        currencyConverter: false,
+        time: false,
+        currency: false,
       },
-      textColor: '#000000',
-      widgetsBackgroundColor: '#ffffff',
-      processingContainerColor: '#ffffff',
-      processingTextColor: '#000000',
+      colors: this.colors
     },
-    'Cash Division': {
+    cashier: {
+      title:'Cash Division',
       logoUrl: 'assets/logo/vsu.png',
       backgroundType: 'color',
       backgroundColor: '#283c1c',
@@ -107,15 +130,13 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
       notesText: 'Cash Division Notes',
       widgets: {
         weather: false,
-        timeAndDate: false,
-        currencyConverter: false,
+        time: false,
+        currency: false,
       },
-      textColor: '#000000',
-      widgetsBackgroundColor: '#ffffff',
-      processingContainerColor: '#ffffff',
-      processingTextColor: '#000000',
+      colors: this.colors
     },
-    'Accounting Office': {
+    accountant: {
+      title:'Accounting Division',
       logoUrl: 'assets/logo/vsu.png',
       backgroundType: 'photo',
       backgroundColor: '#283c1c',
@@ -125,21 +146,23 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
       notesText: 'Accounting Office Notes',
       widgets: {
         weather: false,
-        timeAndDate: false,
-        currencyConverter: false,
+        time: false,
+        currency: false,
       },
-      textColor: '#000000',
-      widgetsBackgroundColor: '#ffffff',
-      processingContainerColor: '#ffffff',
-      processingTextColor: '#000000',
+      colors: this.colors
     },
   };
 
   // Store the default content data to enable reset functionality
   private defaultContentData: { [key: string]: any };
 
+  isSuperAdmin:boolean = false;
   // Track if there are unsaved changes
   isDirty: boolean = false;
+
+  divisions:{id:string, name:string}[] =[];
+
+  contents:any[] =[];
 
   // Subscription for dialog
   private dialogSubscription!: Subscription;
@@ -147,15 +170,135 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
   constructor(
     private snackBar: MatSnackBar, 
     private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private auth: UswagonAuthService,
+    private API:UswagonCoreService,
+    private contentService: ContentService
   ) {
     // Deep clone the initial contentData to defaultContentData
     this.defaultContentData = JSON.parse(JSON.stringify(this.contentData));
+    this.isSuperAdmin = this.auth.accountLoggedIn() == 'superadmin';
+    if(!this.isSuperAdmin){
+      this.selectedTab = this.auth.accountLoggedIn()!;
+    }else{
+      this.selectedTab = 'registrar';
+    }
+    
   }
+
+  ngOnInit(): void {
+    this.loadSettings();
+  }
+
+
+
+  async loadSettings(){
+    const user = this.auth.getUser();
+    this.API.setLoading(true);
+    try{
+      if(user.role == 'superadmin'){
+        const divisions = await this.contentService.getDivisions();
+        this.divisions = divisions.reduce((prev:any,curr:any)=>{
+          if(curr.id != user.division_id){
+            return [...prev, { id:curr.id, name:curr.name}] 
+          } else{
+            return prev;
+          }
+        },[]);
+        
+        this.contents = await this.contentService.getContentSettings();
+        const content = this.contents.find((content)=>{
+          return content.id == this.divisions[0].id
+        })
+        if(content == undefined ){
+          return;
+        }
+        this.colors = {
+          'primary_text':content.primary_text,
+          'secondary_text':content.secondary_text,
+          'tertiary_text':content.tertiary_text,
+          'primary_bg': content.primary_bg,
+          'secondary_bg': content.secondary_bg,
+          'tertiary_bg': content.tertiary_bg,
+        }
+
+        this.widgets = { 
+          weather: content.weather == 't',
+          time: content.time == 't',
+          currency: content.currency == 't',
+         }
+
+        this.contentData[this.selectedTab] = {
+          title: this.divisions[0].name,
+          logoUrl: this.previewUrls['logo'] || content.logo,
+          backgroundType: content.background != null ? 'photo':'color',
+          backgroundColor: this.colors['primary_bg'],
+          backgroundPhotoUrl: this.previewUrls['background'] || content.background,
+          videoUrl:
+            content.video,
+          announcementText: this.announcementText,
+          notesText: this.notesText,
+          widgets: { 
+           ...this.widgets
+           },
+          colors: {...this.colors}
+        };        
+        
+      }else{
+        const content = await this.contentService.getContentSetting();
+  
+        if(content == null){
+          return;
+        }
+
+        this.colors = {
+          'primary_text':content.primary_text,
+          'secondary_text':content.secondary_text,
+          'tertiary_text':content.tertiary_text,
+          'primary_bg': content.primary_bg,
+          'secondary_bg': content.secondary_bg,
+          'tertiary_bg': content.tertiary_bg,
+        }
+
+        this.widgets = { 
+          weather: content.weather == 't',
+          time: content.time == 't',
+          currency: content.currency == 't',
+         }
+        
+         console.log(this.colors)
+
+        this.contentData[this.selectedTab] = {
+          title:  this.contentData[this.selectedTab].title,
+          logoUrl: this.previewUrls['logo'] || content.logo,
+          backgroundType: content.background != null ? 'photo':'color',
+          backgroundColor: this.colors['primary_bg'],
+          backgroundPhotoUrl: this.previewUrls['background'] || content.background,
+          videoUrl:
+            content.video,
+          announcementText: this.announcementText,
+          notesText: this.notesText,
+          widgets: { 
+            ...this.widgets
+           },
+          colors: {
+            ...this.colors
+          }
+        };  
+      }
+      this.API.setLoading(false);
+    }catch(e:any){
+      this.API.setLoading(false);
+      throw new Error(e.message);
+    }
+  }
+
+  
 
   ngAfterViewInit(): void {
     // Initialize the ContentModComponent with the default tab's data
     this.updateContentMod();
+
   }
 
   ngOnDestroy(): void {
@@ -168,24 +311,6 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
    * Handle tab click with smooth transition
    * @param tab - The name of the tab clicked
    */
-  onTabClick(tab: string): void {
-    if (this.selectedTab !== tab) {
-      if (this.isDirty) {
-        this.openConfirmationDialog('You have unsaved changes. Do you want to save them before switching tabs?').subscribe((result) => {
-          if (result === 'save') {
-            this.saveChanges();
-            this.switchTab(tab);
-          } else if (result === 'discard') {
-            this.discardChanges();
-            this.switchTab(tab);
-          }
-          // If 'cancel', do nothing
-        });
-      } else {
-        this.switchTab(tab);
-      }
-    }
-  }
 
   /**
    * Switch to the specified tab and update content
@@ -205,20 +330,21 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
     this.widgets = { ...tabData.widgets }; // Copy widgets state
 
     // Update new color settings
-    this.textColor = tabData.textColor;
-    this.widgetsBackgroundColor = tabData.widgetsBackgroundColor;
-    this.processingContainerColor = tabData.processingContainerColor;
-    this.processingTextColor = tabData.processingTextColor;
+    // this.textColor = tabData.textColor;
+    // this.widgetsBackgroundColor = tabData.widgetsBackgroundColor;
+    // this.processingContainerColor = tabData.processingContainerColor;
+    // this.processingTextColor = tabData.processingTextColor;
+    this.colors = tabData.colors;
 
     // Load existing preview URLs from contentData
-    this.previewUrls['Logo'] = tabData.logoUrl;
-    this.previewUrls['Background Photo'] = tabData.backgroundPhotoUrl;
-    this.previewUrls['Video'] = tabData.videoUrl;
+    this.previewUrls['logo'] = tabData.logoUrl;
+    this.previewUrls['background'] = tabData.backgroundPhotoUrl;
+    this.previewUrls['video'] = tabData.videoUrl;
 
     // Reset file inputs
-    this.selectedFiles['Video'] = null;
-    this.selectedFiles['Logo'] = null;
-    this.selectedFiles['Background Photo'] = null;
+    this.selectedFiles['video'] = null;
+    this.selectedFiles['logo'] = null;
+    this.selectedFiles['background'] = null;
 
     // Update content on ContentModComponent
     this.updateContentMod();
@@ -238,18 +364,15 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
   private updateContentMod(): void {
     if (this.contentModComponent) {
       this.contentModComponent.updateContent({
-        logoUrl: this.previewUrls['Logo'] || this.logoUrl,
+        logoUrl: this.previewUrls['logo'] || this.logoUrl,
         backgroundType: this.backgroundType,
         backgroundColor: this.backgroundColor,
-        backgroundPhotoUrl: this.previewUrls['Background Photo'],
-        videoUrl: this.previewUrls['Video'],
+        backgroundPhotoUrl: this.previewUrls['background'],
+        videoUrl: this.previewUrls['video'],
         announcementText: this.announcementText,
         notesText: this.notesText,
-        tabName: this.selectedTab,
-        textColor: this.textColor,
-        widgetsBackgroundColor: this.widgetsBackgroundColor,
-        processingContainerColor: this.processingContainerColor,
-        processingTextColor: this.processingTextColor,
+        tabName: this.contentData[this.selectedTab].title,
+        colors: this.colors,
         widgets: this.widgets,
       });
     }
@@ -266,7 +389,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
       const file = input.files[0];
 
       // Validate file types
-      if (type === 'Logo' || type === 'Background Photo') {
+      if (type === 'logo' || type === 'background') {
         const validTypes = ['image/jpeg', 'image/png'];
         if (!validTypes.includes(file.type)) {
           this.snackBar.open(`Invalid file type. Only JPG and PNG are allowed for ${type}.`, 'Close', {
@@ -278,14 +401,14 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
         }
       }
 
-      if (type === 'Video') {
+      if (type === 'video') {
         const validTypes = ['video/mp4', 'video/webm', 'video/ogg'];
         if (!validTypes.includes(file.type)) {
           this.snackBar.open('Invalid file type for Video. Allowed types: MP4, WEBM, OGG.', 'Close', {
             duration: 3000,
           });
-          this.selectedFiles['Video'] = null;
-          this.previewUrls['Video'] = null;
+          this.selectedFiles['video'] = null;
+          this.previewUrls['video'] = null;
           return;
         }
       }
@@ -307,7 +430,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
    * @param type - The type of file (Logo, Background Photo, Video)
    */
   private generatePreviewUrl(file: File, type: string): void {
-    if (type === 'Video') {
+    if (type === 'video') {
       // For videos, use the object URL
       this.previewUrls[type] = URL.createObjectURL(file);
       this.updateContentMod();
@@ -385,8 +508,8 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
   onBackgroundTypeChange(type: 'photo' | 'color'): void {
     this.backgroundType = type;
     if (type === 'color') {
-      this.selectedFiles['Background Photo'] = null;
-      this.previewUrls['Background Photo'] = null;
+      this.selectedFiles['background'] = null;
+      this.previewUrls['background'] = null;
       // Optionally reset backgroundColor if not needed
     }
     this.isDirty = true; // Mark as dirty
@@ -414,7 +537,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
     this.youtubeUrl = url;
 
     if (url === '') {
-      this.previewUrls['Video'] = null;
+      this.previewUrls['video'] = null;
       this.updateContentMod();
       return;
     }
@@ -424,13 +547,13 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
         duration: 3000,
       });
       this.youtubeUrl = '';
-      this.previewUrls['Video'] = null;
+      this.previewUrls['video'] = null;
       this.updateContentMod();
       return;
     }
 
     // Generate embed URL or handle as needed
-    this.previewUrls['Video'] = this.youtubeUrl;
+    this.previewUrls['video'] = this.youtubeUrl;
     this.updateContentMod();
     this.isDirty = true; // Mark as dirty
   }
@@ -443,10 +566,10 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
     this.videoOption = option;
     if (option === 'upload') {
       this.youtubeUrl = '';
-      this.previewUrls['Video'] = null;
+      this.previewUrls['video'] = null;
     } else {
-      this.selectedFiles['Video'] = null;
-      this.previewUrls['Video'] = null;
+      this.selectedFiles['video'] = null;
+      this.previewUrls['video'] = null;
     }
     this.isDirty = true; // Mark as dirty
     this.updateContentMod();
@@ -454,7 +577,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Get the name of the selected file for a given type
-   * @param fileType - The type of file ('Logo', 'Background Photo', 'Video')
+   * @param fileType - The type of file ('logo', 'background', 'video')
    * @returns The name of the selected file or 'No file chosen'
    */
   getFileName(fileType: string): string {
@@ -463,7 +586,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
 
   /**
    * Check if a file has been picked for a given type
-   * @param fileType - The type of file ('Logo', 'Background Photo', 'Video')
+   * @param fileType - The type of file ('logo', 'background', 'video')
    * @returns True if a file is picked, else False
    */
   isFilePicked(fileType: string): boolean {
@@ -512,84 +635,46 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
    * Handle changes in Text Color Picker
    * @param event - The input event
    */
-  onTextColorChange(event: Event): void {
+  onColorChange(key:string,event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.textColor = input.value;
+    this.colors[key] = input.value;
     this.isDirty = true; // Mark as dirty
     this.updateContentMod();
   }
 
-  /**
-   * Handle changes in Widgets Background Color Picker
-   * @param event - The input event
-   */
-  onWidgetsBackgroundColorChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.widgetsBackgroundColor = input.value;
-    this.isDirty = true; // Mark as dirty
-    this.updateContentMod();
-  }
-
-  /**
-   * Handle changes in Processing Container Background Color Picker
-   * @param event - The input event
-   */
-  onProcessingContainerColorChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.processingContainerColor = input.value;
-    this.isDirty = true; // Mark as dirty
-    this.updateContentMod();
-  }
-
-  /**
-   * Handle changes in Processing Text Color Picker
-   * @param event - The input event
-   */
-  onProcessingTextColorChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.processingTextColor = input.value;
-    this.isDirty = true; // Mark as dirty
-    this.updateContentMod();
-  }
 
   /**
    * Save changes made in the Content Settings
    */
-  saveChanges(): void {
-    console.log('Saving changes...');
-    console.log('Selected Tab:', this.selectedTab);
-    console.log('Announcement Text:', this.announcementText);
-    console.log('Notes Text:', this.notesText);
-    console.log('Selected Files:', this.selectedFiles);
-    console.log('Background Type:', this.backgroundType);
-    console.log('Background Color:', this.backgroundColor);
-    console.log('YouTube URL:', this.youtubeUrl);
-    console.log('Video Option:', this.videoOption);
-    console.log('Text Color:', this.textColor);
-    console.log('Widgets Background Color:', this.widgetsBackgroundColor);
-    console.log('Processing Container Color:', this.processingContainerColor);
-    console.log('Processing Text Color:', this.processingTextColor);
-    console.log('Widgets:', this.widgets);
+  async saveChanges() {
+  
+    await this.contentService.updateContentSettings(
+      {
+        selectedFiles:this.selectedFiles,
+        colors: this.colors,
+        widgets: this.widgets,
+        videoOption:this.videoOption,
+        videoUrl: this.youtubeUrl
+      }
+    )
 
     // Update the contentData for the current tab
     this.contentData[this.selectedTab] = {
-      logoUrl: this.previewUrls['Logo'] || this.contentData[this.selectedTab].logoUrl,
+      title: this.contentData[this.selectedTab].title,
+      logoUrl: this.previewUrls['logo'] || this.contentData[this.selectedTab].logoUrl,
       backgroundType: this.backgroundType,
       backgroundColor: this.backgroundColor,
-      backgroundPhotoUrl: this.previewUrls['Background Photo'],
+      backgroundPhotoUrl: this.previewUrls['background'],
       videoUrl:
         this.videoOption === 'url'
           ? this.youtubeUrl
-          : this.selectedFiles['Video']
-          ? this.previewUrls['Video']
+          : this.selectedFiles['video']
+          ? this.previewUrls['video']
           : null,
       announcementText: this.announcementText,
       notesText: this.notesText,
       widgets: { ...this.widgets }, // Save the widgets state
-      textColor: this.textColor,
-      widgetsBackgroundColor: this.widgetsBackgroundColor,
-      processingContainerColor: this.processingContainerColor,
-      processingTextColor: this.processingTextColor,
+      colors: {...this.colors}
     };
 
     this.showSuccessMessage('Changes have been saved successfully!');
@@ -619,20 +704,18 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
     this.widgets = { ...tabData.widgets }; // Copy widgets state
 
     // Update new color settings
-    this.textColor = tabData.textColor;
-    this.widgetsBackgroundColor = tabData.widgetsBackgroundColor;
-    this.processingContainerColor = tabData.processingContainerColor;
-    this.processingTextColor = tabData.processingTextColor;
+    this.colors = tabData.colors;
+
 
     // Load existing preview URLs from contentData
-    this.previewUrls['Logo'] = tabData.logoUrl;
-    this.previewUrls['Background Photo'] = tabData.backgroundPhotoUrl;
-    this.previewUrls['Video'] = tabData.videoUrl;
+    this.previewUrls['logo'] = tabData.logoUrl;
+    this.previewUrls['background'] = tabData.backgroundPhotoUrl;
+    this.previewUrls['video'] = tabData.videoUrl;
 
     // Reset file inputs
-    this.selectedFiles['Video'] = null;
-    this.selectedFiles['Logo'] = null;
-    this.selectedFiles['Background Photo'] = null;
+    this.selectedFiles['video'] = null;
+    this.selectedFiles['logo'] = null;
+    this.selectedFiles['background'] = null;
 
     // Update content on ContentModComponent
     this.updateContentMod();
@@ -736,20 +819,17 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
     this.widgets = { ...defaultData.widgets };
 
     // Update new color settings
-    this.textColor = defaultData.textColor;
-    this.widgetsBackgroundColor = defaultData.widgetsBackgroundColor;
-    this.processingContainerColor = defaultData.processingContainerColor;
-    this.processingTextColor = defaultData.processingTextColor;
+    this.colors = defaultData.colors;
 
     // Load existing preview URLs from contentData
-    this.previewUrls['Logo'] = defaultData.logoUrl;
-    this.previewUrls['Background Photo'] = defaultData.backgroundPhotoUrl;
-    this.previewUrls['Video'] = defaultData.videoUrl;
+    this.previewUrls['logo'] = defaultData.logoUrl;
+    this.previewUrls['background'] = defaultData.backgroundPhotoUrl;
+    this.previewUrls['video'] = defaultData.videoUrl;
 
     // Reset file inputs
-    this.selectedFiles['Video'] = null;
-    this.selectedFiles['Logo'] = null;
-    this.selectedFiles['Background Photo'] = null;
+    this.selectedFiles['video'] = null;
+    this.selectedFiles['logo'] = null;
+    this.selectedFiles['background'] = null;
 
     // Update content on ContentModComponent
     this.updateContentMod();
@@ -759,6 +839,10 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy {
 
     // Notify user
     this.showSuccessMessage('Layout has been reset to default settings.');
+  }
+
+  onTabClick(tab:string){
+    this.selectedTab = tab;
   }
 
   /**

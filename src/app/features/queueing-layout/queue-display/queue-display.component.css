@@ -1,33 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 .queue-display {
   position: relative;
   width: 100%;
-  height: 100vh; /* Full viewport height */
-  background-image: url('/assets/queue-display/background.png'); 
+  height: 100vh;
+  background-image: url('/assets/queue-display/background.png');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: poppins;
 }
 
 .queue-content {
   display: flex;
   justify-content: space-between;
-  width: 90%; 
+  width: 100%;
+  padding-bottom: 20px;
 }
 
 /* Left Section */
 .left-section {
   position: absolute;
-  top: 50px; 
-  left: 50px; 
+  top: 20px;
+  left: 50px;
 }
 
 .header {
@@ -36,7 +40,7 @@
 }
 
 .logo {
-  width: 200px; 
+  width: 200px;
   margin-right: 20px;
 }
 
@@ -46,7 +50,7 @@
   color: #fff;
   padding: 0;
   margin: 0;
-  line-height: 1; /* Adjust line-height for tighter spacing */
+  line-height: 1;
 }
 
 .title h2 {
@@ -55,7 +59,7 @@
   color: #fff;
   padding: 0;
   margin: 0;
-  line-height: 1; /* Adjust line-height for tighter spacing */
+  line-height: 1;
 }
 
 .serving-section {
@@ -70,8 +74,8 @@
 
 .counters {
   display: flex;
-  flex-direction: column; 
-  gap: 20px; 
+  flex-direction: column;
+  gap: 20px;
 }
 
 .counter {
@@ -88,7 +92,7 @@
 .counter-label {
   font-size: 1.5rem;
   font-weight: bold;
-  padding: 10px; 
+  padding: 10px;
   color: #fff !important;
   width: 100%;
 }
@@ -114,18 +118,19 @@
   font-size: 1.5rem;
   color: #212529;
 }
+
 /* Right Section */
 .right-section {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: space-between; /* Distribute widgets and the "Up Next" table */
+  justify-content: space-between;
   gap: 20px;
-  width: 45%; 
+  width: 45%;
   position: absolute;
-  top: 50px;
+  top: 20px;
   right: 50px;
-  height: calc(100% - 100px); /* Adjust height based on top and bottom padding */
+  height: calc(100% - 100px);
 }
 
 /* Centered Widgets (Currency, Time, and Weather) */
@@ -133,101 +138,147 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Vertically center within the right section */
+  justify-content: center;
   width: 100%;
-  height: auto; /* Remove fixed height */
+  height: auto;
 }
 
 /* Header Info (Currency and Time) */
 .header-info {
   display: flex;
-  flex-direction: row; 
-  gap: 10px; /* Reduce gap */
+  flex-direction: row;
+  gap: 10px;
   justify-content: center;
   width: 100%;
 }
 
 .currency-info, .time-info {
+  flex: 1;
   background-color: white;
   color: #212529;
-  padding: 10px 15px; 
+  padding: 10px 15px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
-  min-width: 150px; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  
 }
 
+/* Currency Widget */
 .currency-info {
   background-color: white;
   color: #212529;
   display: flex;
   align-items: center;
-  padding: 15px 20px; /* Adjust padding for spacing */
+  justify-content: space-between;
+  padding: 10px 20px;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  font-size: 1.5rem; /* Text size for the value */
-  min-width: 250px; /* Adjust the width as necessary */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
 }
 
 .currency-icon img {
-  width: 30px; /* Icon size */
-  height: 30px;
-  margin-right: 15px; /* Space between icon and value */
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+}
+
+.currency-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.currency-label {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2b523f;
 }
 
 .currency-value {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  gap: 5px;
 }
 
 .currency-value span:first-child {
   font-weight: bold;
+  font-size: 1.6rem;
   color: #212529;
 }
 
 .currency-value .change {
-  color: green; /* Change text color */
-  font-size: 1rem; /* Smaller font size for the percentage */
+  font-size: 1rem;
+  color: #f5a425;
 }
 
+/* Time Widget */
+.time-info {
+  flex: 2;
+  background-color: white;
+  color: #212529;
+  padding: 10px 40px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 200px;
+}
+
+.time-location {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #3b523f;
+  text-align: start;
+}
+
+.time-value {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #3b523f;
+}
 
 /* Weather Section */
 .weather-section {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   width: 100%;
 }
 
 .weather-info {
   display: flex;
-  gap: 10px; /* Reduce gap */
+  gap: 10px;
+  width: 100%;
 }
 
 .weather-item {
-  background-color: white;
-  padding: 8px 15px; /* Reduce padding */
-  font-size: 1rem;
+  background-color: #2F4A2C;
+  padding: 20px;
+  font-size: 2rem;
   font-weight: bold;
-  color: #212529;
+  color: #fff;
   border-radius: 8px;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 100%;
 }
+
 /* Up Next Section */
 .up-next-section {
-  width:90%;
-  background-color: #fff; /* Dark background for the table */
-  border-radius: 10px; /* Rounded corners */
-  padding: 15px 20px; /* Padding inside the table */
-  color: #000; /* White text color */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  font-size: 2.5rem;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px 20px;
+  color: #000;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 2rem;
 }
+
 /* Up Next List Items */
 .up-next-list {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Add space between rows */
+  gap: 15px;
 }
 
 .up-next-item {
@@ -236,11 +287,16 @@
   align-items: center;
   padding: 10px 20px;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.upnext {
+  font-weight: bold;
+  color: #2F4A2C;
 }
 
 .avatar {
-  width: 50px; /* Avatar size */
+  width: 50px;
   height: 50px;
   margin-right: 15px;
 }
@@ -248,11 +304,33 @@
 .up-next-ticket-number {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1f2e4d; /* Dark text for ticket number */
-  margin-right: 40px; /* Add space between ticket number and name */
+  color: #1f2e4d;
+  padding-right: 20%;
 }
 
 .up-next-person-name {
   font-size: 1.5rem;
+  font-weight: bold;
   color: #212529;
+}
+
+/* Announcement Section */
+.announcement-bar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #FBDF30;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #1f2e4d;
+  box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px; 
+}
+
+.announcement-bar p {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

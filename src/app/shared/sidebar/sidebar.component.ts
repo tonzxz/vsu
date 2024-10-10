@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -22,18 +22,24 @@ export class SidebarComponent implements OnInit {
   appTitle = 'Visayas State University';
   isExpanded = true;
   isMobile = false;
+  @Input() role: string = 'admin';
 
   private router = inject(Router);
   
-  menuItems: MenuItem[] = [
-    { title: 'Dashboard', route: '/admin/dashboard', active: true, icon: 'dashboard' },
-    { title: 'Content Management', route: '/admin/content-management', active: false, icon: 'content_paste' },
-    { title: 'User Management', route: '/admin/user-management', active: false, icon: 'people' },
-    { title: 'Terminal', route: '/admin/terminal', active: false, icon: 'computer' },
-    { title: 'Kiosk Management', route: '/admin/kiosk-management', active: false, icon: 'touch_app' }
-  ];
+  menuItems: MenuItem[] = []
 
   ngOnInit() {
+    this.menuItems = this.role =='admin'? [
+      { title: 'Dashboard', route: '/admin/dashboard', active: true, icon: 'dashboard' },
+      { title: 'Content Management', route: '/admin/content-management', active: false, icon: 'content_paste' },
+      { title: 'User Management', route: '/admin/user-management', active: false, icon: 'people' },
+      { title: 'Terminal', route: '/admin/terminal', active: false, icon: 'computer' },
+      { title: 'Kiosk Management', route: '/admin/kiosk-management', active: false, icon: 'touch_app' }
+    ]: [
+      { title: 'Dashboard', route: '/desk-attendant/dashboard', active: true, icon: 'dashboard' },
+      { title: 'Content Management', route: '/desk-attendant/contentmgmt', active: false, icon: 'content_paste' },
+      { title: 'Terminal Management', route: '/desk-attendant/terminalmgmt', active: false, icon: 'computer' },
+    ];
     this.checkScreenSize();
     this.updateActiveItem();
 

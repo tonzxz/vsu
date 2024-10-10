@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SidebarComponent } from "../../shared/sidebar/sidebar.component";
 import { HeaderComponent } from '../../shared/header/header.component';
 
@@ -11,5 +11,6 @@ import { HeaderComponent } from '../../shared/header/header.component';
   styleUrls: ['./admin-layout.component.css']
 })
 export class AdminLayoutComponent {
-  // Removed isSidebarOpen and toggleSidebar()
+  constructor(private route: ActivatedRoute){}
+  role = this.route.snapshot.data['requiredRole'];
 }

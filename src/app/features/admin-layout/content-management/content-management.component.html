@@ -1,0 +1,315 @@
+<section class="w-full h-full flex flex-col">
+        <div class="  rounded-3xl shadow-xl overflow-hidden relative">
+            <img src="assets/logo/vsuHeader.png" class="w-full h-full object-contain ">
+        </div>
+        <!-- Main Container -->
+        <div class="flex py-5 flex-row w-full flex-1 gap-5">
+            <!-- Edit Contents -->
+            <div class="flex flex-col flex-[1_1_0%] gap-1 h-full bg-white shadow-md rounded-xl border-2 border-solid hover:border-green-500 py-3 px-3">
+                <div class="text-xl px-1"> Edit Contents</div>
+                <div class="px-1 font-thin">Change queue display layout by adjusting these settings.</div>
+                <!-- Uploads Collapsable -->
+                <div class="w-full
+                    border-solid border-2 border-gray-300 text-gray-500
+                    transition-all 
+                       hover:text-green-700
+                    rounded-lg
+                "
+                [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.uploads
+            }"
+                >
+                    <div (click)="toggleCollapse('uploads')" class="text-lg  px-2 py-2 flex items-center justify-between">
+                        <span>Uploads</span>
+                        <span *ngIf="!collapsables.uploads" class="material-icons"> keyboard_arrow_down </span>
+                    </div>
+                    <div *ngIf="collapsables.uploads" class="px-1 pb-2 gap-1 flex flex-col">
+                        <!-- Logo Input -->
+                        <div class="flex flex-col">
+                            <label for="logo" class=" text-gray-800 px-1">Logo</label>
+                            <div (click)="logoInput.click()"  class="w-full h-12 rounded-md 
+                                transition-all
+                                hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                text-gray-400
+                                border-gray-300 border-2 border-solid 
+                                bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
+                                    <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.logo != undefined ? files.logo.name : 'Choose Logo Image'}}</span>
+                                    <span class="material-icons"> upload_file </span>
+                                </div>
+                            <input (change)="onFileChange('logo', $event)" accept="image/*" name="logo"  #logoInput class="hidden" type="file">
+                        </div>
+                        <!-- Background Image Input -->
+                        <div class="flex flex-col">
+                            <label for="background" class=" text-gray-800 px-1">Background Image</label>
+                            <div (click)="bgInput.click()"   class="w-full h-12 rounded-md 
+                                transition-all
+                                hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                text-gray-400
+                                border-gray-300 border-2 border-solid 
+                                bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
+                                <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.background != undefined ? files.background.name : 'Choose Background Image'}}</span>
+                                    <span class="material-icons"> upload_file </span>
+                                </div>
+                            <input (change)="onFileChange('background', $event)" accept="image/*" name="background"  #bgInput class="hidden" type="file">
+                        </div>
+                        <!-- Video Input -->
+                        <div (click)="videoInput.click()" class="flex flex-col">
+                            <label for="video" class=" text-gray-800 px-1">Video</label>
+                            <div  class="w-full h-12 rounded-md 
+                                transition-all
+                                hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                text-gray-400
+                                border-gray-300 border-2 border-solid 
+                                bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
+                                    <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.video != undefined ? files.video.name : 'Choose Video File'}}</span>
+                                    <span class="material-icons"> upload_file </span>
+                                </div>
+                            <input (change)="onFileChange('video', $event)" accept="video/*" name="video" #videoInput class="hidden" type="file">
+                        </div>
+                    </div>
+                </div>
+                <!-- Widgets  Collasable-->
+                <div class="w-full
+                    border-solid border-2 border-gray-300 text-gray-500
+                    transition-all 
+                    hover:text-green-700
+                    rounded-lg
+                "
+                [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.widgets}"
+                >
+                    <div (click)="toggleCollapse('widgets')" class="text-lg  px-2 py-2 flex items-center justify-between">
+                        <div class="flex justify-between items-center w-full">
+                                <span>Widgets</span>
+                                <div class="ml-2 flex gap-2 text-green-600 animate-pulse">
+                                    <span *ngIf="toggles.time" class="material-icons"> paid </span>
+                                    <span *ngIf="toggles.weather" class="material-icons"> sunny </span>
+                                    <span *ngIf="toggles.currency" class="material-icons"> payments </span>
+                                </div>
+                            </div>
+                        <span *ngIf="!collapsables.widgets" class="material-icons"> keyboard_arrow_down </span>
+                    </div>
+                    <div *ngIf="collapsables.widgets" class="flex flex-col px-1 pb-2 gap-1" >             
+                        <!-- Time -->
+                        <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
+                            <div class="flex flex-col">
+                                <div class="flex flex-row w-full justify-between mb-1" >
+                                    <label for="announcement" class="text-lg text-gray-800 px-1">Time/Clock</label>
+                                    <div>
+                                        <input [(ngModel)]="toggles.time" #timeToggle type="checkbox" id="toggle" class="hidden">
+                                        <div (click)="timeToggle.click()" class="flex items-center cursor-pointer">
+                                            <div class="relative">
+                                                <div class="block  w-12 h-7 rounded-full "
+                                                    [ngClass]="{
+                                                        'bg-green-500': toggles.time,
+                                                        'bg-gray-400': !toggles.time
+                                                    }"
+                                                ></div>
+                                                <div class="dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-300 ease-in-out"
+                                                    [ngClass]="{'translate-x-5': toggles.time}"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Weather -->
+                        <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
+                            <div class="flex flex-col">
+                                <div class="flex flex-row w-full justify-between mb-1" >
+                                    <label for="announcement" class="text-lg text-gray-800 px-1">Weather View</label>
+                                    <div>
+                                        <input [(ngModel)]="toggles.weather" #weatherToggle type="checkbox" id="toggle" class="hidden">
+                                        <div (click)="weatherToggle.click()" class="flex items-center cursor-pointer">
+                                            <div class="relative">
+                                                <div class="block  w-12 h-7 rounded-full "
+                                                    [ngClass]="{
+                                                        'bg-green-500': toggles.weather,
+                                                        'bg-gray-400': !toggles.weather
+                                                    }"
+                                                ></div>
+                                                <div class="dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-300 ease-in-out"
+                                                    [ngClass]="{'translate-x-5': toggles.weather}"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Currency -->
+                        <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
+                            <div class="flex flex-col">
+                                <div class="flex flex-row w-full justify-between mb-1" >
+                                    <label for="announcement" class="text-lg text-gray-800 px-1">Currency Converter</label>
+                                    <div>
+                                        <input [(ngModel)]="toggles.currency" #currencyToggle type="checkbox" id="toggle" class="hidden">
+                                        <div (click)="currencyToggle.click()" class="flex items-center cursor-pointer">
+                                            <div class="relative">
+                                                <div class="block  w-12 h-7 rounded-full "
+                                                    [ngClass]="{
+                                                        'bg-green-500': toggles.currency,
+                                                        'bg-gray-400': !toggles.currency
+                                                    }"
+                                                ></div>
+                                                <div class="dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-300 ease-in-out"
+                                                    [ngClass]="{'translate-x-5': toggles.currency}"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Colors Collapsable -->
+                <div class="w-full
+                    border-solid border-2 border-gray-300 text-gray-500
+                    transition-all 
+                   hover:text-green-700
+                    rounded-lg
+                "
+                [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.colors}"
+                >
+                    <div (click)="toggleCollapse('colors')" class="text-lg  px-2 py-2 flex items-center justify-between">
+                        <div class="flex justify-between items-center w-full">
+                            <span>Colors</span>
+                            <div class="ml-2 flex gap-2">
+                                <div class="rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.primary_bg}"> </div>
+                                <div class="rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.secondary_bg}"> </div>
+                                <div class="rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.tertiary_bg}"> </div>
+                                <div class="rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.primary_text}"> </div>
+                                <div class="rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.secondary_text}"> </div>
+                                <div class="rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.tertiary_text}"> </div>
+                            </div>
+                        </div>
+                        <span *ngIf="!collapsables.colors" class="material-icons"> keyboard_arrow_down </span>
+                    </div>
+                    <div *ngIf="collapsables.colors" class="px-1 pb-2 ">
+                        <div class="flex gap-1">
+                            <!-- Background Colors -->
+                            <div class="flex-1 flex flex-col gap-1">
+                                <!-- Primary Background Input -->
+                                <div class="flex flex-col">
+                                    <label  class=" text-gray-800 px-1">Primary Background</label>
+                                    <input [(ngModel)]="colors.primary_bg" class="w-full h-12 rounded-md 
+                                    transition-all
+                                    hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                    text-gray-400
+                                    border-gray-300 border-2 border-solid 
+                                    bg-white cursor-pointer select-none" type="color">
+                                </div>
+                                <!-- Secondary Background Input -->
+                                <div class="flex flex-col">
+                                    <label class=" text-gray-800 px-1">Secondary Background</label>
+                                    <input [(ngModel)]="colors.secondary_bg" class="w-full h-12 rounded-md 
+                                    transition-all
+                                    hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                    text-gray-400
+                                    border-gray-300 border-2 border-solid 
+                                    bg-white cursor-pointer select-none" type="color">
+                                </div>
+                                <!-- Tertiary Background Input -->
+                                <div  class="flex flex-col">
+                                    <label  class=" text-gray-800 px-1">Tertiary Background</label>
+                                    <input [(ngModel)]="colors.tertiary_bg" class="w-full h-12 rounded-md 
+                                    transition-all
+                                    hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                    text-gray-400
+                                    border-gray-300 border-2 border-solid 
+                                    bg-white cursor-pointer select-none" type="color">
+                                </div>
+                            </div>
+                            <!-- Text Colors -->
+                            <div class="flex-1 flex flex-col gap-1">
+                                <!-- Primary Background Input -->
+                                <div class="flex flex-col ">
+                                    <label  class=" text-gray-800 px-1">Primary Text</label>
+                                    <input [(ngModel)]="colors.primary_text" class="w-full h-12 rounded-md 
+                                    transition-all
+                                    hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                    text-gray-400
+                                    border-gray-300 border-2 border-solid 
+                                    bg-white cursor-pointer select-none" type="color">
+                                </div>
+                                <!-- Secondary Background Input -->
+                                <div class="flex flex-col">
+                                    <label class=" text-gray-800 px-1">Secondary Text</label>
+                                    <input [(ngModel)]="colors.secondary_text" class="w-full h-12 rounded-md 
+                                    transition-all
+                                    hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                    text-gray-400
+                                    border-gray-300 border-2 border-solid 
+                                    bg-white cursor-pointer select-none" type="color">
+                                </div>
+                                <!-- Tertiary Background Input -->
+                                <div  class="flex flex-col">
+                                    <label  class=" text-gray-800 px-1">Tertiary Text</label>
+                                    <input [(ngModel)]="colors.tertiary_text" class="w-full h-12 rounded-md 
+                                    transition-all
+                                    hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                    text-gray-400
+                                    border-gray-300 border-2 border-solid 
+                                    bg-white cursor-pointer select-none" type="color">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>            
+                <!-- Announcements Collapsable -->
+                <div class="w-full
+                    border-solid border-2 border-gray-300 text-gray-500
+                    transition-all 
+                    hover:border-green-600   hover:text-green-700
+                    rounded-lg
+                "
+                [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.announcements}"
+                >
+                    <div (click)="toggleCollapse('announcements')" class="text-lg  px-2 py-2 flex items-center justify-between">
+                        <div class="flex flex-row justify-between w-full gap-2 mb-1" >
+                            <label for="announcement" class="text-lg text-gray-800 px-1">Announcements</label>
+                            <div>
+                                <input [(ngModel)]="toggles.announcements" #announcementToggle type="checkbox" id="toggle" class="hidden">
+                                <div (click)="announcementToggle.click()" class="flex items-center cursor-pointer">
+                                    <div class="relative">
+                                        <div class="block  w-12 h-7 rounded-full "
+                                            [ngClass]="{
+                                                'bg-green-500': toggles.announcements,
+                                                'bg-gray-400': !toggles.announcements
+                                            }"
+                                        ></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-300 ease-in-out"
+                                            [ngClass]="{'translate-x-5': toggles.announcements}"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span *ngIf="!collapsables.announcements" class="material-icons"> keyboard_arrow_down </span>
+                    </div>
+                    <div class="flex flex-col pb-2 px-1" *ngIf="collapsables.announcements">
+                        <textarea
+                        placeholder="This will show on queue displays once announcements are enabled"
+                        name="announcement"
+                        class="w-full h-24 rounded-md
+                        py-1 
+                        transition-all
+                        hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                        text-gray-400
+                        border-gray-300 border-2 border-solid 
+                        bg-white cursor-pointer select-none flex items-center px-2 justify-between"
+                        ></textarea>
+                    </div>
+                </div>
+                <!-- ACTION BUTTONS -->
+                <div class="flex gap-2 justify-end mt-2">
+                    <button class="bg-red-700 px-4 py-2 rounded-lg text-white ">Revert Changes</button>
+                    <button class="bg-green-700 px-4 py-2 rounded-lg text-white ">Publish Changes</button>
+                </div>
+            </div>
+            <!-- Content View -->
+            <div class="flex-[3_3_0%] h-full bg-green-950 shadow-md rounded-xl">
+
+            </div>
+        </div>
+</section>

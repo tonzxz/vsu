@@ -89,7 +89,7 @@ export class QueueService {
         },
         conditions:`WHERE id = '${id}'`
       });
-      if(!updateResponse.success) throw new Error('Something went wrong. Please try again.');
+      if(!updateResponse.success) throw new Error();
   
       const createResponse = await this.API.create({
         tables:'attended_queue',
@@ -99,19 +99,34 @@ export class QueueService {
           status:'ongoing'
         }
       });
-      if(!createResponse.success) throw new Error('Something went wrong. Please try again.');
+      if(!createResponse.success) throw new Error();
     }catch(e){
       throw new Error('Something went wrong. Please try again');
     }
   }
 
-  async resolveAttendedQueue(id:string){
-    
+  async resolveAttendedQueue(attended_queuue_id:string, remark:'finished'|'skipped'){
+    const timestamp  = new Date();
+    try{
+      const updateResponse = await this.API.update({
+        tables: 'attended_queue',
+        values:{
+          finished_on: remark == 'skipped' ? null : timestamp.toISOString(),
+          status: remark,
+        },
+        conditions:`WHERE id = '${attended_queuue_id}'`
+      });
+      if(!updateResponse.success) throw new Error();
+    }catch(e){
+      throw new Error('Something went wrong. Please try again');
+    }
   }
 
-  async nextQueue(current_id:string){
+  async nextQueue(attended_queuue_id?:string, remark?:'finished'|'skipped'){
     if(this.queue.length <= 0) return;
-    await this.resolveAttendedQueue(current_id);
+    if(attended_queuue_id && remark){
+      await this.resolveAttendedQueue(attended_queuue_id,remark);
+    }
     this.takeFromQueue(this.queue[0].division_id);
     await this.addQueueToAttended(this.queue[0].id);
   }

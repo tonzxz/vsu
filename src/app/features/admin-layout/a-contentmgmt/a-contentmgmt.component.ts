@@ -162,6 +162,8 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy, OnInit {
 
   divisions:{id:string, name:string}[] =[];
 
+  selectedDivision = 0;
+
   contents:any[] =[];
 
   // Subscription for dialog
@@ -190,13 +192,50 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy, OnInit {
     this.loadSettings();
   }
 
+  async loadDivisionSettings(division:string){
+    const content = this.contents.find((content)=>{
+      return content.id == division
+    })
+    if(content == undefined ){
+      return;
+    }
+    this.colors = {
+      'primary_text':content.primary_text,
+      'secondary_text':content.secondary_text,
+      'tertiary_text':content.tertiary_text,
+      'primary_bg': content.primary_bg,
+      'secondary_bg': content.secondary_bg,
+      'tertiary_bg': content.tertiary_bg,
+    }
 
+    this.widgets = { 
+      weather: content.weather == 't',
+      time: content.time == 't',
+      currency: content.currency == 't',
+     }
+
+    this.contentData[this.selectedTab] = {
+      title: this.divisions[0].name,
+      logoUrl: this.previewUrls['logo'] || content.logo,
+      backgroundType: content.background != null ? 'photo':'color',
+      backgroundColor: this.colors['primary_bg'],
+      backgroundPhotoUrl: this.previewUrls['background'] || content.background,
+      videoUrl:
+        content.video,
+      announcementText: this.announcementText,
+      notesText: this.notesText,
+      widgets: { 
+       ...this.widgets
+       },
+      colors: {...this.colors}
+    };   
+  }
 
   async loadSettings(){
     const user = this.auth.getUser();
     this.API.setLoading(true);
     try{
-      if(user.role == 'superadmin'){
+      if(this.isSuperAdmin){
         const divisions = await this.contentService.getDivisions();
         this.divisions = divisions.reduce((prev:any,curr:any)=>{
           if(curr.id != user.division_id){
@@ -265,8 +304,7 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy, OnInit {
           time: content.time == 't',
           currency: content.currency == 't',
          }
-        
-         console.log(this.colors)
+
 
         this.contentData[this.selectedTab] = {
           title:  this.contentData[this.selectedTab].title,
@@ -841,8 +879,9 @@ export class AContentmgmtComponent implements AfterViewInit, OnDestroy, OnInit {
     this.showSuccessMessage('Layout has been reset to default settings.');
   }
 
-  onTabClick(tab:string){
-    this.selectedTab = tab;
+  onTabClick(tab:number){
+    this.selectedDivision = tab;
+    this.loadDivisionSettings(this.divisions[this.selectedDivision].id);
   }
 
   /**

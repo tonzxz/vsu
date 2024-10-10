@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UswagonCoreService } from 'uswagon-core';
+import { CreateAccountModalComponent } from "./create-account-modal/create-account-modal.component";
 
 interface User {
   id: string;
@@ -26,7 +27,7 @@ interface PerformanceMetrics {
   templateUrl: './a-user-management.component.html',
   styleUrls: ['./a-user-management.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CreateAccountModalComponent],
 })
 export class AUserManagementComponent implements OnInit {
   users: User[] = [];
@@ -48,6 +49,8 @@ export class AUserManagementComponent implements OnInit {
     this.fetchUsers();
   }
 
+  // get
+
   async fetchUsers() {
     const data = await this.API.read({
       selectors: [
@@ -68,11 +71,17 @@ export class AUserManagementComponent implements OnInit {
     if (data.success && data.output.length > 0) {
       this.users = data.output;
       this.filteredUsers = [...this.users];
-      this.setCurrentUser(this.users[0]); // Set the first user as current user
+      this.setCurrentUser(this.users[0]); 
       console.log('Users fetched:', this.users);
     } else {
       console.error('No users found or query failed');
     }
+  }
+
+  // create account
+
+  async createUsers() {
+    
   }
 
   searchUsers() {
@@ -100,4 +109,7 @@ export class AUserManagementComponent implements OnInit {
   viewUserDetails(user: User) {
     this.setCurrentUser(user);
   }
+
+
+
 }

@@ -11,17 +11,17 @@
       <!-- Tabs Navigation -->
       <nav *ngIf="isSuperAdmin" class="flex" role="tablist">
         <button
-          *ngFor="let tab of ['registrar', 'cashier', 'accountant']"
-          (click)="onTabClick(tab)"
+          *ngFor="let tab of divisions; let i = index"
+          (click)="onTabClick(i)"
           [ngClass]="{
-            'bg-[#283c1c] text-white': selectedTab === tab,
-            'bg-gray-100 text-gray-700 hover:bg-[#3c4c3a] hover:text-white': selectedTab !== tab
+            'bg-[#283c1c] text-white': selectedDivision === i,
+            'bg-gray-100 text-gray-700 hover:bg-[#3c4c3a] hover:text-white': selectedDivision !== i
           }"
           class="flex-1 py-3 px-4 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#283c1c]"
-          [attr.aria-selected]="selectedTab === tab"
+          [attr.aria-selected]="selectedDivision === i"
           role="tab"
         >
-          {{ contentData[tab].title }}
+          {{ tab.name}}
         </button>
       </nav>
 

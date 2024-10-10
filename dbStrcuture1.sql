@@ -49,18 +49,14 @@ CREATE TABLE services (
 CREATE TABLE terminals (
     id VARCHAR(32) PRIMARY KEY,
     division_id VARCHAR(32),
-    desk_attendant_id VARCHAR(32),
     number INT,
-    in_maintenance BOOLEAN,
+    in_online BOOLEAN,
     FOREIGN KEY (division_id) REFERENCES divisions(id) ON DELETE CASCADE,
-    FOREIGN KEY (desk_attendant_id) REFERENCES desk_attendants(id) ON DELETE CASCADE
 );
 
--- update terminal to is_online
 
-ALTER TABLE terminals
-RENAME COLUMN in_maintenance TO is_online;
 
+ALTER TABLE terminals DROP COLUMN desk_attendant_id;
 
 
 
@@ -153,4 +149,18 @@ CREATE TABLE client_reviews (
     field VARCHAR(255),
     FOREIGN KEY (terminal_id) REFERENCES terminals(id) ON DELETE CASCADE,
     FOREIGN KEY (queue_id) REFERENCES queue(id) ON DELETE CASCADE
+);
+
+
+
+-- terminal_sessions
+
+CREATE Table terminal_sessions(
+    id VARCHAR(32) PRIMARY KEY,
+    terminal_id VARCHAR(32),
+    attendant_id VARCHAR(32),
+    start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP DEFAULT NULL,
+    FOREIGN KEY (terminal_id) REFERENCES terminals(id) ON DELETE CASCADE,
+    FOREIGN KEY (attendant_id) REFERENCES desk_attendants(id) ON DELETE CASCADE
 );

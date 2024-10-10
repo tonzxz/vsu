@@ -26,12 +26,12 @@ interface PerformanceMetrics {
 
 @Component({
   selector: 'app-user-management',
-  templateUrl: './a-user-management.component.html',
-  styleUrls: ['./a-user-management.component.css'],
+  templateUrl: './user-management.component.html',
+  styleUrls: ['./user-management.component.css'],
   standalone: true,
   imports: [CommonModule, FormsModule, CreateAccountModalComponent],
 })
-export class AUserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit {
   users: User[] = [];
   filteredUsers: User[] = [];
   searchQuery = '';

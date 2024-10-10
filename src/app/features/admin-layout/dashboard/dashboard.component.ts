@@ -38,10 +38,10 @@ interface KioskStatus {
   selector: 'app-admin-dashboard',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './a-dashboard.component.html',
-  styleUrls: ['./a-dashboard.component.css']
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class ADashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currentUser: User | null = null;
 
   @ViewChildren('dailyPerformanceCanvas') dailyPerformanceCanvases!: QueryList<ElementRef>;

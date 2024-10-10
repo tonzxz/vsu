@@ -10,12 +10,12 @@ interface Counter {
 
 @Component({
   selector: 'app-terminal-management',  // Component selector used in templates
-  templateUrl: './a-terminal-management.component.html',  // HTML template for the component
-  styleUrls: ['./a-terminal-management.component.css'],  // CSS for the component
+  templateUrl: './terminal-management.component.html',  // HTML template for the component
+  styleUrls: ['./terminal-management.component.css'],  // CSS for the component
   standalone: true,  // Allows the component to be used without being declared in a module
   imports: [CommonModule]  // Importing CommonModule to use Angular common directives
 })
-export class ATerminalManagementComponent implements OnInit {
+export class TerminalManagementComponent implements OnInit {
 
   // Dictionary to hold counters for each tab
   counters: { [key: string]: Counter[] } = {

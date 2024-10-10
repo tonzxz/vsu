@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { LoginLayoutComponent } from './features/auth/login-layout/login-layout.component'; 
 import { LoginAsComponent } from './features/auth/login-layout/login-as/login-as.component';
 import { AdminLayoutComponent } from './features/admin-layout/admin-layout.component';
-import { ADashboardComponent } from './features/admin-layout/a-dashboard/a-dashboard.component';
+import { DashboardComponent } from './features/admin-layout/dashboard/dashboard.component';
 import { DeskAttendantLayoutComponent } from './features/desk-attendant-layout/desk-attendant-layout.component';
 import { DaDashboardComponent } from './features/desk-attendant-layout/da-dashboard/da-dashboard.component';
 import { ContentManagementComponent } from './features/admin-layout/content-management/content-management.component';
@@ -12,9 +12,10 @@ import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection
 import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
 import { QueueSelectionComponent } from './features/queueing-layout/queue-selection/queue-selection.component';
 import { QueueDisplayComponent } from './features/queueing-layout/queue-display/queue-display.component';
-import { AUserManagementComponent } from './features/admin-layout/a-user-management/a-user-management.component';
-import { ATerminalManagementComponent } from './features/admin-layout/a-terminal-management/a-terminal-management.component';
-import { AKioskManagementComponent } from './features/admin-layout/a-kiosk-management/a-kiosk-management.component';
+import { UserManagementComponent } from './features/admin-layout/user-management/user-management.component';
+import { TerminalManagementComponent } from './features/admin-layout/terminal-management/terminal-management.component';
+import { KioskManagementComponent } from './features/admin-layout/kiosk-management/kiosk-management.component';
+
 import { AuthGuard } from './shared/auth.guard';
 
 export const routes: Routes = [
@@ -37,11 +38,11 @@ export const routes: Routes = [
     data: { requiredRole: 'admin',  },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: ADashboardComponent },
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'content-management', component: ContentManagementComponent },
-      { path: 'user-management', component: AUserManagementComponent },
-      { path: 'terminal', component: ATerminalManagementComponent },
-      { path: 'kiosk-management', component: AKioskManagementComponent },
+      { path: 'user-management', component: UserManagementComponent },
+      { path: 'terminal', component: TerminalManagementComponent },
+      { path: 'kiosk-management', component: KioskManagementComponent },
     ]
   },
   {

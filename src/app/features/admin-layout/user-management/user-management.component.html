@@ -1,4 +1,4 @@
-<main class="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 px-14 py-6">
+<main class="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 ">
   <div class=" mx-auto space-y-6">
     <div class="  rounded-3xl shadow-xl overflow-hidden relative">
       <img src="assets/logo/vsuHeader.png" class="w-full h-full object-contain ">
@@ -23,28 +23,27 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <p class="text-sm font-medium text-gray-500 mb-1">Total Check-ins</p>
-            <p class="text-2xl font-bold text-gray-800">43,212</p>
+            <p class="text-lg font-bold text-gray-800">Not Available</p>
           </div>
           <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <p class="text-sm font-medium text-gray-500 mb-1">Avg Check-in Time</p>
-            <p class="text-2xl font-bold text-gray-800">43,212</p>
+            <p class="text-lg font-bold text-gray-800">Not Available</p>
           </div>
           <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <p class="text-sm font-medium text-gray-500 mb-1">Today's Check-ins</p>
-            <p class="text-2xl font-bold text-gray-800">1,345</p>
+            <p class="text-lg font-bold text-gray-800">Not Available</p>
           </div>
           <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <p class="text-sm font-medium text-gray-500 mb-1">This Week's Check-ins</p>
-            <p class="text-2xl font-bold text-gray-800">12,124</p>
+            <p class="text-lg font-bold text-gray-800">Not Available</p>
           </div>
           <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <p class="text-sm font-medium text-gray-500 mb-1">Avg Service Time</p>
-            <p class="text-2xl font-bold text-gray-800">7:30 mins</p>
+            <p class="text-lg font-bold text-gray-800">Not Available</p>
           </div>
           <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <p class="text-sm font-medium text-gray-500 mb-1">Rating</p>
             <div class="flex items-center">
-              <p class="text-2xl font-bold text-gray-800 mr-2">4</p>
               <div class="flex text-yellow-400">
                 <span *ngFor="let star of [1,2,3,4,5]">★</span>
               </div>
@@ -104,7 +103,7 @@
         </td>
         <td class="p-3">
           <div class="flex space-x-2">
-            
+
             <button (click)="editUser(user)" class="text-green-600 hover:text-green-800 transition-colors duration-200 p-1 rounded-full hover:bg-green-100">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-5 w-5">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536-10.607 10.607a2 2 0 01-.879.516l-4.243 1.061a1 1 0 01-1.213-1.213l1.06-4.243a2 2 0 01.517-.879l10.606-10.607zm1.414-1.414a2 2 0 012.828 0l1.414 1.414a2 2 0 010 2.828l-1.414 1.414-3.536-3.536L16.646 3.818z" />

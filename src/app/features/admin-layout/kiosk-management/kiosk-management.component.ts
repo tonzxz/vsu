@@ -12,12 +12,12 @@ interface Counter {
 
 @Component({
   selector: 'app-a-kiosk-management',
-  templateUrl: './a-kiosk-management.component.html',
-  styleUrls: ['./a-kiosk-management.component.css'],
+  templateUrl: './kiosk-management.component.html',
+  styleUrls: ['./kiosk-management.component.css'],
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class AKioskManagementComponent implements OnInit {
+export class KioskManagementComponent implements OnInit {
   counters: { [key: string]: Counter[] } = {
     'Registrar': [],
     'Cash Division': [],

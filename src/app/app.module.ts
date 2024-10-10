@@ -6,9 +6,9 @@ import { FormsModule } from '@angular/forms';
 // Components
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
-import { AUserManagementComponent } from './features/admin-layout/a-user-management/a-user-management.component';
-import { ATerminalManagementComponent } from './features/admin-layout/a-terminal-management/a-terminal-management.component';
-import { CreateAccountModalComponent } from './features/admin-layout/a-user-management/create-account-modal/create-account-modal.component';
+import { UserManagementComponent } from './features/admin-layout/user-management/user-management.component';
+import { TerminalManagementComponent } from './features/admin-layout/terminal-management/terminal-management.component';
+import { CreateAccountModalComponent } from './features/admin-layout/user-management/create-account-modal/create-account-modal.component';
 import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection/kiosk-selection.component';
 import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
 

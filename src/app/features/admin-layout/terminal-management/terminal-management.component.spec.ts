@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ATerminalManagementComponent } from './a-terminal-management.component';
+import { TerminalManagementComponent } from './terminal-management.component';
 
 describe('ATerminalManagementComponent', () => {
-  let component: ATerminalManagementComponent;
-  let fixture: ComponentFixture<ATerminalManagementComponent>;
+  let component: TerminalManagementComponent;
+  let fixture: ComponentFixture<TerminalManagementComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ATerminalManagementComponent]
+      imports: [TerminalManagementComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ATerminalManagementComponent);
+    fixture = TestBed.createComponent(TerminalManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

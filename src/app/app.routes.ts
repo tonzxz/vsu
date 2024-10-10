@@ -6,8 +6,7 @@ import { AdminLayoutComponent } from './features/admin-layout/admin-layout.compo
 import { ADashboardComponent } from './features/admin-layout/a-dashboard/a-dashboard.component';
 import { DeskAttendantLayoutComponent } from './features/desk-attendant-layout/desk-attendant-layout.component';
 import { DaDashboardComponent } from './features/desk-attendant-layout/da-dashboard/da-dashboard.component';
-import { DaContentmanagementComponent } from './features/desk-attendant-layout/da-contentmanagement/da-contentmanagement.component';
-import { AContentmgmtComponent } from './features/admin-layout/a-contentmgmt/a-contentmgmt.component';
+import { ContentManagementComponent } from './features/admin-layout/content-management/content-management.component';
 import { DaTerminalmgmtComponent } from './features/desk-attendant-layout/da-terminalmgmt/da-terminalmgmt.component';
 import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection/kiosk-selection.component';
 import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
@@ -35,11 +34,11 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminLayoutComponent,
     canActivate: [AuthGuard],
-    data: { requiredRole: 'admin' },
+    data: { requiredRole: 'admin',  },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: ADashboardComponent },
-      { path: 'content-management', component: AContentmgmtComponent },
+      { path: 'content-management', component: ContentManagementComponent },
       { path: 'user-management', component: AUserManagementComponent },
       { path: 'terminal', component: ATerminalManagementComponent },
       { path: 'kiosk-management', component: AKioskManagementComponent },
@@ -59,7 +58,6 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DaDashboardComponent },
-      { path: 'contentmgmt', component: DaContentmanagementComponent },
       { path: 'terminalmgmt', component: DaTerminalmgmtComponent }
     ]
   },

@@ -87,6 +87,12 @@
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-200">
+
+      <tr *ngIf="filteredUsers.length === 0">
+        <td colspan="6" class="p-5 text-center text-gray-500">No users put a fuckingg good lottie file hereee!</td>
+      </tr>
+
+
       <tr (click)="viewUserDetails(user)" *ngFor="let user of filteredUsers; let even = even" 
           [ngClass]="{'bg-gray-50': even}"
           class="hover:bg-green-300 hover:text-white transition-colors duration-200">

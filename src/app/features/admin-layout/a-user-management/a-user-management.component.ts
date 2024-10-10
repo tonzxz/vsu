@@ -6,11 +6,13 @@ import { CreateAccountModalComponent } from "./create-account-modal/create-accou
 
 interface User {
   id: string;
-  number: string;
-  fullname: string;
   username: string;
+  fullname: string;
   division: string;
   is_online: boolean;
+  number: string;
+  profile?: string;
+  password?: string;
 }
 
 interface PerformanceMetrics {
@@ -42,46 +44,63 @@ export class AUserManagementComponent implements OnInit {
     rating: 4
   };
   currentUser: User | null = null;
+  showModal = false;
+  selectedUser: User | null = null;
 
   constructor(private API: UswagonCoreService) {}
 
   ngOnInit() {
     this.fetchUsers();
+ 
+
   }
 
-  // get
+
 
   async fetchUsers() {
     const data = await this.API.read({
       selectors: [
-        'terminals.id',
-        'terminals.number',
-        'desk_attendants.fullname',
-        'desk_attendants.username',
-        'divisions.name AS division',
-        'terminals.is_online'
+        '*'
       ],
-      tables: 'terminals',
-      conditions: `
-        LEFT JOIN desk_attendants ON terminals.desk_attendant_id = desk_attendants.id
-        LEFT JOIN divisions ON terminals.division_id = divisions.id
-      `
+      tables: 'desk_attendants',
+      conditions: ``
     });
-
+  
     if (data.success && data.output.length > 0) {
-      this.users = data.output;
+      this.users = await Promise.all(data.output.map(async (user: {
+        password: any;
+        fullname: any;
+        username: any;
+        id: string;
+        profile: string;
+        division: string;
+        is_online: boolean;
+      }) => {
+
+        const decryptedPassword = await this.API.decrypt(user.password);
+      
+        return {
+          id: user.id,
+          fullname: user.fullname,
+          username: user.username,
+          profile: this.getImageURL(user.profile),
+          password: decryptedPassword, 
+          division: user.division || 'Not Available',
+          is_online: user.is_online
+        };
+      }));
+      
       this.filteredUsers = [...this.users];
-      this.setCurrentUser(this.users[0]); 
+      this.setCurrentUser(this.users[0]);
       console.log('Users fetched:', this.users);
     } else {
       console.error('No users found or query failed');
     }
   }
-
-  // create account
-
-  async createUsers() {
-    
+  
+  
+  getImageURL(file: string): string | undefined {
+    return this.API.getFileURL(file);
   }
 
   searchUsers() {
@@ -95,21 +114,78 @@ export class AUserManagementComponent implements OnInit {
 
   setCurrentUser(user: User) {
     this.currentUser = user;
-    // You might want to fetch or update performance metrics for the selected user here
   }
 
   createNewAccount() {
-    // Implement create new account functionality
+    this.selectedUser = null;
+    this.showModal = true;
   }
 
-  deleteUser(user: User) {
-    // Implement delete user functionality
+  async deleteUser(user: User) {
+   
+    const confirmed = confirm(`Are you sure you want to delete ${user.fullname}?`);
+
+    if (!confirmed) {
+      return; 
+    }
+
+    try {
+      if (!user.id) {
+        console.error('User ID is undefined');
+        alert('Failed to delete user: User ID is undefined');
+        return;
+      }
+
+      const response = await this.API.delete({
+        tables: 'desk_attendants',
+        conditions: `WHERE id = '${user.id}'` 
+      });
+
+      if (response && response.success) {
+        this.users = this.users.filter(u => u.id !== user.id);
+        this.filteredUsers = this.filteredUsers.filter(u => u.id !== user.id);
+
+        console.log('User deleted successfully:', user.fullname);
+      } else {
+        console.error('Failed to delete user:', response.output);
+        alert(`Failed to delete user: ${response.output || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error occurred during user deletion:', error);
+    }
   }
 
   viewUserDetails(user: User) {
     this.setCurrentUser(user);
   }
 
+  closeModal() {
+    this.showModal = false;
+    this.selectedUser = null;
+  }
 
+  async onAccountCreated(partialUser: Partial<User>) {
+    if (this.selectedUser) {
+      const index = this.users.findIndex(u => u.id === partialUser.id);
+      if (index !== -1) {
+        this.users[index] = { ...this.users[index], ...partialUser };
+      }
+    } else {
+      const newUser: User = {
+        ...partialUser,
+        division: 'NA',
+        is_online: false,
+        number: ''
+      } as User;
+      this.users.push(newUser);
+    }
+    this.closeModal();
+    await this.fetchUsers(); 
+  }
+
+editUser(user: User) {
+  this.selectedUser = user;  
+  this.showModal = true;     
+}
 
 }

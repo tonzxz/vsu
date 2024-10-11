@@ -11,6 +11,7 @@ import { TerminalManagementComponent } from './features/admin-layout/terminal-ma
 import { CreateAccountModalComponent } from './features/admin-layout/user-management/create-account-modal/create-account-modal.component';
 import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection/kiosk-selection.component';
 import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
+import { QueueDisplayComponent } from './features/queueing-layout/queue-display/queue-display.component';
 
 // Services
 import { UserService } from './services/user.service';
@@ -20,9 +21,11 @@ import { AppRoutingModule } from './app.routes';
 
 @NgModule({
   declarations: [
-
+    AppComponent,
+    QueueDisplayComponent 
   ],
   imports: [
+    AppComponent,
     BrowserModule,
     FormsModule,
     CommonModule,

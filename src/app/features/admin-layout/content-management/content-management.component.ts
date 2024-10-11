@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ToggleComponent } from '../../../shared/components/toggle/toggle.component';
 import { UswagonAuthService } from 'uswagon-auth';
 import { ContentService } from '../../../services/content.service';
+import { UswagonCoreService } from 'uswagon-core';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationComponent } from './modals/confirmation/confirmation.component';
 
 interface ContentColors {
   primary_bg: string,
@@ -49,13 +52,15 @@ interface ContentSettings {
 @Component({
   selector: 'app-content-management',
   standalone: true,
-  imports: [FormsModule,CommonModule, ToggleComponent],
+  imports: [FormsModule,CommonModule, ToggleComponent,ConfirmationComponent],
   templateUrl: './content-management.component.html',
   styleUrl: './content-management.component.css'
 })
 export class ContentManagementComponent implements OnInit {
 
-  constructor(private auth:UswagonAuthService, private contentService:ContentService){}
+  constructor(private auth:UswagonAuthService, private contentService:ContentService, 
+    private dialog: MatDialog,  
+    private API:UswagonCoreService){}
 
   toggles:ContentToggles= {
     announcements:false,
@@ -87,6 +92,12 @@ export class ContentManagementComponent implements OnInit {
     announcements : ''
   }
   
+  factorySettings:ContentSettings = {
+    toggles: {... this.toggles},
+    colors: {...this.colors},
+    files: {...this.files},
+    inputFields: {...this.inputFields}
+  }
 
   previousSettings?:ContentSettings;
 
@@ -115,15 +126,59 @@ export class ContentManagementComponent implements OnInit {
       return [...prev, curr.name]
     },[])
   }
+  selectedDivision?:string;
+  selectDivision(division_id:string){
+    this.selectedDivision = division_id;
+    const content = this.contents.find((_content)=> _content.division_id == division_id);
+    if(!content){
+      this.previousSettings =this.factorySettings;
+      this.revertChanges();
+      this.contentLoading = false;
+      return;
+    }
+    this.toggles  = {
+      announcements: content.announcements != null,
+      time: content.time == 't',
+      weather:content.weather == 't',
+      currency:content.currency == 't',
+      videoURL: content.video?.includes('https://'),
+    }
+    this.colors ={
+      primary_bg: content.primary_bg,
+      secondary_bg: content.secondary_bg,
+      tertiary_bg: content.tertiary_bg,
+      primary_text: content.primary_text,
+      secondary_text: content.secondary_text,
+      tertiary_text: content.tertiary_text
+    }
+    if(content.logo){
+      this.inputFields.logoUrl = content.logo;
+    }
+    if(content.background){
+      this.inputFields.backgroundUrl = content.background;
+    }
+    if(content.video && !this.toggles.videoURL){
+      this.inputFields.videoUrl = content.video;
+    }
+    if(this.toggles.videoURL){
+      this.inputFields.youtubeURL = content.video
+    }
+    this.previousSettings ={
+      toggles: {... this.toggles},
+      colors: {...this.colors},
+      files: {...this.files},
+      inputFields: {...this.inputFields}
+    }
+  }
 
   async loadContents(){
     this.contentLoading = true;
+    this.API.setLoading(true);
     try{
       if(this.auth.accountLoggedIn() == 'superadmin'){
         this.divisions = await this.contentService.getDivisions();
         this.contents = await this.contentService.getContentSettings();
-
-        const content = this.contents.find((_content)=> _content.division_id == this.divisions[0]);
+        const content = this.contents.find((_content)=> _content.division_id == this.divisions[0].id);
         if(!content){
           this.previousSettings ={
             toggles: {... this.toggles},
@@ -131,6 +186,7 @@ export class ContentManagementComponent implements OnInit {
             files: {...this.files},
             inputFields: {...this.inputFields}
           }
+          this.API.setLoading(false);
           this.contentLoading = false;
           return;
         }
@@ -161,6 +217,7 @@ export class ContentManagementComponent implements OnInit {
         if(this.toggles.videoURL){
           this.inputFields.youtubeURL = content.video
         }
+        this.API.setLoading(false);
         this.contentLoading = false;
       }else{
         const content = await this.contentService.getContentSetting();
@@ -171,6 +228,7 @@ export class ContentManagementComponent implements OnInit {
             files: {...this.files},
             inputFields: {...this.inputFields}
           }
+          this.API.setLoading(false);
           this.contentLoading =false;
           return;
         }
@@ -208,12 +266,16 @@ export class ContentManagementComponent implements OnInit {
         files: {...this.files},
         inputFields: {...this.inputFields}
       }
+      this.API.setLoading(false);
       this.contentLoading = false;
     }catch(e){
+      this.API.setLoading(false);
       this.contentLoading = false;
-      throw new Error('Something went wrong.');
+      throw new Error(e as any);
     }
   }
+
+  modalType?:'publish'| 'revert';
   
   // UI Functions
 
@@ -236,14 +298,33 @@ export class ContentManagementComponent implements OnInit {
       this.files[key] = file;
     }
   }
+
+  confirmDialog(type:'publish'| 'revert'){
+    this.modalType = type;
+  }
+
+  closeDialog(){
+    this.modalType = undefined;
+  }
+
+  updateChanges(type:'publish'|'revert'){
+      if(type == 'publish'){
+        this.publishChanges();
+      }else{
+        this.revertChanges();
+      }
+  }
+
   revertChanges(){
     this.colors = {...this.previousSettings!.colors};
     this.files = {...this.previousSettings!.files};
     this.inputFields = {...this.previousSettings!.inputFields};
     this.toggles = {...this.previousSettings!.toggles};
+    this.modalType = undefined;
   }
 
   publishChanges(){
-
+    alert();
+    this.modalType = undefined;
   }
 }

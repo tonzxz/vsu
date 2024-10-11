@@ -1,4 +1,8 @@
-<div class="h-screen w-screen flex overflow-hidden">
+<div *ngIf="isLoading" class="h-screen w-screen bg-white overflow-hidden absolute z-10 flex justify-center item">
+  Loading..
+</div>
+
+<div class="h-screen w-screen flex overflow-hidden relative">
   <!-- Sidebar -->
   <app-sidebar [role]="role"></app-sidebar>
 
@@ -11,3 +15,4 @@
     </div>
   </div>
 </div>
+

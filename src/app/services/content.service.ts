@@ -55,11 +55,21 @@ export class ContentService {
       });
 
       if(response.success){
-        if(response.output.length > 0){
-          return response.output[0];
-        }else{
-          return null;
+        for(let i = 0; i < response.output.length; i++){
+          const content = response.output[i];
+
+          if(content.video){
+            content.video = this.API.getFileURL(content.video);
+          }
+          if(content.background){
+            content.background = this.API.getFileURL(content.background);
+          }
+          if(content.logo){
+            content.logo = this.API.getFileURL(content.logo);
+          }
+          response.output[i]= content;
         }
+        return response.output
       }else{
         throw new Error('Error getting content.');
       }
@@ -73,7 +83,8 @@ export class ContentService {
     });
 
     if(response.success){
-      return response.output;
+      const user = this.auth.getUser();
+      return (response.output as any[]).filter((division:any)=> division.id != user.division_id);
     }else{
       throw new Error('Error getting divisions.');
     }

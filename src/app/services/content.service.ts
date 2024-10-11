@@ -90,17 +90,16 @@ export class ContentService {
     }
   }
 
-  async updateContentSettings( settings: {selectedFiles: { [key: string]: File | null }, colors:{[key:string]:string}, widgets:{weather: boolean,time: boolean,currency: boolean,} , videoOption:string, videoUrl:string} ){
-    const {selectedFiles,colors,widgets,videoOption,videoUrl} = settings
-    
-    const division_id = this.auth.getUser().division_id;
+  async updateContentSettings( settings: {division_id: string ,selectedFiles: { [key: string]: File | undefined  }, colors:{[key:string]:string}, widgets:{weather: boolean,time: boolean,currency: boolean,} , videoOption:string, videoUrl?:string, announcements?:string} ){
+    const {division_id,selectedFiles,colors,widgets,videoOption,videoUrl, announcements} = settings
+  
     // Process files for upload
     const uploadedFiles:{[key:string]:string} =  {};
     for(const variable in selectedFiles){
       // upload each file
       try{
         
-        if(selectedFiles[variable] != null){
+        if(selectedFiles[variable] != undefined){
           const encryptedDivision = await this.API.encrypt(division_id);
           const cleanedDivision = encryptedDivision.replace(/[^a-zA-Z0-9]/g, '');
           const location =  `content/${encodeURIComponent(cleanedDivision)}/${selectedFiles[variable]!.name}`;
@@ -132,7 +131,8 @@ export class ContentService {
             ...colors,
             ...uploadedFiles,
             ...widgets,
-            ...url
+            ...url,
+            ...{announcements: announcements}
            
           },
           conditions: `WHERE division_id  = '${division_id}'`
@@ -149,8 +149,8 @@ export class ContentService {
             'division_id': division_id,
             ...colors,
             ...uploadedFiles,
-            ...widgets
-            
+            ...widgets,
+            ...{announcements: announcements}
           },
         });
         if(!createResponse.success){

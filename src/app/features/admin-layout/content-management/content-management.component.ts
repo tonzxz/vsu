@@ -131,7 +131,7 @@ export class ContentManagementComponent implements OnInit {
     this.selectedDivision = division_id;
     const content = this.contents.find((_content)=> _content.division_id == division_id);
     if(!content){
-      this.previousSettings =this.factorySettings;
+      this.previousSettings ={...this.factorySettings};
       this.revertChanges();
       this.contentLoading = false;
       return;
@@ -151,6 +151,7 @@ export class ContentManagementComponent implements OnInit {
       secondary_text: content.secondary_text,
       tertiary_text: content.tertiary_text
     }
+    this.inputFields = {...this.factorySettings.inputFields};
     if(content.logo){
       this.inputFields.logoUrl = content.logo;
     }
@@ -162,6 +163,9 @@ export class ContentManagementComponent implements OnInit {
     }
     if(this.toggles.videoURL){
       this.inputFields.youtubeURL = content.video
+    }
+    if(this.toggles.announcements){
+      this.inputFields.announcements = content.announcements;
     }
     this.previousSettings ={
       toggles: {... this.toggles},
@@ -176,9 +180,12 @@ export class ContentManagementComponent implements OnInit {
     this.API.setLoading(true);
     try{
       if(this.auth.accountLoggedIn() == 'superadmin'){
-        this.divisions = await this.contentService.getDivisions();
+        if(this.divisions.length <=0){
+          this.divisions = await this.contentService.getDivisions();
+          this.selectedDivision = this.divisions[0].id;
+        }
         this.contents = await this.contentService.getContentSettings();
-        const content = this.contents.find((_content)=> _content.division_id == this.divisions[0].id);
+        const content = this.contents.find((_content)=> _content.division_id ==this.selectedDivision);
         if(!content){
           this.previousSettings ={
             toggles: {... this.toggles},
@@ -216,6 +223,9 @@ export class ContentManagementComponent implements OnInit {
         }
         if(this.toggles.videoURL){
           this.inputFields.youtubeURL = content.video
+        }
+        if(this.toggles.announcements){
+          this.inputFields.announcements = content.announcements;
         }
         this.API.setLoading(false);
         this.contentLoading = false;
@@ -323,8 +333,29 @@ export class ContentManagementComponent implements OnInit {
     this.modalType = undefined;
   }
 
-  publishChanges(){
-    alert();
+  async publishChanges(){
+    if(this.selectedDivision == undefined) return;
     this.modalType = undefined;
+    this.API.setLoading(true);
+    await this.contentService.updateContentSettings({
+      division_id: this.selectedDivision!,
+      selectedFiles: {
+        logo: this.files.logo,
+        video: this.files.video,
+        background:this.files.background
+      },
+      colors: {...this.colors},
+      widgets: {
+        time: this.toggles.time,
+        weather: this.toggles.weather,
+        currency: this.toggles.currency
+      },
+      videoOption: this.toggles.videoURL ? 'url': 'file',
+      videoUrl: this.inputFields.videoUrl,
+      announcements: this.toggles.announcements ?  this.inputFields.announcements : undefined,
+
+    });
+    await this.loadContents();
+    this.API.setLoading(false);
   }
 }

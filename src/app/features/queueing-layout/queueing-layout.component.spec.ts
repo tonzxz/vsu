@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { QueueingLayoutComponent } from './queueing-layout.component';
+import { QueueingLayoutModule } from './queueing-layout.component';
 
 describe('QueueingLayoutComponent', () => {
-  let component: QueueingLayoutComponent;
-  let fixture: ComponentFixture<QueueingLayoutComponent>;
+  let component: QueueingLayoutModule;
+  let fixture: ComponentFixture<QueueingLayoutModule>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [QueueingLayoutComponent]
+      imports: [QueueingLayoutModule]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(QueueingLayoutComponent);
+    fixture = TestBed.createComponent(QueueingLayoutModule);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -80,7 +80,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
   currentCurrency: CurrencyInfo = this.currencies[this.currentCurrencyIndex];
   timeInfo = { location: 'Manila (GMT +8)', time: '' };
   pesoAmount: number = 1; 
-
+  
   // Video-related variables
   showVideo: boolean = false; 
   videoUrl: string = 'assets/queue-display/vsu.mp4'; 

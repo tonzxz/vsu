@@ -1,0 +1,14 @@
+<div>
+    <input [checked]="isActive" (input)="onInput()" #toggle type="checkbox" id="toggle" class="hidden">
+    <div (click)="toggle.click()" class="flex items-center cursor-pointer">
+        <div class="relative w-full h-full">
+            <div class="block {{body}} rounded-full "
+                [ngClass]="{
+                    'bg-green-500': isActive,
+                    'bg-gray-400': !isActive
+                }"
+            ></div>
+            <div class="dot absolute left-1 top-1 bg-white {{knob}} {{ isActive ? translate : ''}} rounded-full transition-transform duration-300 ease-in-out"></div>
+        </div>
+    </div>
+</div>

@@ -15,8 +15,7 @@
                        hover:text-green-700
                     rounded-lg
                 "
-                [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.uploads
-            }"
+                [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.uploads}"
                 >
                     <div (click)="toggleCollapse('uploads')" class="text-lg  px-2 py-2 flex items-center justify-between">
                         <span>Uploads</span>
@@ -32,7 +31,7 @@
                                 text-gray-400
                                 border-gray-300 border-2 border-solid 
                                 bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
-                                    <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.logo != undefined ? files.logo.name : 'Choose Logo Image'}}</span>
+                                    <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.logo != undefined ? files.logo.name : inputFields.logoUrl ? getLastDirectory(inputFields.logoUrl) : 'Choose Logo Image'}}</span>
                                     <span class="material-icons"> upload_file </span>
                                 </div>
                             <input (change)="onFileChange('logo', $event)" accept="image/*" name="logo"  #logoInput class="hidden" type="file">
@@ -46,21 +45,21 @@
                                 text-gray-400
                                 border-gray-300 border-2 border-solid 
                                 bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
-                                <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.background != undefined ? files.background.name : 'Choose Background Image'}}</span>
+                                <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.background != undefined ? files.background.name : inputFields.backgroundUrl ? getLastDirectory(inputFields.backgroundUrl):  'Choose Background Image'}}</span>
                                     <span class="material-icons"> upload_file </span>
                                 </div>
                             <input (change)="onFileChange('background', $event)" accept="image/*" name="background"  #bgInput class="hidden" type="file">
                         </div>
                         <!-- Video Input -->
-                        <div (click)="videoInput.click()" class="flex flex-col">
+                        <div class="flex flex-col">
                             <label for="video" class=" text-gray-800 px-1">Video</label>
-                            <div  class="w-full h-12 rounded-md 
+                            <div (click)="videoInput.click()"  class="w-full h-12 rounded-md 
                                 transition-all
                                 hover:border-green-600 hover:text-green-700 hover:bg-green-100
                                 text-gray-400
                                 border-gray-300 border-2 border-solid 
                                 bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
-                                    <span class="w-full overflow-hidden text-ellipsis whitespace-nowrap">{{files.video != undefined ? files.video.name : 'Choose Video File'}}</span>
+                                    <span class="w-full max-w-60 overflow-hidden text-ellipsis whitespace-nowrap">{{files.video != undefined ? files.video.name :inputFields.videoUrl ? getLastDirectory(inputFields.videoUrl): 'Choose Video File'}}</span>
                                     <span class="material-icons"> upload_file </span>
                                 </div>
                             <input (change)="onFileChange('video', $event)" accept="video/*" name="video" #videoInput class="hidden" type="file">
@@ -92,7 +91,7 @@
                         <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
                             <div class="flex flex-col">
                                 <div class="flex flex-row w-full justify-between mb-1" >
-                                    <label for="announcement" class="text-lg text-gray-800 px-1">Time/Clock</label>
+                                    <label class="text-lg text-gray-800 px-1">Time/Clock</label>
                                     <div>
                                         <input [(ngModel)]="toggles.time" #timeToggle type="checkbox" id="toggle" class="hidden">
                                         <div (click)="timeToggle.click()" class="flex items-center cursor-pointer">
@@ -116,7 +115,7 @@
                         <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
                             <div class="flex flex-col">
                                 <div class="flex flex-row w-full justify-between mb-1" >
-                                    <label for="announcement" class="text-lg text-gray-800 px-1">Weather View</label>
+                                    <label  class="text-lg text-gray-800 px-1">Weather View</label>
                                     <div>
                                         <input [(ngModel)]="toggles.weather" #weatherToggle type="checkbox" id="toggle" class="hidden">
                                         <div (click)="weatherToggle.click()" class="flex items-center cursor-pointer">
@@ -140,7 +139,7 @@
                         <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
                             <div class="flex flex-col">
                                 <div class="flex flex-row w-full justify-between mb-1" >
-                                    <label for="announcement" class="text-lg text-gray-800 px-1">Currency Converter</label>
+                                    <label  class="text-lg text-gray-800 px-1">Currency Converter</label>
                                     <div>
                                         <input [(ngModel)]="toggles.currency" #currencyToggle type="checkbox" id="toggle" class="hidden">
                                         <div (click)="currencyToggle.click()" class="flex items-center cursor-pointer">
@@ -269,20 +268,8 @@
                         <div class="flex flex-row justify-between w-full gap-2 mb-1" >
                             <label for="announcement" class="text-lg text-gray-800 px-1">Announcements</label>
                             <div>
-                                <input [(ngModel)]="toggles.announcements" #announcementToggle type="checkbox" id="toggle" class="hidden">
-                                <div (click)="announcementToggle.click()" class="flex items-center cursor-pointer">
-                                    <div class="relative">
-                                        <div class="block  w-12 h-7 rounded-full "
-                                            [ngClass]="{
-                                                'bg-green-500': toggles.announcements,
-                                                'bg-gray-400': !toggles.announcements
-                                            }"
-                                        ></div>
-                                        <div class="dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-300 ease-in-out"
-                                            [ngClass]="{'translate-x-5': toggles.announcements}"
-                                        ></div>
-                                    </div>
-                                </div>
+                                <app-toggle dimensions="
+                                w-12 h-7" [(isActive)]="toggles.announcements"></app-toggle>
                             </div>
                         </div>
                         <span *ngIf="!collapsables.announcements" class="material-icons"> keyboard_arrow_down </span>
@@ -291,6 +278,7 @@
                         <textarea
                         placeholder="This will show on queue displays once announcements are enabled"
                         name="announcement"
+                        [(ngModel)]="inputFields.announcements"
                         class="w-full h-24 rounded-md
                         py-1 
                         transition-all
@@ -303,13 +291,12 @@
                 </div>
                 <!-- ACTION BUTTONS -->
                 <div class="flex gap-2 justify-end mt-2">
-                    <button class="bg-red-700 px-4 py-2 rounded-lg text-white ">Revert Changes</button>
-                    <button class="bg-green-700 px-4 py-2 rounded-lg text-white ">Publish Changes</button>
+                    <button (click)="revertChanges()" class="bg-red-700 w-40 h-10 rounded-lg text-white ">Revert Changes</button>
+                    <button (click)="publishChanges()" class="bg-green-700 w-40 rounded-lg text-white ">Publish Changes</button>
                 </div>
             </div>
             <!-- Content View -->
             <div class="flex-[3_3_0%] h-full bg-green-950 shadow-md rounded-xl">
-
             </div>
         </div>
 </section>

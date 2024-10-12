@@ -1,8 +1,8 @@
 <!-- Sidebar -->
 <div
-  class="h-full bg-[#22381F] text-white transition-all duration-500 ease-in-out flex flex-col shadow-lg overflow-hidden"
+  class="h-full bg-green-950 text-white transition-all duration-500 ease-in-out flex flex-col shadow-lg overflow-hidden"
   [ngClass]="{
-    'w-64': isExpanded,
+    'w-72': isExpanded,
     'w-16': !isExpanded && !isMobile,
     'fixed z-50 left-0 top-0 bottom-0': isMobile,
     '-left-64': !isExpanded && isMobile,
@@ -10,14 +10,14 @@
   }"
 >
   <!-- Sidebar Header with fixed height -->
-  <div class="p-4 flex items-center justify-between border-b border-white/10 h-16">
-    <div class="flex items-center space-x-3">
+  <div class="pr-2 pl-4 py-4 flex items-center {{isExpanded ? 'justify-between':'justify-center'}} border-b-2 border-white/15 border-dashed  border-opacity-20 h-20">
+    <div class="flex items-center  {{!isExpanded ? 'w-0 overflow-hidden': 'flex-1'}}">
       <!-- Logo (hide when collapsed, header height fixed) -->
       <div
         class="bg-white rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden transition-all duration-500 ease-in-out"
         [ngClass]="{
           'w-10 h-10': isExpanded,
-          'w-0 h-0 opacity-0': !isExpanded
+          'w-0 h-0 opacity-0 max-w-0': !isExpanded
         }"
       >
         <img
@@ -27,16 +27,23 @@
         />
       </div>
       <!-- App Title (smooth transition, but header size stays consistent) -->
-      <h1
-        class="text-sm font-semibold leading-tight whitespace-nowrap transition-all duration-500 ease-in-out"
+      <div
+      class="flex-1 justify-center"
         [ngClass]="{
           'opacity-100 max-w-full': isExpanded,
           'opacity-0 max-w-0': !isExpanded
         }"
-        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
       >
-        {{ appTitle }}
-      </h1>
+        <h1
+          class="text-center font-medium text-sm whitespace-nowrap transition-all duration-500 ease-in-out tracking-wide"
+          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+        >
+          {{ appTitle }}
+        </h1>
+        <div class="text-center font-thin text-xs opacity-70 tracking-wide">
+          {{ appDescription}}
+        </div>
+      </div>
     </div>
     <!-- Hamburger Menu Toggle Button (Fixed position) -->
     <button
@@ -49,46 +56,53 @@
   </div>
 
   <!-- Navigation Items -->
-  <ul class="flex-grow mt-4 overflow-y-auto">
-    <li *ngFor="let item of menuItems; let i = index" class="mb-2 px-3">
+  <ul class="flex-grow mt-3 overflow-y-auto">
+    <li *ngFor="let item of menuItems; let i = index" class="mb-2 pl-3 flex justify-between gap-2 group overflow-hidden">
       <a
-        class="flex items-center py-2 px-3 rounded-lg transition-all duration-500 ease-in-out cursor-pointer hover:bg-[#2F4A2C]"
-        [ngClass]="{ 'bg-[#2F4A2C] shadow-md': item.active }"
+        class="flex items-center  py-3 px-3 rounded-lg transition-all duration-500 ease-in-out cursor-pointer hover:bg-white  flex-1"
+        [ngClass]="{ 'bg-white shadow-md': item.active }"
         (click)="setActiveItem(i)"
       >
         <span
-          class="material-icons flex items-center justify-center w-6 h-6 transition-all duration-500 ease-in-out"
+          class="material-icons  flex items-center justify-center w-6 h-6 transition-all duration-500 ease-in-out group-hover:text-gray-800"
           [ngClass]="{
-            'text-green-400': item.active,
+            'text-gray-800': item.active,
             'text-white': !item.active
           }"
         >
           {{ item.icon }}
         </span>
         <span
-          class="ml-3 whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out"
+          class="ml-3 whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out group-hover:text-gray-800 group-hover:tracking-wide"
           [ngClass]="{
             'opacity-100 max-w-xs': isExpanded,
             'opacity-0 max-w-0': !isExpanded,
-            'font-semibold': item.active
+            'tracking-wide text-gray-800': item.active,
+            'text-white': !item.active
+            
           }"
         >
           {{ item.title }}
         </span>
       </a>
+      <div class="transition-all duration-500 ease-in-out  w-1 rounded-l-full"
+      [ngClass]="{ 'bg-white shadow-md': item.active }"
+      >
+        
+      </div>
     </li>
   </ul>
 
   <!-- Logout Button -->
   <div class="p-4">
     <uswagon-logout-button
-      class="w-full py-2 px-3 bg-[#2F4A2C] text-white font-bold rounded-lg transition-all duration-500 ease-in-out hover:bg-[#1F3419] flex items-center justify-center"
+      [class]="'w-full py-3 px-2 font-bold rounded-lg transition-all  text-white hover:bg-white hover:text-gray-800 flex items-center justify-start'"
     >
-      <span class="material-icons" [ngClass]="{ 'mr-2': isExpanded }">
+      <span class="material-icons" [ngClass]="{ 'mr-4': isExpanded }">
         logout
       </span>
       <span
-        class="whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out"
+        class="whitespace-nowrap overflow-hidden  "
         [ngClass]="{
           'opacity-100 max-w-xs': isExpanded,
           'opacity-0 max-w-0': !isExpanded

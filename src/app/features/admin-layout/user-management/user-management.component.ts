@@ -58,6 +58,7 @@ export class UserManagementComponent implements OnInit {
 
 
   async fetchUsers() {
+    this.API.setLoading(true);
     const data = await this.API.read({
       selectors: [
         '*'
@@ -92,8 +93,10 @@ export class UserManagementComponent implements OnInit {
       
       this.filteredUsers = [...this.users];
       this.setCurrentUser(this.users[0]);
+      this.API.setLoading(false);
       console.log('Users fetched:', this.users);
     } else {
+      this.API.setLoading(false);
       console.error('No users found or query failed');
     }
   }

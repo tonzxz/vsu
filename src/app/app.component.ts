@@ -13,6 +13,9 @@ import { environment } from '../environment/environment';
 export class AppComponent {
   title = 'VSUQSM';
   constructor(private API:UswagonCoreService){
-    this.API.initialize(environment)
+    this.API.initialize({
+      ...environment,
+      loaderDelay: 1000,
+    })
   }
 }

@@ -10,7 +10,7 @@
                 <div class="flex">
                     <button  *ngFor="let division of divisions; let i = index" 
                         (click)="selectDivision(division.id)"
-                        class="h-10 transition-all {{division.id == selectedDivision ? 'bg-green-600 text-white':'bg-white'}} px-4 flex-1 border-2 border-solid {{ i == 0 ? 'rounded-l-lg': i == 1 ? '':'rounded-r-lg' }} font-medium  hover:bg-green-600 hover:text-white">{{division.name.replace('Division', '').trim().replace('Cash','Cashier')}}</button>
+                        class="h-10 transition-all {{division.id == selectedDivision ? 'bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 text-white':'bg-white'}} px-4 flex-1 border-2 border-solid {{ i == 0 ? 'rounded-l-lg': i == 1 ? '':'rounded-r-lg' }} font-medium  hover:bg-green-600 hover:text-white">{{division.name.replace('Division', '').trim().replace('Cash','Cashier')}}</button>
                 </div> 
                 <div *ngIf="contentLoading" class="h-full w-full flex justify-center items-center bg-white shadow-md rounded-xl border-2 border-solid hover:border-green-500">Loading</div>
                 <div *ngIf="!contentLoading" class="flex flex-col  gap-1 h-full bg-white shadow-md rounded-xl border-2 border-solid hover:border-green-500 py-3 px-3">
@@ -279,8 +279,8 @@
                     <div class="flex-1"></div>
                     <!-- ACTION BUTTONS -->
                     <div class="flex gap-2 justify-end mt-2">
-                        <button (click)="confirmDialog('revert')" class="bg-red-600 w-40 h-10 rounded-lg text-white font-medium">Revert Changes</button>
-                        <button (click)="confirmDialog('publish')" class="bg-green-600 w-40 rounded-lg text-white font-medium">Publish Changes</button>
+                        <button (click)="confirmDialog('revert')" class="bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 w-40 h-10 rounded-lg text-white font-medium">Revert Changes</button>
+                        <button (click)="confirmDialog('publish')" class="bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 w-40 rounded-lg text-white font-medium">Publish Changes</button>
                     </div>
                 </div>
             </div>

@@ -20,6 +20,7 @@ interface MenuItem {
 })
 export class SidebarComponent implements OnInit {
   appTitle = 'Visayas State University';
+  appDescription = 'Queue Management System';
   isExpanded = true;
   isMobile = false;
   @Input() role: string = 'admin';

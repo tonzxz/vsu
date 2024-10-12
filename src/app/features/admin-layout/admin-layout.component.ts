@@ -5,11 +5,12 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { UswagonCoreService } from 'uswagon-core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { LottieAnimationComponent } from '../../shared/components/lottie-animation/lottie-animation.component';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [SidebarComponent, RouterModule, HeaderComponent, CommonModule],
+  imports: [SidebarComponent, RouterModule, HeaderComponent, CommonModule, LottieAnimationComponent],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css']
 })

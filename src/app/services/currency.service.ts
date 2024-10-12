@@ -7,7 +7,7 @@ import { Observable, interval, switchMap } from 'rxjs';
 })
 export class CurrencyService {
   private apiUrl = 'https://api.currencyfreaks.com/latest'; // CurrencyFreaks API URL
-  private apiKey = '9ce5a11a9d044b33afa4574e7bf7e258'; // Your API key
+  private apiKey = '6739f86ad02b4df2a256783b219adb99'; // Your API key
 
   constructor(private http: HttpClient) {}
 

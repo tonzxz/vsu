@@ -21,8 +21,7 @@ import { AppRoutingModule } from './app.routes';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    QueueDisplayComponent 
+
   ],
   imports: [
     AppComponent,

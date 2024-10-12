@@ -10,13 +10,12 @@ import { ContentManagementComponent } from './features/admin-layout/content-mana
 import { DaTerminalmgmtComponent } from './features/desk-attendant-layout/da-terminalmgmt/da-terminalmgmt.component';
 import { KioskSelectionComponent } from './features/kiosk-layout/kiosk-selection/kiosk-selection.component';
 import { KioskFormsComponent } from './features/kiosk-layout/kiosk-forms/kiosk-forms.component';
-import { QueueSelectionComponent } from './features/queueing-layout/queue-selection/queue-selection.component';
-import { QueueDisplayComponent } from './features/queueing-layout/queue-display/queue-display.component';
 import { UserManagementComponent } from './features/admin-layout/user-management/user-management.component';
 import { TerminalManagementComponent } from './features/admin-layout/terminal-management/terminal-management.component';
 import { KioskManagementComponent } from './features/admin-layout/kiosk-management/kiosk-management.component';
 
 import { AuthGuard } from './shared/auth.guard';
+import { QueueingLayoutComponent } from './features/queueing-layout/queueing-layout.component';
 
 export const routes: Routes = [
   {
@@ -63,7 +62,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'queueing-display', component: QueueDisplayComponent,
+    path: 'queueing-display', component: QueueingLayoutComponent,
     // children: [
     //   { path: 'display/:role', component: QueueDisplayComponent }, 
     // ]

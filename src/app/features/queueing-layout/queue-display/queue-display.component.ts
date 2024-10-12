@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CurrencyService } from '../../../services/currency.service';
@@ -34,17 +34,17 @@ interface CurrencyInfo {
 })
 export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>; // Access video element
-  logoUrl = '/assets/logo/vsu.png';
-
+  @Input() logoUrl = '/assets/logo/vsu.png';
+  @Input() isPreview = false;
   // Variables for user-defined backgrounds
-  backgroundImageUrl = '/assets/queue-display/background.png'; 
+  @Input() backgroundImageUrl = '/assets/queue-display/background.png'; 
   backgroundColor: string = '#4a4a4a'; 
   backgroundType: number = 0; 
 
   // Control flags: 1 is "on", 0 is "off"
-  showTime: number = 1;
-  showWeather: number = 1;
-  showCurrency: number = 1;
+  @Input() showTime: number = 1;
+  @Input() showWeather: number = 1;
+  @Input() showCurrency: number = 1;
 
   // Mock data for queue
   counters: Counter[] = [
@@ -83,7 +83,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
   
   // Video-related variables
   showVideo: boolean = false; 
-  videoUrl: string = 'assets/queue-display/vsu.mp4'; 
+  @Input() videoUrl: string = 'assets/queue-display/vsu.mp4'; 
   videoCurrentTime: number = 0; 
 
   constructor(private currencyService: CurrencyService, private router: Router, private route: ActivatedRoute) {}

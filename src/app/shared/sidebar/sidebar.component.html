@@ -94,10 +94,9 @@
   </ul>
 
   <!-- Logout Button -->
-  <div class="pl-4 py-4 overflow-hidden flex {{isExpanded ? 'gap-2':''}} group w-full">
-    <uswagon-logout-button
-    class="w-full"
-      [class]="'w-full py-3 pl-3  flex-1 font-bold transition-all  text-white group-hover:bg-white group-hover:text-gray-800 flex items-center justify-start ' + (isExpanded? 'rounded-lg':'rounded-l-lg')"
+  <div (click)="openLogoutModal()" class="pl-4 py-4 overflow-hidden flex {{isExpanded ? 'gap-2':''}} group w-full">
+    <button
+      class="w-full py-3 pl-3  flex-1 font-bold transition-all  text-white group-hover:bg-white group-hover:text-gray-800 flex items-center justify-start  {{isExpanded? 'rounded-lg':'rounded-l-lg'}}"
     >
       <span class="material-icons" [ngClass]="{ 'mr-4': isExpanded }">
         logout
@@ -111,10 +110,17 @@
       >
         Logout
       </span>
-    </uswagon-logout-button>
+    </button>
     <div class="transition-all  w-1 {{isExpanded?'rounded-l-full':''}} group-hover:bg-white"
       >
         
       </div>
   </div>
 </div>
+
+<app-confirmation
+    *ngIf="logoutOpen"
+    [type]="'logout'"
+    (onCancel)="closeLogoutModal()"
+    (onConfirm)="logout()"
+></app-confirmation>

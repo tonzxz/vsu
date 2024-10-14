@@ -14,6 +14,7 @@ export class LottieAnimationComponent implements OnChanges {
 
   @Input() class:string = '';
   @Input() animation:string = '';
+  @Input() loop:boolean = true;
 
   options: AnimationOptions = {
     path: `/assets/animations/loader.json`,
@@ -25,7 +26,7 @@ export class LottieAnimationComponent implements OnChanges {
     if(changes['animation']){
       this.options = {
         path: `/assets/animations/${this.animation}.json`,
-        loop: true,
+        loop: this.loop,
         autoplay: true
       }
     }

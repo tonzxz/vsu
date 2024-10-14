@@ -18,9 +18,9 @@ export class ContentService {
     }
 
     const response = await this.API.read({
-        selectors: ['*'],
-        tables: 'contents',
-        conditions: `WHERE division_id = '${_division}'`,
+        selectors: ['contents.*', 'divisions.name as division'],
+        tables: 'contents, divisions',
+        conditions: `WHERE contents.division_id = '${_division}' AND divisions.id = contents.division_id`,
       });
 
       if(response.success){
@@ -47,11 +47,10 @@ export class ContentService {
   }
 
   async getContentSettings(){
-
     const response = await this.API.read({
-        selectors: ['*'],
-        tables: 'contents',
-        conditions: ``,
+        selectors: ['contents.*', 'divisions.name as division'],
+        tables: 'contents, divisions',
+        conditions: `WHERE contents.division_id = divisions.id`,
       });
 
       if(response.success){
@@ -76,22 +75,38 @@ export class ContentService {
   }
 
   async getDivisions(){
+    const user = this.auth.getUser();
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'divisions',
-      conditions: ``,
+      conditions: `WHERE id != '${user.division_id}'`,
     });
 
     if(response.success){
-      const user = this.auth.getUser();
-      return (response.output as any[]).filter((division:any)=> division.id != user.division_id);
+      return response.output;
     }else{
       throw new Error('Error getting divisions.');
     }
   }
 
-  async updateContentSettings( settings: {division_id: string ,selectedFiles: { [key: string]: File | undefined  }, colors:{[key:string]:string}, widgets:{weather: boolean,time: boolean,currency: boolean,} , videoOption:string, videoUrl?:string, announcements?:string} ){
-    const {division_id,selectedFiles,colors,widgets,videoOption,videoUrl, announcements} = settings
+  async getDivision(id:string){
+    const response = await this.API.read({
+      selectors: ['*'],
+      tables: 'divisions',
+      conditions: `WHERE id = '${id}' `,
+    });
+
+    if(response.success){
+      return response.output;
+    }else{
+      throw new Error('Error getting divisions.');
+    }
+  }
+
+  async updateContentSettings( settings: {division_id: string ,selectedFiles: { [key: string]: File | undefined  }, colors:{[key:string]:string}, widgets:{weather: boolean,time: boolean,currency: boolean,} , 
+    announcement_on:boolean, background_on:boolean,
+    videoOption:string, videoUrl?:string, announcements?:string} ){
+    const {background_on, announcement_on,division_id,selectedFiles,colors,widgets,videoOption,videoUrl, announcements} = settings
   
     // Process files for upload
     const uploadedFiles:{[key:string]:string} =  {};
@@ -132,7 +147,7 @@ export class ContentService {
             ...uploadedFiles,
             ...widgets,
             ...url,
-            ...{announcements: announcements}
+            ...{announcements: announcements, background_on: background_on, announcement_on: announcement_on}
            
           },
           conditions: `WHERE division_id  = '${division_id}'`
@@ -142,6 +157,7 @@ export class ContentService {
         }
       }else{
         const id = this.API.createUniqueID32();
+        const url =  videoOption == 'url' ?  {video:videoUrl} : {};
         const createResponse = await this.API.create({
           tables: 'contents',
           values: {
@@ -150,7 +166,8 @@ export class ContentService {
             ...colors,
             ...uploadedFiles,
             ...widgets,
-            ...{announcements: announcements}
+            ...url,
+            ...{announcements: announcements, background_on: background_on, announcement_on: announcement_on}
           },
         });
         if(!createResponse.success){

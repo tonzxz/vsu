@@ -6,7 +6,8 @@ import { UswagonAuthService } from 'uswagon-auth';
 import { ContentService } from '../../../services/content.service';
 import { UswagonCoreService } from 'uswagon-core';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationComponent } from './modals/confirmation/confirmation.component';
+import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
+import { QueueDisplayComponent } from '../../queueing-layout/queue-display/queue-display.component';
 
 interface ContentColors {
   primary_bg: string,
@@ -30,6 +31,7 @@ interface ContentToggles {
   time: boolean,
   weather: boolean,
   currency: boolean,
+  background:boolean
 }
 interface ContentFields {
   announcements:string,
@@ -52,7 +54,7 @@ interface ContentSettings {
 @Component({
   selector: 'app-content-management',
   standalone: true,
-  imports: [FormsModule,CommonModule, ToggleComponent,ConfirmationComponent],
+  imports: [FormsModule,CommonModule, ToggleComponent,ConfirmationComponent, QueueDisplayComponent],
   templateUrl: './content-management.component.html',
   styleUrl: './content-management.component.css'
 })
@@ -62,12 +64,16 @@ export class ContentManagementComponent implements OnInit {
     private dialog: MatDialog,  
     private API:UswagonCoreService){}
 
+
+  isSuperAdmin:boolean = this.auth.getUser().role == 'superadmin';
+
   toggles:ContentToggles= {
     announcements:false,
     time:false,
     weather:false,
     currency:false,
     videoURL: false,
+    background:false,
   }
 
   collapsables:ContentCollapsables = {
@@ -112,6 +118,7 @@ export class ContentManagementComponent implements OnInit {
   }
 
   getLastDirectory(url?:string) {
+    if(this.isValidYouTubeUrl(url??'')) return null;
     if(!url){
       return null;
     }
@@ -126,6 +133,12 @@ export class ContentManagementComponent implements OnInit {
       return [...prev, curr.name]
     },[])
   }
+
+  getDivisionName(){
+    if(!this.selectedDivision) return '';
+    return this.divisions.find((division) => division.id == this.selectedDivision).name;
+  }
+
   selectedDivision?:string;
   selectDivision(division_id:string){
     this.selectedDivision = division_id;
@@ -137,11 +150,12 @@ export class ContentManagementComponent implements OnInit {
       return;
     }
     this.toggles  = {
-      announcements: content.announcements != null,
+      announcements: content.announcement_on == 't',
       time: content.time == 't',
       weather:content.weather == 't',
       currency:content.currency == 't',
-      videoURL: content.video?.includes('https://'),
+      background: content.background_on == 't',
+      videoURL: this.isValidYouTubeUrl(content.video??''),
     }
     this.colors ={
       primary_bg: content.primary_bg,
@@ -158,15 +172,15 @@ export class ContentManagementComponent implements OnInit {
     if(content.background){
       this.inputFields.backgroundUrl = content.background;
     }
-    if(content.video && !this.toggles.videoURL){
+    if(content.video){
       this.inputFields.videoUrl = content.video;
     }
     if(this.toggles.videoURL){
       this.inputFields.youtubeURL = content.video
     }
-    if(this.toggles.announcements){
-      this.inputFields.announcements = content.announcements;
-    }
+
+    this.inputFields.announcements = content.announcements ?? '';
+
     this.previousSettings ={
       toggles: {... this.toggles},
       colors: {...this.colors},
@@ -175,11 +189,17 @@ export class ContentManagementComponent implements OnInit {
     }
   }
 
+
+
+
+
+
+
   async loadContents(){
     this.contentLoading = true;
     this.API.setLoading(true);
     try{
-      if(this.auth.accountLoggedIn() == 'superadmin'){
+      if(this.isSuperAdmin){
         if(this.divisions.length <=0){
           this.divisions = await this.contentService.getDivisions();
           this.selectedDivision = this.divisions[0].id;
@@ -198,11 +218,12 @@ export class ContentManagementComponent implements OnInit {
           return;
         }
         this.toggles  = {
-          announcements: content.announcements != null,
+          announcements: content.announcement_on == 't',
           time: content.time == 't',
           weather:content.weather == 't',
           currency:content.currency == 't',
-          videoURL: content.video?.includes('https://'),
+          background: content.background_on == 't',
+          videoURL: this.isValidYouTubeUrl(content.video??''),
         }
         this.colors ={
           primary_bg: content.primary_bg,
@@ -218,18 +239,20 @@ export class ContentManagementComponent implements OnInit {
         if(content.background){
           this.inputFields.backgroundUrl = content.background;
         }
-        if(content.video && !this.toggles.videoURL){
+        if(content.video){
           this.inputFields.videoUrl = content.video;
         }
         if(this.toggles.videoURL){
           this.inputFields.youtubeURL = content.video
         }
-        if(this.toggles.announcements){
-          this.inputFields.announcements = content.announcements;
-        }
+        
+        this.inputFields.announcements = content.announcements ?? '';
+      
         this.API.setLoading(false);
         this.contentLoading = false;
       }else{
+        this.selectedDivision = this.auth.getUser().division_id;
+        this.divisions = await this.contentService.getDivision(this.selectedDivision!);
         const content = await this.contentService.getContentSetting();
         if(!content) {
           this.previousSettings ={
@@ -243,11 +266,12 @@ export class ContentManagementComponent implements OnInit {
           return;
         }
         this.toggles  = {
-          announcements: content.announcements != null,
+          announcements: content.announcement_on == 't',
           time: content.time == 't',
           weather:content.weather == 't',
           currency:content.currency == 't',
-          videoURL: content.video?.includes('https://'),
+          background: content.background_on == 't',
+          videoURL: this.isValidYouTubeUrl(content.video??''),
         }
         this.colors ={
           primary_bg: content.primary_bg,
@@ -263,12 +287,13 @@ export class ContentManagementComponent implements OnInit {
         if(content.background){
           this.inputFields.backgroundUrl = content.background;
         }
-        if(content.video && !this.toggles.videoURL){
+        if(content.video){
           this.inputFields.videoUrl = content.video;
         }
         if(this.toggles.videoURL){
           this.inputFields.youtubeURL = content.video
         }
+        this.inputFields.announcements = content.announcements ?? '';
       }
       this.previousSettings ={
         toggles: {... this.toggles},
@@ -306,6 +331,19 @@ export class ContentManagementComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.files[key] = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        if(key == 'logo'){
+          this.inputFields.logoUrl = reader.result as string;
+        }
+        if(key == 'background'){
+          this.inputFields.backgroundUrl = reader.result as string;
+        }
+        if(key == 'video'){
+          this.inputFields.videoUrl = reader.result as string;
+        }
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -332,6 +370,17 @@ export class ContentManagementComponent implements OnInit {
     this.toggles = {...this.previousSettings!.toggles};
     this.modalType = undefined;
   }
+  private isValidYouTubeUrl(url: string): boolean {
+    const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
+    return regex.test(url);
+  }
+
+  checkYoutubeUrl(){
+    if(!this.isValidYouTubeUrl(this.inputFields.youtubeURL!)){
+      this.inputFields.youtubeURL = undefined;
+      alert('Please paste a valid youtube URL');
+    }
+  }
 
   async publishChanges(){
     if(this.selectedDivision == undefined) return;
@@ -351,11 +400,16 @@ export class ContentManagementComponent implements OnInit {
         currency: this.toggles.currency
       },
       videoOption: this.toggles.videoURL ? 'url': 'file',
-      videoUrl: this.inputFields.videoUrl,
+      videoUrl: this.inputFields.youtubeURL,
+      background_on: this.toggles.background,
+      announcement_on:this.toggles.announcements,
       announcements: this.toggles.announcements ?  this.inputFields.announcements : undefined,
 
     });
     await this.loadContents();
+    this.API.socketSend({
+      'event': 'content-changes'
+    })
     this.API.setLoading(false);
   }
 }

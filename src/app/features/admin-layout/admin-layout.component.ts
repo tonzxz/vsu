@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SidebarComponent } from "../../shared/sidebar/sidebar.component";
 import { HeaderComponent } from '../../shared/header/header.component';
@@ -15,13 +15,14 @@ import { LottieAnimationComponent } from '../../shared/components/lottie-animati
   styleUrls: ['./admin-layout.component.css']
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy{
-  constructor(private route: ActivatedRoute, private API:UswagonCoreService){}
+  constructor(private route: ActivatedRoute, private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
   role = this.route.snapshot.data['requiredRole'];
   isLoading:boolean= false;
   loading$?:Subscription;
   ngOnInit(): void {
      this.loading$ = this.API.isLoading$.subscribe(loading=>{
       this.isLoading=loading;
+      this.cdr.detectChanges();
     })
   }
 

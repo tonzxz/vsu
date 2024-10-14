@@ -2,7 +2,8 @@ import { Component, HostListener, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { UswagonAuthModule } from 'uswagon-auth';
+import { UswagonAuthModule, UswagonAuthService } from 'uswagon-auth';
+import { ConfirmationComponent } from '../modals/confirmation/confirmation.component';
 
 interface MenuItem {
   title: string;
@@ -14,7 +15,7 @@ interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule,UswagonAuthModule],
+  imports: [CommonModule, RouterModule,ConfirmationComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
@@ -22,10 +23,13 @@ export class SidebarComponent implements OnInit {
   appTitle = 'Visayas State University';
   appDescription = 'Queue Management System';
   isExpanded = true;
+  logoutOpen = false;
   isMobile = false;
   @Input() role: string = 'admin';
-
+  
   private router = inject(Router);
+
+  private auth = inject(UswagonAuthService);
   
   menuItems: MenuItem[] = []
 
@@ -65,6 +69,18 @@ export class SidebarComponent implements OnInit {
     this.isExpanded = !this.isExpanded;
   }
 
+  openLogoutModal(){
+    this.logoutOpen = true;
+  }
+
+  closeLogoutModal(){
+    this.logoutOpen = false;
+  }
+
+  logout(){
+    this.auth.logout();
+  }
+
   setActiveItem(index: number): void {
     this.menuItems.forEach(item => item.active = false);
     this.menuItems[index].active = true;
@@ -86,8 +102,5 @@ export class SidebarComponent implements OnInit {
     });
   }
 
-  logout(): void {
-    // Implement your logout logic here
-    this.router.navigate(['/login']);
-  }
+
 }

@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { UswagonCoreService } from 'uswagon-core';
 import { LottieAnimationComponent } from '../../shared/components/lottie-animation/lottie-animation.component';
+import { QueueService } from '../../services/queue.service';
 
 @Component({
   selector: 'app-queueing-layout',
@@ -23,7 +24,7 @@ export class QueueingLayoutComponent implements OnInit,OnDestroy{
   ngOnDestroy(): void {
     this.loading$!.unsubscribe();
   }
-  constructor(private contentService:ContentService, private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
+  constructor(private contentService:ContentService, private API:UswagonCoreService,private cdr: ChangeDetectorRef, private queueServe:QueueService){}
   
   ngOnInit(): void {
     this.loading$ = this.API.isLoading$.subscribe(loading=>{

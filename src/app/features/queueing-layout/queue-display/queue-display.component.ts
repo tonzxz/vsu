@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef, Input } from '@angular/core';
+import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ThirdPartyService } from '../../../services/thirdparty.service';
@@ -45,7 +45,7 @@ interface Colors {
   templateUrl: './queue-display.component.html',
   styleUrls: ['./queue-display.component.css']
 })
-export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
+export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
  
  
   @Input() title = 'Registrar Division';
@@ -120,6 +120,9 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
   showVideo: boolean = false; 
  
   videoCurrentTime: number = 0; 
+  intervalVideo:any;
+  intervalTime:any;
+  intervalCurrency:any;
 
   constructor(private thirdPartyService: ThirdPartyService, private sanitizer: DomSanitizer) {}
 
@@ -161,13 +164,21 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
         hour12: true,
     };
     return date.toLocaleString('en-US', options);
+
+   
+
 }
 
 
+  ngOnDestroy(): void {
+    clearInterval(this.intervalCurrency);
+    clearInterval(this.intervalTime);
+    clearInterval(this.intervalVideo);
+  }
   ngOnInit(): void {
     this.getSafeYoutubeUrl(this.videoUrl);
     this.updateTime();
-    setInterval(() => this.updateTime(), 1000);
+    this.intervalTime = setInterval(() => this.updateTime(), 1000);
     if(!this.disableAPI){
        // Fetch real-time currency data from CurrencyFreaks
     this.thirdPartyService.getCurrencyData().subscribe({
@@ -217,12 +228,12 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges {
     }
    
 
-    setInterval(() => {
+   this.intervalVideo = setInterval(() => {
       // this.toggleVideoUpNextIFrame();
       this.toggleVideoUpNext();
     }, this.videoSwitchTimer); 
 
-        setInterval(() => this.updateCurrency(), this.currencySwitchTimer);
+        this.intervalCurrency =setInterval(() => this.updateCurrency(), this.currencySwitchTimer);
   }
 
   ngAfterViewInit(): void {}

@@ -151,12 +151,12 @@
         <div 
         class="flex items-center {{!showVideo ? 'h-full':''}}  w-full">
           <div 
-          *ngIf="!showVideo"
+          
           [ngStyle]="{
             'color': colors.secondary_text,
             'backgroundColor': colors.secondary_bg
           }"
-          class=" rounded-lg shadow-lg w-full h-full overflow-hidden animate-pop px-3 py-2 flex flex-col gap-2 min-[3500px]:rounded-3xl min-[3500px]:gap-8 min-[3500px]:px-20 min-[3500px]:py-16">
+          class=" {{showVideo ? 'hidden':''}} rounded-lg shadow-lg w-full h-full overflow-hidden animate-pop px-3 py-2 flex flex-col gap-2 min-[3500px]:rounded-3xl min-[3500px]:gap-8 min-[3500px]:px-20 min-[3500px]:py-16">
             <h1 class="font-medium text-2xl min-[3500px]:text-8xl min-[3500px]:font-semibold">UP NEXT</h1>
             <div class="flex flex-col gap-2 flex-1 min-[3500px]:gap-8">
               <div 
@@ -180,9 +180,9 @@
           class="animate-pop w-full h-full aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
         ></iframe>
           <video
-          *ngIf="!safeYoutubeUrl && showVideo"
+          *ngIf="!safeYoutubeUrl"
           [ngStyle]="{'border-color': colors.primary_text + '80',}"
-          #videoPlayer width="100%" height="100%" class="animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl" autoplay controls="false">
+          #videoPlayer width="100%" height="100%" class="{{!showVideo ? 'hidden':''}}  animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
             <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
             Your browser does not support the video tag.
           </video>
@@ -201,8 +201,8 @@
     </div>
     <!-- Overlay -->
     <div 
-    [ngStyle]="{'backgroundColor': colors.primary_bg,'mix-blend-mode': 'darken' }"
-    class="absolute top-0 h-full w-full opacity-80 z-10">
+    [ngStyle]="{'backgroundColor': colors.primary_bg,'mix-blend-mode': 'multiply' }"
+    class="absolute top-0 h-full w-full opacity-60 z-10">
     </div>
     <!-- Background Image -->
     <img *ngIf="showBackground" [src]="backgroundUrl??'assets/queue-display/background.png'" class="absolute top-0 h-full w-full object-cover opacity-100  z-0">

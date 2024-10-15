@@ -40,10 +40,11 @@ export class QueueService {
     });
   }
 
-  private takeFromQueue(division:string){
+  private takeFromQueue(queue:any){
     this.API.socketSend({
       event: 'live-queue-attend',
-      division:division,
+      division:queue.division,
+      id:queue.id,
     });
   }
 
@@ -62,7 +63,7 @@ export class QueueService {
         type: info.type,
         gender: info.gender,
         status:'waiting',
-        student_id: info.student.id
+        student_id: info.student_id
       }
     });
     if(!response.success){
@@ -127,7 +128,7 @@ export class QueueService {
     if(attended_queuue_id && remark){
       await this.resolveAttendedQueue(attended_queuue_id,remark);
     }
-    this.takeFromQueue(this.queue[0].division_id);
+    this.takeFromQueue(this.queue[0]);
     await this.addQueueToAttended(this.queue[0].id);
   }
 

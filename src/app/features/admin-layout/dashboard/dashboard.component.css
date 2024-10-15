@@ -1,17 +1,33 @@
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .animate-fadeIn {
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  .animate-fadeInUp {
-    animation: fadeInUp 0.5s ease-out;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.bg-primary {
+  background-color: #1F2E4D;
+}
+
+.bg-primary-dark {
+  background-color: #22381F;
+}
+
+.text-primary {
+  color: #1F2E4D;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}

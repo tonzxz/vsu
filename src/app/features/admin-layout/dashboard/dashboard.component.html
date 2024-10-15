@@ -1,166 +1,109 @@
-<section class="w-full min-h-screen ">
-  <div class="mx-auto  w-full">
-    <header class="flex flex-wrap items-center justify-between w-full mb-10">
-      <div>
-        <h1 class="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-        <h2 class="text-lg text-gray-500">Queue Management System</h2>
-      </div>
-      <div class="flex flex-wrap gap-4">
-        <button class="bg-[#22381F] hover:bg-opacity-90 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">Add User</button>
-        <button class="bg-[#22381F] hover:bg-opacity-90 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">Create Content</button>
-        <button class="bg-[#22381F] hover:bg-opacity-90 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">Manage Kiosks</button>
+<section class="w-full min-h-screen p-8 bg-gray-50">
+  <div class="w-full max-w-7xl mx-auto">
+
+    <!-- Welcome Header -->
+    <header class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-semibold text-gray-900">Welcome {{ currentUser.firstName }} 🎉</h1>
+      <div class="flex items-center">
+        <i class="fa fa-user-circle text-3xl text-gray-700"></i>
       </div>
     </header>
 
-    <!-- Overall Metrics -->
-    <div class="grid w-full grid-cols-1 gap-6 card-container sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
-      @for (metric of overallMetrics; track metric.title) {
-        <div class="flex flex-col items-start w-full h-full p-4 bg-white rounded-lg shadow-md metric-card">
-          <div class="flex items-center justify-between w-full">
-            <div class="flex items-center">
-              <span class="p-2 mr-4 text-white bg-blue-500 rounded-full icon">
-                <i class="fa fa-ticket"></i> <!-- Placeholder for the icon, adjust as needed -->
-              </span>
-              <div>
-                <h3 class="text-lg font-bold">{{ metric.title }}</h3>
-                <h4 class="mt-2 text-3xl font-semibold">{{ metric.value }}</h4> <!-- Removed the dollar sign -->
-              </div>
+    <!-- Overall Metrics Overview and Queue Status -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+      <!-- Metrics -->
+      <div class="lg:col-span-2">
+        <h2 class="text-xl font-semibold mb-4">Overall Metrics Overview</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <ng-container *ngFor="let metric of overallMetrics">
+            <div class="p-4 bg-white rounded-lg shadow">
+              <h3 class="text-gray-700 text-sm font-medium">{{ metric.title }}</h3>
+              <p class="text-3xl font-bold text-gray-900 mt-2">{{ metric.value }}</p>
             </div>
-            <span class="text-gray-500 time-period">24H</span>
-          </div>
-          <div class="relative w-full mt-4" style="height: 100px;">
-            <canvas #canvasElement></canvas>
-          </div>
+          </ng-container>
         </div>
-      }
-    </div>
+      </div>
 
-    <!-- Queue Status -->
-    <section class="w-full mb-10">
-      <h2 class="mb-4 text-2xl font-semibold text-gray-800">Queue Status</h2>
-      <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        @for (queue of queueAnalytics; track queue.office) {
-          <div class="w-full p-6 bg-white rounded-lg shadow-sm">
-            <h3 class="mb-4 text-lg font-semibold text-gray-700">{{ queue.office }}</h3>
-            <p class="mb-2 text-sm text-gray-600">Current Ticket: <span class="font-bold text-blue-600">{{ queue.currentTicket }}</span></p>
-            <p class="mb-2 text-sm text-gray-600">Waiting: <span class="font-bold">{{ queue.waitingCount }}</span></p>
-            <p class="mb-2 text-sm text-gray-600">Avg Wait Time: <span class="font-bold">{{ queue.avgWaitTime }} mins</span></p>
-            <div class="h-24 mt-4">
-              <svg class="w-full h-full" viewBox="0 0 100 100">
-                <rect x="10" [attr.y]="100 - queue.waitingCount" width="80" [attr.height]="queue.waitingCount"
-                      [attr.fill]="queue.status === 'Busy' ? '#DC2626' : queue.status === 'Moderate' ? '#F59E0B' : '#10B981'">
-                </rect>
-              </svg>
+      <!-- Queue Status -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-4">Queue Status</h3>
+        <div class="grid grid-cols-1 gap-4">
+          <ng-container *ngFor="let queue of queueAnalytics">
+            <div class="p-4 bg-gray-50 rounded-lg shadow">
+              <h4 class="text-gray-800 font-medium">{{ queue.office }}</h4>
+              <p class="text-sm text-gray-600">Average wait time: {{ queue.avgWaitTime }}</p>
+              <p class="text-sm text-gray-600">In-Queue: {{ queue.waitingCount }}</p>
             </div>
-            <p class="mt-4 text-sm text-gray-600">Status:
-              <span class="font-bold" [ngClass]="{'text-green-500': queue.status === 'Normal', 'text-yellow-500': queue.status === 'Moderate', 'text-red-500': queue.status === 'Busy'}">
-                {{ queue.status }}
-              </span>
-            </p>
-          </div>
-        }
+          </ng-container>
+        </div>
       </div>
     </section>
 
-    <!-- Staff Performance -->
+    <!-- Service Over Time Chart -->
     <section class="mb-10">
-      <h2 class="mb-4 text-2xl font-semibold text-gray-800">Staff Performance</h2>
-      <div class="w-full overflow-hidden bg-white rounded-lg shadow-sm">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Office</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Tickets Served</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Avg. Service Time</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              @for (staff of paginatedStaffPerformance; track staff.name; let idx = $index) {
-                <tr (click)="toggleStaffDetails(staff)" class="transition duration-150 ease-in-out cursor-pointer hover:bg-gray-100">
-                  <td class="px-6 py-4 whitespace-nowrap">{{ staff.name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ staff.office }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ staff.ticketsServed }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ staff.avgServiceTime }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 text-xs font-medium rounded-full"
-                          [ngClass]="{
-                            'bg-green-100 text-green-800': staff.status === 'Active',
-                            'bg-yellow-100 text-yellow-800': staff.status === 'On Break',
-                            'bg-red-100 text-red-800': staff.status === 'Offline'
-                          }">
-                      {{ staff.status }}
-                    </span>
-                  </td>
-                </tr>
-                @if (staff.isExpanded) {
-                  <tr>
-                    <td colspan="5" class="px-6 py-4">
-                      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
-                        <h3 class="mb-2 text-lg font-semibold text-gray-700">{{ staff.name }}'s Performance Metrics</h3>
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                          <div>
-                            <p class="text-sm text-gray-600">Total Clients Served</p>
-                            <p class="text-2xl font-bold">{{ staff.ticketsServed }}</p>
-                          </div>
-                          <div>
-                            <p class="text-sm text-gray-600">Average Service Time</p>
-                            <p class="text-2xl font-bold">{{ staff.avgServiceTime }}</p>
-                          </div>
-                          <div>
-                            <p class="text-sm text-gray-600">Customer Rating</p>
-                            <p class="text-2xl font-bold">{{ staff.customerRating.toFixed(1) }}</p>
-                          </div>
-                        </div>
-                        <div class="mt-6">
-                          <h4 class="mb-3 font-semibold text-gray-700 text-md">Daily Clients Served</h4>
-                          <div class="relative w-full p-4 bg-gray-100 rounded-lg shadow-md h-60">
-                            <canvas #dailyPerformanceCanvas></canvas>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              }
-            </tbody>
-          </table>
-        </div>
+      <h2 class="text-xl font-semibold mb-4">Service Over Time</h2>
+      <div class="w-full bg-white rounded-lg shadow p-6">
+        <canvas #canvasElement></canvas>
       </div>
     </section>
 
-
-
-    <!-- Kiosk Status -->
-    <section class="w-full">
-      <h2 class="mb-4 text-2xl font-semibold text-gray-800">Kiosk Status</h2>
-      <div class="w-full overflow-x-auto bg-white rounded-lg shadow-sm">
-        <table class="w-full text-sm text-gray-700">
-          <thead>
-            <tr class="bg-gray-50">
-              <th class="p-4 text-left">ID</th>
-              <th class="p-4 text-left">Location</th>
-              <th class="p-4 text-left">Status</th>
-              <th class="p-4 text-left">Tickets Issued</th>
-              <th class="p-4 text-left">Last Maintenance</th>
+    <!-- Terminal and Kiosk Management Overview and Screen Preview -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+      <!-- Terminal and Kiosk Management Overview -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-4">Terminal and Kiosk Management Overview</h3>
+        <table class="w-full table-auto">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="p-4 text-left text-sm text-gray-600">Name</th>
+              <th class="p-4 text-left text-sm text-gray-600">Location</th>
+              <th class="p-4 text-left text-sm text-gray-600">Counter</th>
             </tr>
           </thead>
           <tbody>
-            @for (kiosk of kioskStatus; track kiosk.id) {
-              <tr class="hover:bg-gray-50">
+            <ng-container *ngFor="let kiosk of kioskStatus">
+              <tr>
                 <td class="p-4">{{ kiosk.id }}</td>
                 <td class="p-4">{{ kiosk.location }}</td>
-                <td class="p-4">
-                  <span [ngClass]="{'text-green-500': kiosk.status === 'Operational', 'text-yellow-500': kiosk.status === 'Low Paper', 'text-red-500': kiosk.status === 'Out of Service'}">
-                    {{ kiosk.status }}
-                  </span>
-                </td>
                 <td class="p-4">{{ kiosk.ticketsIssued }}</td>
-                <td class="p-4">{{ kiosk.lastMaintenance }}</td>
               </tr>
-            }
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Screen Preview -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold mb-4">Screen Preview</h3>
+        <div class="relative w-full">
+          <img src="assets/screen-preview.png" alt="Queue Screen Preview" class="rounded-lg w-full">
+          <button class="absolute bottom-4 right-4 bg-black text-white px-4 py-2 rounded">Play Video</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desk Attendant Performance Metrics -->
+    <section class="mb-10">
+      <h3 class="text-lg font-semibold mb-4">Desk Attendant Performance Metrics</h3>
+      <div class="bg-white rounded-lg shadow p-6">
+        <table class="w-full table-auto">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="p-4 text-left text-sm text-gray-600">Name</th>
+              <th class="p-4 text-left text-sm text-gray-600">Location</th>
+              <th class="p-4 text-left text-sm text-gray-600">Service Provided</th>
+              <th class="p-4 text-left text-sm text-gray-600">Avg. Wait Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let staff of paginatedStaffPerformance">
+              <tr>
+                <td class="p-4">{{ staff.name }}</td>
+                <td class="p-4">{{ staff.office }}</td>
+                <td class="p-4">{{ staff.ticketsServed }}</td>
+                <td class="p-4">{{ staff.avgServiceTime }}</td>
+              </tr>
+            </ng-container>
           </tbody>
         </table>
       </div>

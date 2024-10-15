@@ -42,7 +42,6 @@ export class SidebarComponent implements OnInit {
       { title: 'Kiosk Management', route: '/admin/kiosk-management', active: false, icon: 'touch_app' }
     ]: [
       { title: 'Dashboard', route: '/desk-attendant/dashboard', active: true, icon: 'dashboard' },
-      { title: 'Content Management', route: '/desk-attendant/contentmgmt', active: false, icon: 'content_paste' },
       { title: 'Terminal Management', route: '/desk-attendant/terminalmgmt', active: false, icon: 'computer' },
     ];
     this.checkScreenSize();

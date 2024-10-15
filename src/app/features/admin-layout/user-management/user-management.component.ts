@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { UswagonCoreService } from 'uswagon-core';
 import { CreateAccountModalComponent } from "./create-account-modal/create-account-modal.component";
 import { UswagonAuthService } from 'uswagon-auth';
-import { environment } from '../../../../../../CATSU-SL/src/environments/environment';
 import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
+import { environment } from '../../../../environment/environment';
 
 interface User {
   id: string;

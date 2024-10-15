@@ -3,16 +3,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UswagonCoreService } from 'uswagon-core';
 import { CreateAccountModalComponent } from "./create-account-modal/create-account-modal.component";
+import { UswagonAuthService } from 'uswagon-auth';
+import { environment } from '../../../../../../CATSU-SL/src/environments/environment';
+import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
 
 interface User {
   id: string;
   username: string;
   fullname: string;
+  division_id: string;
   division: string;
   is_online: boolean;
   number: string;
   profile?: string;
   password?: string;
+}
+
+interface Divisions {
+  id: string;
+  name:string;
 }
 
 interface PerformanceMetrics {
@@ -29,7 +38,7 @@ interface PerformanceMetrics {
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, CreateAccountModalComponent],
+  imports: [CommonModule, FormsModule, CreateAccountModalComponent, LottieAnimationComponent],
 })
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
@@ -46,25 +55,61 @@ export class UserManagementComponent implements OnInit {
   currentUser: User | null = null;
   showModal = false;
   selectedUser: User | null = null;
+  isSuperAdmin: boolean = this.auth.accountLoggedIn() == 'superadmin';
 
-  constructor(private API: UswagonCoreService) {}
+
+  divisions: Divisions[] = [];
+  
+  constructor(private API: UswagonCoreService, private auth:UswagonAuthService) {}
 
   ngOnInit() {
-    this.fetchUsers();
+    this.loadData();
  
 
   }
 
-
-
-  async fetchUsers() {
+  async loadData(){
     this.API.setLoading(true);
+    await this.fetchUsers();
+    await this.fetchDivisions();
+    this.API.setLoading(false);
+  }
+
+  async fetchDivisions(){
     const data = await this.API.read({
       selectors: [
         '*'
       ],
-      tables: 'desk_attendants',
-      conditions: ``
+      tables: 'divisions',
+      conditions: `WHERE id != '${environment.administrators}'`
+    });
+
+    if(data.success){
+      this.divisions  = data.output as Divisions[];
+      if(!this.isSuperAdmin){
+        this.divisions = this.divisions.filter((division)=> division.id == this.auth.getUser().division_id );
+      }
+    }else{
+      throw new Error('Something went wrong');
+    }
+  
+  }
+
+  async fetchUsers() {
+    let conditions ='';
+
+    if(this.isSuperAdmin){
+      conditions =  `WHERE divisions.id = desk_attendants.division_id`;
+    }else{
+       conditions =  `WHERE divisions.id = desk_attendants.division_id AND divisions.id = '${this.auth.getUser().division_id}'`
+    }
+
+    const data = await this.API.read({
+      selectors: [
+        'desk_attendants.*, divisions.name as division'
+      ],
+      tables: 'desk_attendants,divisions',
+      conditions:conditions
     });
   
     if (data.success && data.output.length > 0) {
@@ -74,6 +119,7 @@ export class UserManagementComponent implements OnInit {
         username: any;
         id: string;
         profile: string;
+        division_id: string;
         division: string;
         is_online: boolean;
       }) => {
@@ -86,6 +132,7 @@ export class UserManagementComponent implements OnInit {
           username: user.username,
           profile: this.getImageURL(user.profile),
           password: decryptedPassword, 
+          division_id: user.division_id,
           division: user.division || 'Not Available',
           is_online: user.is_online
         };
@@ -93,10 +140,10 @@ export class UserManagementComponent implements OnInit {
       
       this.filteredUsers = [...this.users];
       this.setCurrentUser(this.users[0]);
-      this.API.setLoading(false);
+
       console.log('Users fetched:', this.users);
     } else {
-      this.API.setLoading(false);
+
       console.error('No users found or query failed');
     }
   }
@@ -176,7 +223,7 @@ export class UserManagementComponent implements OnInit {
     } else {
       const newUser: User = {
         ...partialUser,
-        division: 'NA',
+        division: this.divisions.find( (division)=> division.id == partialUser.division_id)?.name,
         is_online: false,
         number: ''
       } as User;

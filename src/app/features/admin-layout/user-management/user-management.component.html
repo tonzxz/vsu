@@ -89,7 +89,13 @@
     <tbody class="divide-y divide-gray-200">
 
       <tr *ngIf="filteredUsers.length === 0">
-        <td colspan="6" class="p-5 text-center text-gray-500">No users put a fuckingg good lottie file hereee!</td>
+        <td colspan="6" class="p-2 text-center text-gray-500">
+      
+            <app-lottie-animation class="w-56 h-56 mx-auto"  animation="noUsers"></app-lottie-animation>
+            <div class="text-lg ">No users available. </div>
+            <div class="text-base mb-4">Click <span class="font-medium">'Create Account'</span> to add a user.</div>
+    
+        </td>
       </tr>
 
 
@@ -138,6 +144,7 @@
   *ngIf="showModal"
   [editingUser]="!!selectedUser"
   [user]="selectedUser"
+  [divisions]="divisions"
   (closeModal)="closeModal()"
   (accountCreated)="onAccountCreated($event)">
 </app-create-account-modal>

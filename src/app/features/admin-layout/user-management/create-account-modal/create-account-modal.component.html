@@ -40,6 +40,19 @@
                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"/>
       </div>
 
+      <!-- Dropdown Field -->
+      <div class="mt-4">
+        <label for="userRole" class="block mb-1 text-sm font-semibold text-gray-700">User Role</label>
+        <select id="userRole" [(ngModel)]="newUser.division_id" name="userRole"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+          <option value="" disabled selected>Select a role</option>
+          <ng-container *ngFor="let division of divisions">
+            <option *ngIf="!isSuperAdmin" selected [value]="division.id">{{division.name}}</option>
+            <option *ngIf="isSuperAdmin" [value]="division.id">{{division.name}}</option>
+          </ng-container>
+        </select>
+      </div>
+
       <!-- Password Field -->
       <div>
         <div *ngIf="editingUser && !showPasswordField" class="flex justify-end">

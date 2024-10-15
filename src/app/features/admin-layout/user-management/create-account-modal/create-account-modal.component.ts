@@ -2,15 +2,21 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UswagonCoreService } from 'uswagon-core';
+import { UswagonAuthService } from 'uswagon-auth';
 
 interface PartialUser {
   id: string;
+  division_id:string;
   username: string;
   fullname: string;
   profile?: string;
   password?: string;
 }
 
+interface Divisions {
+  id: string;
+  name:string;
+}
 @Component({
   selector: 'app-create-account-modal',
   templateUrl: './create-account-modal.component.html',
@@ -21,11 +27,13 @@ interface PartialUser {
 export class CreateAccountModalComponent {
   @Input() editingUser: boolean = false;
   @Input() user: PartialUser | null = null;
+  @Input() divisions:Divisions[] = [];
   @Output() closeModal = new EventEmitter<void>();
   @Output() accountCreated = new EventEmitter<Omit<PartialUser, 'password'>>();
 
   newUser: PartialUser = {
     id: '',
+    division_id:'',
     username: '',
     fullname: '',
     profile: '',
@@ -37,14 +45,21 @@ export class CreateAccountModalComponent {
   errorMessage: string = '';
   showPasswordField: boolean = false;
 
-  constructor(public API: UswagonCoreService) {}
+  isSuperAdmin:boolean = this.auth.accountLoggedIn() =='superadmin';
+
+  constructor(public API: UswagonCoreService, private auth:UswagonAuthService) {}
 
   ngOnInit() {
     if (this.editingUser && this.user) {
       this.newUser = { ...this.user, password: '' };
     }
+    if(!this.isSuperAdmin){
+      this.newUser.division_id = this.auth.getUser().division_id;
+    }
   }
 
+
+  
   async submitForm() {
     try {
       if (this.editingUser) {

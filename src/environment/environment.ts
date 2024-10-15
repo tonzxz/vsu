@@ -8,5 +8,6 @@ export const environment = {
     // socket: 'ws://192.168.10.2:3000',
     // nodeserver: 'http://192.168.10.2:3000',
     // server: 'http://192.168.10.2/public',
-    app: 'vsu'
+    app: 'vsu',
+    administraror: 'a1b2c3d4e5f6g7h8i9j0klmnopqrst12'
 }

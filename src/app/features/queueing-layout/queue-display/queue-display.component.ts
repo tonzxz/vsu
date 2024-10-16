@@ -61,13 +61,13 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
   // Mock data for queue
   @Input() counters: Counter[] = [
-    { label: 'COUNTER 1', ticketNumber: 'P-312314', personName: 'Domeng Valdez' },
-    { label: 'COUNTER 2', ticketNumber: 'R-312314', personName: 'Burnok Binawian' },
-    { label: 'COUNTER 3', ticketNumber: 'R-312315', personName: 'John Doe' },
-    { label: 'COUNTER 4', ticketNumber: 'P-312316', personName: 'Jane Doe' },
-    { label: 'COUNTER 5', ticketNumber: 'R-312317', personName: 'Alice Johnson' },
-    { label: 'COUNTER 6', ticketNumber: 'P-312318', personName: 'Bob Brown' },
-    { label: 'COUNTER 7', ticketNumber: 'R-312319', personName: 'Charlie White' }
+    { label: '1', ticketNumber: 'P-32', personName: 'Domeng Valdez' },
+    { label: '2', ticketNumber: 'R-30', personName: 'Burnok Binawian' },
+    { label: '3', ticketNumber: 'R-31', personName: 'John Doe' },
+    { label: '4', ticketNumber: 'P-29', personName: 'Jane Doe' },
+    { label: '5', ticketNumber: 'R-40', personName: 'Alice Johnson' },
+    { label: '6', ticketNumber: 'P-21', personName: 'Bob Brown' },
+    { label: '7', ticketNumber: 'R-20', personName: 'Charlie White' }
   ];
 
 
@@ -126,6 +126,9 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
   constructor(private thirdPartyService: ThirdPartyService, private sanitizer: DomSanitizer) {}
 
+
+  
+
   private isValidYouTubeUrl(url: string): boolean {
     const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
     return regex.test(url);
@@ -179,6 +182,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     this.getSafeYoutubeUrl(this.videoUrl);
     this.updateTime();
     this.intervalTime = setInterval(() => this.updateTime(), 1000);
+   
     if(!this.disableAPI){
        // Fetch real-time currency data from CurrencyFreaks
     this.thirdPartyService.getCurrencyData().subscribe({
@@ -236,7 +240,20 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
         this.intervalCurrency =setInterval(() => this.updateCurrency(), this.currencySwitchTimer);
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    for (let i = 1; i < this.counters.length - 1; i += 2) {
+      // Swap elements at index i and i + 1
+      [this.counters[i], this.counters[i + 1]] = [this.counters[i + 1], this.counters[i]];
+    }
+  }
+
+  darkenColor(color: string,intensity:number): string {
+    const hex = color.replace('#', '');
+    const r = Math.max(0, parseInt(hex.substring(0, 2), 16) - intensity);
+    const g = Math.max(0, parseInt(hex.substring(2, 4), 16) - intensity);
+    const b = Math.max(0, parseInt(hex.substring(4, 6), 16) - intensity);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {}
 

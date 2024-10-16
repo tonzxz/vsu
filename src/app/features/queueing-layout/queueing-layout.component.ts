@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { UswagonCoreService } from 'uswagon-core';
 import { LottieAnimationComponent } from '../../shared/components/lottie-animation/lottie-animation.component';
 import { QueueService } from '../../services/queue.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-queueing-layout',
@@ -20,17 +21,20 @@ export class QueueingLayoutComponent implements OnInit,OnDestroy{
 
   isLoading:boolean= true;
   loading$?:Subscription;
+  contentIndex: number = 0;
 
   ngOnDestroy(): void {
     this.loading$!.unsubscribe();
   }
-  constructor(private contentService:ContentService, private API:UswagonCoreService,private cdr: ChangeDetectorRef, private queueServe:QueueService){}
+  constructor(private contentService:ContentService, private API:UswagonCoreService,private cdr: ChangeDetectorRef, private queueServe:QueueService,private route: ActivatedRoute){}
   
   ngOnInit(): void {
     this.loading$ = this.API.isLoading$.subscribe(loading=>{
       this.isLoading=loading;
       this.cdr.detectChanges();
     })
+
+    this.contentIndex = this.route.snapshot.queryParams['id'];
  
     this.loadContents();
 
@@ -47,12 +51,11 @@ export class QueueingLayoutComponent implements OnInit,OnDestroy{
   async loadContents(){
     this.API.setLoading(true);
     const contents = await this.contentService.getContentSettings();
-
     if(contents.length <= 0) {
       this.API.setLoading(false);
       return;
     };
-    this.content = contents[0];
+    this.content = contents[this.contentIndex];
     this.API.setLoading(false);
   }
 }

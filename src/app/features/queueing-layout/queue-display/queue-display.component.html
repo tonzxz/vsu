@@ -7,7 +7,7 @@
     <!-- Main Content -->
     <div class="w-full h-full flex flex-row px-4 pt-4 pb-8 2xl:pb-14  min-[3500px]:px-16  min-[3500px]:pt-14 min-[3500px]:pb-40 relative z-50">
       <!-- Left Side -->
-      <div class="flex-[1_1_0%] flex flex-col  min-[3500px]:gap-5">  
+      <div class="flex-[1_1_0%] flex flex-col gap-3  min-[3500px]:gap-5">  
         <!-- Division Banner -->
         <div class="flex w-full gap-3  min-[3500px]:gap-16 px-3 py-2  min-[3500px]:p-12">
           <!-- Logo -->
@@ -17,7 +17,7 @@
           }"
           [src]="logoUrl ??'assets/logo/vsu.png'" alt="University Logo" class="w-28 h-28 border-dashed border-2 min-[3500px]:border-8 min-[3500px]:w-96 min-[3500px]:h-96  rounded-full shadow-md object-cover">
           <div class="flex flex-col justify-center   min-[3500px]:gap-3">
-            <h1 class="text-3xl 2xl:text-4xl min-[3500px]:text-[7rem] min-[3500px]:leading-none  font-semibold tracking-wider min-[3500px]:tracking-wider text-shadow"
+            <h1 class="text-2xl 2xl:text-4xl min-[3500px]:text-[7rem] min-[3500px]:leading-none  font-semibold tracking-wider min-[3500px]:tracking-wider text-shadow"
               [ngStyle]="{'color': colors.primary_text}">{{title.toUpperCase()}}</h1>
             <h1 class="2xl:px-1 text-xl 2xl:text-2xl min-[3500px]:text-7xl text-white tracking-wider min-[3500px]:tracking-widest text-shadow"
               [ngStyle]="{'color': colors.primary_text}">Visayas State University</h1>
@@ -64,125 +64,164 @@
       </div>
       <!-- Right Side -->
       <div class="flex-[1_1_0%] flex flex-col justify-center items-center w-full gap-2 py-4 min-[3500px]:gap-8">
-        <!-- Time Currency Row -->
-        <div *ngIf="showTime || showCurrency" class="h-24 2xl:h-32 flex gap-3 w-full min-[3500px]:h-96 min-[3500px]:gap-8">
-          <!-- Empty Time Pusher -->
-          <div  *ngIf="! showTime" class='flex-[2_2_0%]'></div>
-          <!-- Empty Currency Pusher -->
-          <div  *ngIf="!showCurrency" class='flex-[1_1_0%]'></div>
-          <!-- Currency -->
-          <ng-container *ngFor="let currency of currencies; let i = index">
-           <div   
-           [ngStyle]="{
-
-            'border-color': colors.primary_text + '80',
-          }"
-           *ngIf="showCurrency && i == currentCurrencyIndex"
-           class="border-dashed border-2 min-[3500px]:border-8  flex-[1_1_0%]  h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden  animate-pop ">
+        <!-- Widget Row -->
+        <div  class="flex flex-[2_2_0%] gap-3 w-full min-[3500px]:gap-8">
+          <!-- Video -->
+          <div class="flex-[5_5_0%] flex items-center">
+            <iframe
+              #iframePlayer
+              [ngStyle]="{'border-color': colors.primary_text + '80',}"
+              *ngIf="safeYoutubeUrl"
+              [src]="safeYoutubeUrl"
+              autoplay
+              frameborder="0"
+              class="aspect-video animate-pop w-full h-full object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
+            ></iframe>
+            <video
+            *ngIf="!safeYoutubeUrl"
+            [ngStyle]="{'border-color': colors.primary_text + '80',}"
+            #videoPlayer width="100%" height="100%" class=" animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
+              <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
+              Your browser does not support the video tag.
+            </video> 
+          </div>
+          
+          <div 
+          *ngIf="showTime || showCurrency || showWeather"
+          class="flex flex-col flex-[2_2_0%] gap-3  min-[3500px]:gap-8">
+            <!-- Time -->
+            <div 
+            *ngIf="showTime"
+            [ngStyle]="{
+              'border-color': colors.primary_text + '80',
+            }"
+            class="flex-[1_1_0%] border-dashed border-2 min-[3500px]:border-8  w-full h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden ">
               <div 
-             
               [ngStyle]="{
                 'color': colors.secondary_text,
                 'backgroundColor': colors.secondary_bg,
 
               }"
-              class="w-full rounded-lg shadow-lg flex flex-col h-full min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl">
-                <!-- Currency Header -->
-                <div class=" flex gap-2 px-4 py-2 items-center min-[3500px]:px-10 min-[3500px]:py-6 min-[3500px]:gap-10">
-                  <div 
-                  [ngStyle]="{
-                    'color': colors.tertiary_text,
-                    'backgroundColor': colors.secondary_text
-                  }"
-                  class="w-7 h-7 2xl:w-9 2xl:h-9 rounded-full flex justify-center items-center min-[3500px]:w-32 min-[3500px]:h-32">
-                    <!-- Currency Icon -->
-                    <span class="text-lg 2xl:text-xl text-shadow min-[3500px]:text-7xl">{{currency.icon}}</span>
-                  </div>
-                  <!-- Currency Label -->
-                  <span class="text-xl 2xl:text-2xl font-semibold text-shadow min-[3500px]:text-8xl">{{currency.label}}</span>
-                </div>
-                <!-- Currency Details -->
-                <div class="flex-1 flex flex-col  items-center min-[3500px]:gap-5">
-                  <!-- Converted -->
-                  <div 
-                  [ngStyle]="{
-                    'color': colors.secondary_text,
-                  }"
-                  class="text-lg 2xl:text-2xl text-shadow min-[3500px]:text-8xl">₱{{currency.rate.toFixed(3)}}</div>
-                  <!-- Extra -->
+              class="w-full h-full p-2 min-[3500px]:p-4 flex flex-col justify-center ">
+                <!-- Timezone -->
+                <div class="text-base 2xl:text-xl font-semibold   min-[3500px]:px-4 min-[3500px]:text-6xl flex flex-col min-[3500px]:gap-4">
+                  <div class="font-bold">{{timeInfo.location.split('(')[0].trim()}}</div>
                   <div
                   [ngStyle]="{
                     'color': colors.tertiary_text,
                   }"
-                  class="text-shadow text-sm 2xl:text-base min-[3500px]:text-6xl "
-                  ><span>{{currency.label}}</span><span>➜</span><span>PHP</span></div>
+                  >({{timeInfo.location.split('(')[1].trim()}}</div>
                 </div>
-
-              </div>
-            </div>
-          </ng-container>
-          <!-- Time -->
-          <div             
-          [ngStyle]="{
-            'border-color': colors.primary_text + '80',
-          }"
-          *ngIf="showTime"  class="border-dashed border-2 min-[3500px]:border-8 flex-[2_2_0%] h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden ">
-            <div 
-
-            [ngStyle]="{
-              'color': colors.secondary_text,
-              'backgroundColor': colors.secondary_bg,
-
-            }"
-            class="w-full px-4  shadow-lg flex flex-col h-full
-              min-[3500px]:px-10   min-[3500px]:py-6
-              min-[3500px]:shadow-2xl min-[3500px]:rounded-3xl ">
-              <!-- Timezone -->
-              <div class="text-xl 2xl:text-2xl font-semibold  py-2 min-[3500px]:px-4 min-[3500px]:text-8xl">
-                {{timeInfo.location}}
-              </div>
-              <!-- Current Time -->
-              <div class="flex-1 text-3xl 2xl:text-5xl w-full justify-center  flex  font-bold min-[3500px]:text-9xl min-[3500px]:items-center">
-                {{timeInfo.time}}
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Weather Row -->
-        <div *ngIf="showWeather" class="h-20 flex gap-3 w-full min-[3500px]:h-72 min-[3500px]:gap-8 items-center" >
-          <div *ngFor="let item of weatherItems" 
-          class="border-dashed border-2 min-[3500px]:border-8  w-full h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden "
-          [ngStyle]="{
-            'border-color': colors.primary_text + '80',
-          }"
-          >
-            <div 
-         
-            [ngStyle]="{
-              'color': colors.primary_text,
-              'backgroundColor': colors.primary_bg,
-            }"
-            class="w-full h-full flex bg-white    items-center
-               min-[3500px]:shadow-2xl ">
-              <div class="flex-[2_2_0%] flex items-center justify-center font-semibold  text-lg 2xl:text-xl text-shadow min-[3500px]:text-7xl min-[3500px]:font-bold ">
-                {{item.time}}
-              </div>
-              <div class="flex-1 flex flex-col justify-center items-center">
-                <!-- Weather Icon -->
-                <app-lottie-animation  class="w-10 h-10 2xl:w-12 2xl:h-12 min-[3500px]:h-40 min-[3500px]:w-40" animation="{{item.temperature < 27 ? 'cloudy': 'sunny'}}"></app-lottie-animation>
-                <!-- Weather Temp -->
-                <div class="font-medium text-shadow min-[3500px]:text-5xl">
-                  {{item.temperature}}°C
+                <!-- Current Time -->
+                <div class=" text-3xl 2xl:text-3xl w-full justify-center  flex font-bold min-[3500px]:text-9xl items-end">
+                    <span>{{timeInfo.time.split(':')[0]}}:{{timeInfo.time.split(':')[1]}}</span>
+                    <span 
+                    [ngStyle]="{
+                      'color': colors.tertiary_text,
+                    }"
+                    class="text-sm 2xl:text-xl min-[3500px]:text-6xl ">:{{timeInfo.time.split(':')[2]}}</span>
                 </div>
               </div>
+
+            </div>
+            <!-- Fillers -->
+            <div *ngIf="!showTime && (!showCurrency || !showWeather)" class="flex-1"></div>
+            <!-- Currency Widget -->
+            <ng-container *ngFor="let currency of currencies; let i = index">
+              <div   
+              [ngStyle]="{
+                'border-color': colors.primary_text + '80',
+              }"
+              *ngIf="showCurrency && i == currentCurrencyIndex && (switcher =='currency' || !showTime)"
+              class="border-dashed border-2 min-[3500px]:border-8  flex-[1_1_0%] flex flex-col w-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden  animate-pop ">
+                  <div 
+                  [ngStyle]="{
+                    'color': colors.secondary_text,
+                    'backgroundColor': colors.secondary_bg,
+
+                  }"
+                  class="w-full rounded-lg shadow-lg flex flex-col h-full min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl">
+                    <!-- Currency Header -->
+                    <div class=" flex gap-2  px-4 pt-2 items-center min-[3500px]:px-10 min-[3500px]:pt-6 min-[3500px]:gap-14">
+                      <div 
+                      [ngStyle]="{
+                        'color': colors.tertiary_text,
+                        'backgroundColor': colors.secondary_text
+                      }"
+                      class="w-7 h-7  rounded-full flex justify-center items-center min-[3500px]:w-32 min-[3500px]:h-32">
+                        <!-- Currency Icon -->
+                        <span class="text-lg text-shadow min-[3500px]:text-7xl">{{currency.icon}}</span>
+                      </div>
+                      <!-- Currency Label -->
+                      <span class="text-xl font-semibold text-shadow min-[3500px]:text-8xl">{{currency.label}}</span>
+                    </div>
+                    <!-- Currency Details -->
+                    <div class="flex flex-col justify-center items-center min-[3500px]:gap-1">
+                      <!-- Converted -->
+                      <div 
+                      [ngStyle]="{
+                        'color': colors.secondary_text,
+                      }"
+                      class="text-lg  text-shadow min-[3500px]:text-8xl">₱{{currency.rate.toFixed(3)}}</div>
+                      <!-- Extra -->
+                      <div
+                      [ngStyle]="{
+                        'color': colors.tertiary_text,
+                      }"
+                      class="text-shadow text-xs 2xl:text-sm min-[3500px]:text-5xl "
+                      ><span>{{currency.label}}</span><span>➜</span><span>PHP</span></div>
+                    </div>
+
+                  </div>
+                </div>
+            </ng-container>
+            <!-- Weather Widget -->
+            <div *ngIf="showWeather &&(switcher =='weather' || !showTime)" class="animate-pop flex-[1_1_0%] flex gap-3 w-full  min-[3500px]:gap-8 items-center" >
+              <ng-container *ngFor="let item of weatherItems; let i = index"  >
+                <div 
+                  *ngIf="i == currentWeatherIndex"
+                  class="border-dashed border-2 min-[3500px]:border-8  w-full h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden "
+                  [ngStyle]="{
+                    'border-color': colors.primary_text + '80',
+                  }"
+                >
+                  <div 
+                  [ngStyle]="{
+                    'color': colors.secondary_text,
+                    'backgroundColor': colors.secondary_bg,
+                  }"
+                  class="w-full h-full flex bg-white px-2   items-center min-[3500px]:px-4
+                    min-[3500px]:shadow-2xl ">
+                    <div class="flex-[2_2_0%] flex flex-col items-center justify-center font-semibold  text-lg 2xl:text-2xl min-[3500px]:text-8xl text-shadow    min-[3500px]:font-bold ">
+                      <span>
+                        {{item.time.replace(' AM','').replace(' PM','')}}
+                      </span>
+                      <span class="text-base 2xl:text-lg min-[3500px]:text-7xl font-medium">
+                        {{item.time.includes('AM') ? 'AM':'PM'}}
+                      </span>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center items-center">
+                      <!-- Weather Icon -->
+                      <app-lottie-animation  class="w-10 h-10 2xl:w-12 2xl:h-12 min-[3500px]:h-48 min-[3500px]:w-48" animation="{{item.temperature < 27 ? 'cloudy': 'sunny'}}"></app-lottie-animation>
+                      <!-- Weather Temp -->
+                      <div class="font-medium text-shadow min-[3500px]:text-5xl">
+                        {{item.temperature}}°C
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container> 
             </div>
           </div>
+        
+
         </div>
-        <!-- Video Row and Queue Row -->
+        
+        <!-- Qeuue Row -->
         <div 
-        class="flex items-center   w-full">
+        class="flex-[3_3_0%] flex items-center   w-full">
           <div    
-          class="{{showVideo ? 'hidden':''}}  border-dashed border-2 min-[3500px]:border-8  w-full h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden  animate-pop"
+          class=" border-dashed border-2 min-[3500px]:border-8  w-full h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden  animate-pop"
           [ngStyle]="{'border-color': colors.primary_text + '80',}">
             <div 
             [ngStyle]="{
@@ -190,7 +229,7 @@
               'color': colors.secondary_text,
               'backgroundColor': colors.secondary_bg
             }"
-            class="   aspect-video rounded-lg shadow-lg w-full overflow-hidden px-3 py-2 flex flex-col gap-2 min-[3500px]:rounded-3xl min-[3500px]:gap-8 min-[3500px]:px-20 min-[3500px]:py-16">
+            class=" h-full rounded-lg shadow-lg w-full overflow-hidden px-3 py-2 flex flex-col gap-2 min-[3500px]:rounded-3xl min-[3500px]:gap-8 min-[3500px]:px-20 min-[3500px]:py-16">
               <h1 class="font-medium text-2xl min-[3500px]:text-8xl min-[3500px]:font-semibold">UP NEXT</h1>
               <div class="flex flex-col gap-2 flex-1 min-[3500px]:gap-8">
                 <div 
@@ -206,22 +245,7 @@
               </div>
             </div>
           </div>
-          <iframe
-          #iframePlayer
-          [ngStyle]="{'border-color': colors.primary_text + '80',}"
-          *ngIf="safeYoutubeUrl && showVideo"
-          [src]="safeYoutubeUrl"
-          autoplay
-          frameborder="0"
-          class="animate-pop w-full h-full aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
-        ></iframe>
-          <video
-          *ngIf="!safeYoutubeUrl"
-          [ngStyle]="{'border-color': colors.primary_text + '80',}"
-          #videoPlayer width="100%" height="100%" class="{{!showVideo ? 'hidden':''}}  animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
-            <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
+      
         </div>
  
       </div>
@@ -234,7 +258,7 @@
       min-[3500px]:h-28 
     ">
       <div class="w-full h-full relative">
-        <div  class="inline-flex min-w-[200%] animate-scroll-tailing h-full tracking-widest font-semibold min-[3500px]:text-6xl  whitespace-nowrap"> 
+        <div  class="inline-flex min-w-[200%] animate-scroll-tailing h-full tracking-widest font-semibold min-[3500px]:text-6xl items-center  whitespace-nowrap"> 
           <span class="flex-1 whitespace-nowrap  px-2 min-[3500px]:px-6 inline-block">{{announcements}} </span> 
           <span class="flex-1 whitespace-nowrap  px-2 min-[3500px]:px-6 inline-block">{{announcements}} </span> 
        </div>

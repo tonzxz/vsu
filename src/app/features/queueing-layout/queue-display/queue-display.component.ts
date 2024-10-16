@@ -88,7 +88,12 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   @Input() videoUrl?: string; 
   @Input() disableAPI:boolean = false;
 
-  currencySwitchTimer:number = 6000;
+  currencySwitchTimer:number = 12000;
+  weatherSwitchTimer:number = 12000;
+  
+  switcher:'weather'|'currency' = 'currency';
+
+  weatherCurrencySwitchTimer:number = 6000;
   videoSwitchTimer:number = 8000;
 
   // Control flags: 1 is "on", 0 is "off"
@@ -118,12 +123,16 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   
   // Video-related variables
   showVideo: boolean = false; 
- 
+  
   videoCurrentTime: number = 0; 
   intervalVideo:any;
   intervalTime:any;
   intervalCurrency:any;
 
+  currentWeatherIndex = 0;
+  intervalWeather:any;
+
+  intervalSwitchter:any;
   constructor(private thirdPartyService: ThirdPartyService, private sanitizer: DomSanitizer) {}
 
 
@@ -176,7 +185,9 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   ngOnDestroy(): void {
     clearInterval(this.intervalCurrency);
     clearInterval(this.intervalTime);
-    clearInterval(this.intervalVideo);
+    // clearInterval(this.intervalVideo);
+    clearInterval(this.intervalWeather);
+    clearInterval(this.intervalSwitchter);
   }
   ngOnInit(): void {
     this.getSafeYoutubeUrl(this.videoUrl);
@@ -232,12 +243,28 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     }
    
 
-   this.intervalVideo = setInterval(() => {
-      // this.toggleVideoUpNextIFrame();
-      this.toggleVideoUpNext();
-    }, this.videoSwitchTimer); 
+  //  this.intervalVideo = setInterval(() => {
+  //     // this.toggleVideoUpNextIFrame();
+  //     this.toggleVideoUpNext();
+  //   }, this.videoSwitchTimer); 
 
-        this.intervalCurrency =setInterval(() => this.updateCurrency(), this.currencySwitchTimer);
+    this.intervalCurrency =setInterval(() => this.updateCurrency(), this.currencySwitchTimer);
+    this.intervalWeather =setInterval(() => this.switchWeather(), this.weatherSwitchTimer);
+    this.intervalSwitchter =setInterval(() => {
+        if(!this.showCurrency){
+          this.switcher = 'weather';
+          return;
+        }
+        if(!this.showWeather){
+          this.switcher = 'currency';
+          return;
+        }
+        if(this.switcher == 'currency'){
+          this.switcher = 'weather';
+        }else{
+          this.switcher = 'currency';
+        }
+    }, this.weatherCurrencySwitchTimer);
   }
 
   ngAfterViewInit(): void {
@@ -276,6 +303,9 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
   updateCurrency(): void {
     this.currentCurrencyIndex = (this.currentCurrencyIndex + 1) % this.currencies.length;
+  }
+  switchWeather(): void {
+    this.currentWeatherIndex = (this.currentWeatherIndex + 1) % this.weatherItems.length;
   }
 
   toggleVideoUpNext(): void {

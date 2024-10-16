@@ -67,7 +67,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     { label: '4', ticketNumber: 'P-29', personName: 'Jane Doe' },
     { label: '5', ticketNumber: 'R-40', personName: 'Alice Johnson' },
     { label: '6', ticketNumber: 'P-21', personName: 'Bob Brown' },
-    { label: '7', ticketNumber: 'R-20', personName: 'Charlie White' }
+    { label: '7', ticketNumber: 'R-20', personName: 'Charlie White' },
   ];
 
 
@@ -241,10 +241,13 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   ngAfterViewInit(): void {
-    for (let i = 1; i < this.counters.length - 1; i += 2) {
-      // Swap elements at index i and i + 1
-      [this.counters[i], this.counters[i + 1]] = [this.counters[i + 1], this.counters[i]];
-    }
+
+  }
+
+  computeFillers(midpoint:number,count:number){
+    if(midpoint == Math.round(count/2))
+      return new Array(5-midpoint);
+    return [];
   }
 
   darkenColor(color: string,intensity:number): string {

@@ -17,7 +17,7 @@
           }"
           [src]="logoUrl ??'assets/logo/vsu.png'" alt="University Logo" class="w-28 h-28 border-dashed border-2 min-[3500px]:border-8 min-[3500px]:w-96 min-[3500px]:h-96  rounded-full shadow-md object-cover">
           <div class="flex flex-col justify-center   min-[3500px]:gap-3">
-            <h1 class="text-2xl 2xl:text-4xl min-[3500px]:text-[7rem] min-[3500px]:leading-none  font-semibold tracking-wider min-[3500px]:tracking-wider text-shadow"
+            <h1 class="text-2xl 2xl:text-3xl min-[3500px]:text-[7rem] min-[3500px]:leading-none  font-semibold tracking-wider min-[3500px]:tracking-wider text-shadow"
               [ngStyle]="{'color': colors.primary_text}">{{title.toUpperCase()}}</h1>
             <h1 class="2xl:px-1 text-xl 2xl:text-2xl min-[3500px]:text-7xl text-white tracking-wider min-[3500px]:tracking-widest text-shadow"
               [ngStyle]="{'color': colors.primary_text}">Visayas State University</h1>
@@ -80,6 +80,7 @@
             <video
             *ngIf="!safeYoutubeUrl"
             [ngStyle]="{'border-color': colors.primary_text + '80',}"
+            autoplay
             #videoPlayer width="100%" height="100%" class=" animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
               <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
               Your browser does not support the video tag.

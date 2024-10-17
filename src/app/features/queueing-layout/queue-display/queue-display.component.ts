@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild, ElementRef, Input, OnDestroy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ThirdPartyService } from '../../../services/thirdparty.service';
@@ -87,7 +87,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   @Input() backgroundUrl?:string; 
   @Input() videoUrl?: string; 
   @Input() disableAPI:boolean = false;
-
+  @Input() mute:boolean = false;
   currencySwitchTimer:number = 12000;
   weatherSwitchTimer:number = 12000;
   
@@ -154,6 +154,10 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
       videoId = videoId.substring(0, ampersandPosition);
     }
     return videoId;
+  }
+
+  videoSalt(){
+    return `?salt${Date.now()}`;
   }
 
   safeYoutubeUrl?:SafeResourceUrl;
@@ -267,9 +271,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     }, this.weatherCurrencySwitchTimer);
   }
 
-  ngAfterViewInit(): void {
-
-  }
+  ngAfterViewInit(): void {}
 
   computeFillers(midpoint:number,count:number){
     if(midpoint == Math.round(count/2))
@@ -285,7 +287,10 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {}
+  ngOnChanges(changes: SimpleChanges): void {
+    if(this.videoPlayer != null)
+    this.videoPlayer.nativeElement.src=this.videoUrl??'assets/queue-display/vsu.mp4';
+  }
 
   updateTime(): void {
     const currentDate = new Date();

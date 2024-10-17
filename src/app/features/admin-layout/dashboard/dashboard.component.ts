@@ -1,6 +1,11 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, ElementRef, QueryList } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, ElementRef, QueryList, ChangeDetectorRef } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import Chart from 'chart.js/auto';
+import { CommonModule } from '@angular/common';
+import { QueueDisplayComponent } from '../../queueing-layout/queue-display/queue-display.component';
+import { UswagonCoreService } from 'uswagon-core';
+import { ContentService } from '../../../services/content.service';
+import { UswagonAuthService } from 'uswagon-auth';
 
 interface QueueAnalytics {
   office: string;
@@ -34,6 +39,8 @@ interface KioskStatus {
 
 @Component({
   selector: 'app-admin-dashboard',
+  standalone: true,
+  imports: [CommonModule, QueueDisplayComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -46,14 +53,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   overallMetrics$: Observable<any[]> = of([]);
 
   currentUser!: { firstName: string; };
-
+  isSuperAdmin:boolean = this.auth.accountLoggedIn() == 'superadmin';
+  contents:any[]=[];
+  divisions:any[] = [];
   charts: Chart[] = [];
+  content:any;
 
-  constructor() {}
+
+  constructor(private API:UswagonCoreService, private contentService:ContentService, private auth:UswagonAuthService
+  ) {}
 
   ngOnInit() {
     // Initialize currentUser with a mock value
     this.currentUser = { firstName: 'User' };
+
+    this.loadContents();
 
     // Fetch mock data directly in the component
     this.queueAnalytics$ = this.getMockQueueAnalytics();
@@ -161,6 +175,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.charts.push(chart);
       });
     });
+  }
+
+  async loadContents(){
+    this.API.setLoading(true);
+    if(this.isSuperAdmin){
+      this.divisions = await this.contentService.getDivisions();
+      this.contents = await this.contentService.getContentSettings();
+      if(this.contents.length > 0){
+        this.content = this.contents[0];
+      }
+    }else{
+      this.content = await this.contentService.getContentSetting();
+    }
+    this.API.setLoading(false);
+  }
+
+  changeContent(division_id:string){
+    this.content = this.contents.find((content)=> content.division_id == division_id);
   }
 
   // Destroy Charts

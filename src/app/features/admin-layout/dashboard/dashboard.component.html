@@ -15,7 +15,7 @@
       <div class="lg:col-span-2">
         <h2 class="text-xl font-semibold mb-4">Overall Metrics Overview</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <ng-container *ngFor="let metric of overallMetrics">
+          <ng-container *ngFor="let metric of overallMetrics$ | async">
             <div class="p-4 bg-white rounded-lg shadow">
               <h3 class="text-gray-700 text-sm font-medium">{{ metric.title }}</h3>
               <p class="text-3xl font-bold text-gray-900 mt-2">{{ metric.value }}</p>
@@ -28,7 +28,7 @@
       <div class="bg-white p-6 rounded-lg shadow">
         <h3 class="text-lg font-semibold mb-4">Queue Status</h3>
         <div class="grid grid-cols-1 gap-4">
-          <ng-container *ngFor="let queue of queueAnalytics">
+          <ng-container *ngFor="let queue of queueAnalytics$ | async">
             <div class="p-4 bg-gray-50 rounded-lg shadow">
               <h4 class="text-gray-800 font-medium">{{ queue.office }}</h4>
               <p class="text-sm text-gray-600">Average wait time: {{ queue.avgWaitTime }}</p>
@@ -61,7 +61,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngFor="let kiosk of kioskStatus">
+            <ng-container *ngFor="let kiosk of kioskStatus$ | async">
               <tr>
                 <td class="p-4">{{ kiosk.id }}</td>
                 <td class="p-4">{{ kiosk.location }}</td>
@@ -73,11 +73,39 @@
       </div>
 
       <!-- Screen Preview -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-lg font-semibold mb-4">Screen Preview</h3>
-        <div class="relative w-full">
-          <img src="assets/screen-preview.png" alt="Queue Screen Preview" class="rounded-lg w-full">
-          <button class="absolute bottom-4 right-4 bg-black text-white px-4 py-2 rounded">Play Video</button>
+      <div class="bg-white p-6 rounded-lg shadow flex flex-col items-end">
+        <h3 class="text-lg font-semibold mb-2 w-full text-left">Screen Preview</h3>
+        <div class="h-8 rounded-t-lg w-[90%] flex overflow-hidden mr-2 ">
+          <button
+          (click)="changeContent(division.id)" 
+          class="w-full h-full bg-green-600 font-medium hover:bg-green-500 text-xs text-white flex-1 "
+          *ngFor="let division of divisions">
+            {{division.name}}
+          </button>
+        </div>
+        <div class="relative w-full rounded-lg overflow-hidden">
+          <app-queue-display 
+              *ngIf="content"
+              [showAnnouncement]="content.announcement_on == 't'"
+              [showBackground]="content.background_on == 't'"
+              [showTime]="content.time == 't'" 
+              [showWeather]="content.weather == 't'" 
+              [showCurrency]="content.currency == 't'" 
+              [announcements]="content.announcements ?? ''" 
+              [videoUrl]="content.video"
+              [backgroundUrl]="content.background"
+              [logoUrl]="content.logo"
+              [mute]="true"
+              [disableAPI]="true"
+              [colors]="{
+                  primary_bg: content.primary_bg,
+                  secondary_bg: content.secondary_bg,
+                  tertiary_bg: content.tertiary_bg,
+                  primary_text: content.primary_text,
+                  secondary_text: content.secondary_text,
+                  tertiary_text: content.tertiary_text
+              }" 
+              [title]="content.division" class="w-full h-full"></app-queue-display>
         </div>
       </div>
     </section>
@@ -96,7 +124,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngFor="let staff of paginatedStaffPerformance">
+            <ng-container *ngFor="let staff of staffPerformance$ | async">
               <tr>
                 <td class="p-4">{{ staff.name }}</td>
                 <td class="p-4">{{ staff.office }}</td>

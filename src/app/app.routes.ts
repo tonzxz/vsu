@@ -14,8 +14,10 @@ import { UserManagementComponent } from './features/admin-layout/user-management
 import { TerminalManagementComponent } from './features/admin-layout/terminal-management/terminal-management.component';
 import { KioskManagementComponent } from './features/admin-layout/kiosk-management/kiosk-management.component';
 
-import { AuthGuard } from './shared/auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { QueueingLayoutComponent } from './features/queueing-layout/queueing-layout.component';
+import { KioskLayoutComponent } from './features/kiosk-layout/kiosk-layout.component';
+import { kioskGuard } from './guards/kiosk.guard';
 
 export const routes: Routes = [
   {
@@ -45,11 +47,24 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'kiosk-selection', component: KioskSelectionComponent,
+    path:'kiosk',
+    component:KioskLayoutComponent,
+ 
+    children: [
+      { path: '', redirectTo: 'selection', pathMatch: 'full' },
+      {
+        path: 'selection', 
+        canActivate: [kioskGuard],
+        component: KioskSelectionComponent,
+      },
+      {
+        path: 'forms', 
+        canActivate: [kioskGuard],
+        component: KioskFormsComponent,
+      },
+    ]
   },
-  {
-    path: 'kiosk-forms', component: KioskFormsComponent,
-  },
+
   {
     path: 'desk-attendant',
     component: DeskAttendantLayoutComponent,

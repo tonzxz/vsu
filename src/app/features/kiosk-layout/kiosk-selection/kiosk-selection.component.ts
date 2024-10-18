@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { QueueService } from '../../../services/queue.service';
 
 @Component({
   selector: 'app-kiosk-selection',
@@ -15,27 +16,28 @@ export class KioskSelectionComponent {
 
   // Stores the entered code for kiosk access
   enteredCode: string = '';
+  logging_in:boolean = false;
 
   // Inject the Router and UserService in the constructor for navigation and user validation
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(private router: Router, private queueService: QueueService) {}
 
   // Handles form submission to validate the kiosk access code
-  onSubmit() {
+  async onSubmit() {
     // Retrieve user details by matching the entered code with a password in UserService
-    const user = this.userService.getUserByPassword(this.enteredCode);
-    
-    // Check if the user is valid and if their type is 'kiosk'
-    if (user && user.type.toLowerCase() === 'kiosk') {
-      // If valid, navigate to the corresponding forms page based on the user's department
-      this.navigateToForms(user.department);
-    } else {
-      // Show an alert if the entered code is invalid
-      alert('Invalid code. Please try again.');
+    this.logging_in = true;
+    try{
+      const kiosk = await this.queueService.kioskLogin(this.enteredCode);
+      this.navigateToForms(kiosk.division);
+    }catch(e:any){
+      const error = e.message;
+      alert(error);
     }
+    
+
   }
 
   // Navigates to the kiosk forms page, passing the department as a query parameter
   navigateToForms(department: string) {
-    this.router.navigate(['/kiosk-forms'], { queryParams: { department: department } });
+    this.router.navigate(['/kiosk/forms'], { queryParams: { department: department } });
   }
 }

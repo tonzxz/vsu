@@ -78,12 +78,15 @@
         <div class="h-8 rounded-t-lg w-[90%] flex overflow-hidden mr-2 ">
           <button
           (click)="changeContent(division.id)" 
-          class="w-full h-full bg-green-600 font-medium hover:bg-green-500 text-xs text-white flex-1 "
+          class="w-full h-full  font-medium {{division.id == selectedDivision ? 'bg-green-500' : 'bg-green-600'}} hover:bg-green-500 text-xs text-white flex-1 "
           *ngFor="let division of divisions">
             {{division.name}}
           </button>
         </div>
         <div class="relative w-full rounded-lg overflow-hidden">
+          <div *ngIf="!content" class="bg-black text-white font-thin flex items-center justify-center w-full aspect-[3840/2180]">
+            This division's display has not been configured.
+          </div>
           <app-queue-display 
               *ngIf="content"
               [showAnnouncement]="content.announcement_on == 't'"
@@ -105,7 +108,10 @@
                   secondary_text: content.secondary_text,
                   tertiary_text: content.tertiary_text
               }" 
-              [title]="content.division" class="w-full h-full"></app-queue-display>
+              [division]="{
+                id:content.division_id,
+                name:content.division}"
+              class="w-full h-full"></app-queue-display>
         </div>
       </div>
     </section>

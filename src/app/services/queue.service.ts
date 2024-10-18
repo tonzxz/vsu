@@ -1,73 +1,165 @@
 import { Injectable, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
+
+
+interface Kiosk{
+  id:string;
+  division_id:string;
+  division:string;
+  number:number;
+  last_online:string;
+}
+
+interface Queue{
+  id:string;
+  division_id:string;
+  number:number;
+  status:string;
+  timestamp:string;
+  type:'regular'|'priority';
+  fullname:string;
+  department_id?:string;
+  kiosk_id:string;
+  gender:'male'|'female'|'other';
+  student_id?:string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class QueueService {
+export class QueueService  {
 
-  constructor(private API:UswagonCoreService,private auth:UswagonAuthService) { 
+  constructor(private API:UswagonCoreService,private auth:UswagonAuthService) {}
+
+
+  public lastRegularQueueNumber:number = 0;
+  public lastPriorityQueueNumber:number = 0;
+  public queue:Queue[]=[];
+  private queueSubject = new BehaviorSubject<Queue[]>([]);
+  public queue$ = this.queueSubject.asObservable();
+  private division?:string;
+
+ 
+
+  setDivision(division_id:string){
+    this.division = division_id;
   }
-
-
-  public lastQueueNumber:number = 0;
-  public queue:any[]=[];
-
-
 
   // Socket Events
-  listenToQueue(division:string){
-    this.API.addSocketListener('queue-counter-listener', (message)=>{
-      if(message.event =='live-queue-counter' && message.divison ==division){
-        this.lastQueueNumber = message.lastQueueNumber as number;
-        this.getTodayQueues(division);
+  listenToQueue(){
+    this.API.addSocketListener('live-queue-events-listener', (message)=>{
+      if(message.division!= this.division) return;
+
+      if(message.event =='queue-counter' ){
+        this.lastRegularQueueNumber = message.lastRegularQueueNumber as number;
+        this.lastPriorityQueueNumber = message.lastPriorityQueueNumber as number;
       }
-    });
-    this.API.addSocketListener('queue-attend-listener', (message)=>{
-      if(message.event =='live-queue-attend' && message.divison ==division){
-        this.getTodayQueues(division);
+      if(message.event =='queue-attend'){
+        this.getTodayQueues(this.division!);
       }
+      if(message.event =='update-queue'){
+        this.getTodayQueues(this.division!);
+      }        
     });
   }
 
-  private incrementQueueNumber(division:string){
-    this.lastQueueNumber += 1;
+  private incrementQueueNumber(type:'regular'|'priority',division:string){
+    if(type == 'regular'){
+      this.lastRegularQueueNumber += 1;
+    }else{
+      this.lastPriorityQueueNumber += 1;
+    }
     this.API.socketSend({
-      event: 'live-queue-counter',
+      event: 'queue-counter',
       division:division,
-      lastQueueNumber: this.lastQueueNumber
+      lastRegularQueueNumber: this.lastRegularQueueNumber,
+      lastPriorityQueueNumber: this.lastPriorityQueueNumber
+    });
+  }
+
+  private decrementQueueNumber(type:'regular'|'priority',division:string){
+    if(type == 'regular'){
+      this.lastRegularQueueNumber -= 1;
+    }else{
+      this.lastPriorityQueueNumber -= 1;
+    }
+    this.API.socketSend({
+      event: 'queue-counter',
+      division:division,
+      lastRegularQueueNumber: this.lastRegularQueueNumber,
+      lastPriorityQueueNumber: this.lastPriorityQueueNumber
+    });
+  }
+
+  private updateQueue(division:string){
+    this.API.socketSend({
+      event: 'update-queue',
+      division:division
     });
   }
 
   private takeFromQueue(queue:any){
     this.API.socketSend({
-      event: 'live-queue-attend',
+      event: 'queue-attend',
       division:queue.division,
       id:queue.id,
     });
   }
 
   // Managing queue
-  async addToQueue(division:string, info:any){
+  async addToQueue(
+    info:{department_id?:string,
+          fullname:string, 
+          type:'regular'|'priority', 
+          gender:'male'|'female'|'other'
+          student_id?:string,
+          services:string[],
+        })
+  {
     const id = this.API.createUniqueID32();
-    this.incrementQueueNumber(division);
+    this.incrementQueueNumber(info.type,this.kiosk?.division_id!);
     const response = await this.API.create({
       tables: 'queue',
       values:{
         id: id,
-        division_id: division,
-        department_id: info.department.id,
+        division_id: this.kiosk?.division_id,
+        kiosk_id:this.kiosk?.id,
+        department_id: info.department_id,
         fullname: info.fullname,
-        number: this.lastQueueNumber,
+        number: info.type == 'regular' ? this.lastRegularQueueNumber: this.lastPriorityQueueNumber,
         type: info.type,
         gender: info.gender,
         status:'waiting',
         student_id: info.student_id
       }
     });
+   for(let service_id of info.services){
+    const intent_id = this.API.createUniqueID32();
+    // Add services
+    const servicesResponse = await this.API.create({
+      tables: 'client_intents',
+      values:{
+        id: intent_id,
+        queue_id: id,
+        service_id: service_id
+      }
+    });
+    if(!servicesResponse.success){
+      this.decrementQueueNumber(info.type,this.kiosk?.division_id!);
+      throw new Error('Something went wrong.')
+    }
+   }
+    
+
+    
     if(!response.success){
-      throw new Error('Something went wrong. Please try again.');
+      this.decrementQueueNumber(info.type,this.kiosk?.division_id!);
+      throw new Error('Something went wrong.');
+    }else{
+      this.updateQueue(this.kiosk?.division_id!);
+      return info.type == 'regular' ?  this.lastRegularQueueNumber:this.lastPriorityQueueNumber;
     }
   }
 
@@ -154,7 +246,16 @@ export class QueueService {
       conditions: `WHERE division_id = '${division}' AND timestamp::date = CURRENT_DATE`
     });
     if(response.success){
-      this.lastQueueNumber = response.output.length;
+      const queue = response.output as Queue[];
+      this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
+      this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
+      this.queueSubject.next(queue.sort((a,b)=>{ 
+        if (a.type === 'priority' && b.type === 'regular') return -1;
+        if (a.type === 'regular' && b.type === 'priority') return 1;
+
+        // If types are equal, sort by number
+        return a.number - b.number;
+      }));
       return response.output;
     }else{
       throw new Error('Unable to fetch queue');
@@ -216,13 +317,39 @@ export class QueueService {
       tables: 'attended_queue, queue, terminal_sessions',
       conditions: `
         WHERE attended_queue.queue.id = queue.id AND queue.division_id = '${division}' 
-        AND terminal_sessions.attendant.id = '${user.id}'  AND attended_queue.status = 'ongoing'
+        AND terminal_sessions.attendant_id = '${user.id}'  AND attended_queue.status = 'ongoing'
       '`
     });
     if(response.success){
       return response.output;
     }else{
       throw new Error('Unable to fetch queue');
+    }
+  }
+
+  // KIOSK specific
+
+  public kiosk?:Kiosk;
+
+  async kioskLogin(code:string){
+    const response = await this.API.read({
+      selectors: ['divisions.name as division,kiosks.*'],
+      tables: 'kiosks, divisions',
+      conditions: `
+        WHERE kiosks.division_id = divisions.id 
+        AND kiosks.code = '${code}'  AND status = 'available'
+      `
+    });
+    if(response.success){
+      if(response.output.length > 0){
+        this.kiosk = response.output[0];
+        localStorage.setItem('kiosk', JSON.stringify(this.kiosk));
+        return response.output[0];
+      }else{
+        throw new Error('Invalid kiosk code.');
+      }
+    }else{
+      throw new Error(response.output);
     }
   }
 

@@ -139,6 +139,11 @@ export class ContentManagementComponent implements OnInit {
     return this.divisions.find((division) => division.id == this.selectedDivision).name;
   }
 
+  getDivision(){
+    if(!this.selectedDivision) return undefined;
+    return this.divisions.find((division) => division.id == this.selectedDivision);
+  }
+
   selectedDivision?:string;
   selectDivision(division_id:string){
     this.selectedDivision = division_id;

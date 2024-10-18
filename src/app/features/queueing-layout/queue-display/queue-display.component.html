@@ -1,5 +1,33 @@
+<div *ngIf="!loading && ((upNextItems.length <= 0 && counters.length <= 0)||counters.length<=0)" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
+  <iframe
+  #iframePlayer
+  [ngStyle]="{'border-color': colors.primary_text + '80',}"
+  *ngIf="safeYoutubeUrl"
+  [src]="safeYoutubeUrl"
+  autoplay
+  loop
+  frameborder="0"
+  class="video aspect-video animate-pop w-full h-full object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
+  ></iframe>
+  <video
+  *ngIf="!safeYoutubeUrl"
+  [ngStyle]="{'border-color': colors.primary_text + '80',}"
+  autoplay
+  [muted]="true"
+  #videoPlayer width="100%" height="100%" class="w-full h-full video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
+    <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
+    Your browser does not support the video tag.
+  </video> 
+</div>
+
+<div *ngIf="loading" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
+  <app-lottie-animation class="animate-pop loader" animation="loader"></app-lottie-animation>
+  <div 
+  class="animate-pop loader-text">Loading...</div>
+</div>
+
 <!-- Main Container -->
-<div class="main-container flex flex-col w-full h-full relative aspect-[3840/2180] z-0"
+<div *ngIf="!loading && !((upNextItems.length <= 0 && counters.length <= 0)||counters.length<=0)" class="main-container flex flex-col w-full h-full relative aspect-[3840/2180] z-0"
   [ngStyle]="{'backgroundColor': colors.primary_bg}"
 > 
   <!-- Layout Container -->
@@ -9,7 +37,7 @@
       <!-- Left Side -->
       <div class="left-side flex-[1_1_0%] flex flex-col gap-3  min-[3500px]:gap-5">  
         <!-- Division Banner -->
-        <div class="division-banner flex w-full gap-3  min-[3500px]:gap-16 px-3 py-2  min-[3500px]:p-12">
+        <div class="animate-pop division-banner flex w-full gap-3  min-[3500px]:gap-16 px-3 py-2  min-[3500px]:p-12">
           <!-- Logo -->
           <img 
           [ngStyle]="{
@@ -18,7 +46,7 @@
           [src]="logoUrl ??'assets/logo/vsu.png'" alt="University Logo" class="banner-logo w-28 h-28 min-[3500px]:w-96 min-[3500px]:h-96 border-dashed border-2 min-[3500px]:border-8   rounded-full shadow-md object-cover">
           <div class="banner-text flex flex-col justify-center   min-[3500px]:gap-3">
             <h1 class="banner-title  min-[3500px]:leading-none  font-semibold tracking-wider min-[3500px]:tracking-wider text-shadow"
-              [ngStyle]="{'color': colors.primary_text}">{{title.toUpperCase()}}</h1>
+              [ngStyle]="{'color': colors.primary_text}">{{division!.name.toUpperCase()}}</h1>
             <h1 class="banner-label text-white tracking-wider min-[3500px]:tracking-widest text-shadow"
               [ngStyle]="{'color': colors.primary_text}">Visayas State University</h1>
           </div>
@@ -35,14 +63,14 @@
               [ngStyle]="{
                 'border-color': colors.primary_text + '80',
               }"
-              class="serving-item-outer h-full rounded-lg shadow-lg flex overflow-hidden border-dashed border-2  min-[3500px]:rounded-3xl min-[3500px]:border-8">
+              class="animate-pop serving-item-outer h-full rounded-lg shadow-lg flex overflow-hidden border-dashed border-2  min-[3500px]:rounded-3xl min-[3500px]:border-8">
                 <div 
                 [ngStyle]="{
                   'backgroundColor': colors.tertiary_bg,
                   'color': colors.primary_text
                 }"
                 class="serving-item-header w-1/4 px-3 flex flex-col items-center justify-center font-medium text-2xl 2xl:text-2xl  shadow-sm text-shadow tracking-wide  min-[3500px]:text-8xl min-[3500px]:px-10 min-[3500px]:font-semibold ">
-                  <span class="serving-item-label text-[0.5rem] leading-none min-[3500px]:text-2xl" >COUNTER</span>
+                  <span class="serving-item-label text-[0.5rem] leading-none min-[3500px]:text-3xl" >COUNTER</span>
                   <span>{{i+1}}</span>
                 </div>
                 <div 
@@ -74,6 +102,7 @@
               *ngIf="safeYoutubeUrl"
               [src]="safeYoutubeUrl"
               autoplay
+              loop
               frameborder="0"
               class="video aspect-video animate-pop w-full h-full object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
             ></iframe>
@@ -227,22 +256,44 @@
           [ngStyle]="{'border-color': colors.primary_text + '80',}">
             <div 
             [ngStyle]="{
-              
-              'color': colors.secondary_text,
+              'color':  colors.secondary_text,
               'backgroundColor': colors.secondary_bg
             }"
             class="queue-container-inner h-full rounded-lg shadow-lg w-full overflow-hidden px-3 py-2 flex flex-col min-[3500px]:rounded-3xl  min-[3500px]:px-20 min-[3500px]:py-16">
               <h1 class="queue-title font-medium min-[3500px]:font-semibold">UP NEXT</h1>
-              <div class="queue-list-container grid grid-cols-2 grid-rows-4 grid-flow-col gap-1 flex-1 ">
-                <div 
-                *ngFor="let item of upNextItems" class="queue-item-container rounded-lg border-dashed border-2  shadow-lg gap-4 flex items-center px-4 py-1 
-                min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:gap-12
-                 min-[3500px]:px-14 min-[3500px]:py-10"
-                [ngStyle]="{'border-color': colors.secondary_text+ '80',}"
+              <div class="font-thin w-full h-full flex justify-center items-center" *ngIf="upNextItems.length <= 0">
+                <div
+                class="px-2 py-1 text-center flex flex-col items-center justify-center"
                 >
-                  <img [src]="item.avatar" class="queue-item-icon w-9 h-9 min-[3500px]:w-36 min-[3500px]:h-36">
-                  <div class="queue-item-ticket text-lg font-semibold tracking-wider min-[3500px]:text-7xl min-[3500px]:font-semibold">{{item.ticketNumber}}</div>
-                  <!-- <div class="queue-item-flex-1 text-lg font-medium flex tracking-wider justify-end min-[3500px]:text-7xl min-[3500px]:font-semibold">{{item.personName}}</div> -->
+                  <div class="waiting">
+                    <app-lottie-animation class="w-full h-full" animation="waiting" ></app-lottie-animation> 
+                  </div>
+                  <span class="banner-label">
+                    Waiting list is empty.
+                   </span>
+                </div>
+              </div>
+              <div *ngIf="upNextItems.length > 0" class="queue-list-container grid grid-cols-2 grid-rows-4 grid-flow-col gap-1 flex-1 ">
+                
+                <div *ngFor="let item of upNextItems | slice:0:8"
+                [ngStyle]="{
+                  'border-color': item.ticketNumber.includes('P') ? colors.tertiary_bg  + '80': colors.secondary_text + '80',
+                }"
+                class="border-dashed border-2  rounded-lg overflow-hidden"
+                >
+                  <div 
+                   class="queue-item-container h-full shadow-lg gap-4 flex items-center px-4 py-1 
+                  min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:gap-12
+                  min-[3500px]:px-14 min-[3500px]:py-10"
+                  [ngStyle]="{
+                    'backgroundColor': item.ticketNumber.includes('P') ? colors.tertiary_bg +'10' :'transparent',
+                    'color': item.ticketNumber.includes('P') ? colors.tertiary_bg  :colors.secondary_text,
+                  }"
+                  >
+                    <img [src]="item.avatar" class="queue-item-icon w-9 h-9 min-[3500px]:w-36 min-[3500px]:h-36">
+                    <div class="queue-item-ticket text-lg font-semibold tracking-wider min-[3500px]:text-7xl min-[3500px]:font-semibold">{{item.ticketNumber}}</div>
+                    <!-- <div class="queue-item-flex-1 text-lg font-medium flex tracking-wider justify-end min-[3500px]:text-7xl min-[3500px]:font-semibold">{{item.personName}}</div> -->
+                  </div>
                 </div>
               </div>
             </div>

@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   divisions:any[] = [];
   charts: Chart[] = [];
   content:any;
+  selectedDivision:string='';
 
 
   constructor(private API:UswagonCoreService, private contentService:ContentService, private auth:UswagonAuthService
@@ -183,8 +184,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.divisions = await this.contentService.getDivisions();
       this.contents = await this.contentService.getContentSettings();
       if(this.contents.length > 0){
-        this.content = this.contents[0];
+        this.content = this.contents.find((content)=> content.division_id == this.divisions[0].id);
       }
+      this.selectedDivision = this.divisions[0].id;
     }else{
       this.content = await this.contentService.getContentSetting();
     }
@@ -192,6 +194,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeContent(division_id:string){
+    this.selectedDivision = division_id;
     this.content = this.contents.find((content)=> content.division_id == division_id);
   }
 

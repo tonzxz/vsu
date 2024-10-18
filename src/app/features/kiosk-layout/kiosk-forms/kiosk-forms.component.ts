@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 import jsPDF from 'jspdf';
 import { UswagonCoreService } from 'uswagon-core';
+import { QueueService } from '../../../services/queue.service';
 
 @Component({
   selector: 'app-kiosk-forms',
@@ -32,16 +33,23 @@ export class KioskFormsComponent implements OnInit {
   ];
   queueNumber: string | null = null;
   selectedServices: string[] = [];
-  selectedType: string = '';
+  selectedType: 'regular'|'priority' = 'regular';
 
-  constructor(private route: ActivatedRoute, private kenAPI: UswagonCoreService) {}
+  constructor(private route: ActivatedRoute, 
+    private queueService:QueueService,
+    private kenAPI: UswagonCoreService) {}
 
   async ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.departmentName = params['department'] || 'Department Name';
     }
-    
   );
+
+  if(this.queueService.kiosk != undefined){
+    this.queueService.getTodayQueues(this.queueService.kiosk?.division_id);
+  }else{
+    throw new Error('Invalid method');
+  }
 
 
   this.kenAPI.initializeForm(
@@ -55,6 +63,7 @@ export class KioskFormsComponent implements OnInit {
     tables: 'users',
     conditions: `WHERE role='${this.kenAPI.coreForm['role']}'`
   })
+  
 
   if(data.success) {
     for(let user of data.output){
@@ -68,7 +77,7 @@ export class KioskFormsComponent implements OnInit {
     this.kenAPI.addSocketListener
   }
 
-  handleButtonClick(type: string): void {
+  handleButtonClick(type: 'regular'|'priority'): void {
     this.isChecklistVisible = true;
     this.selectedType = type;
   }
@@ -103,6 +112,22 @@ export class KioskFormsComponent implements OnInit {
     this.showModal = false;  // Hide the modal
   }
 
+  async submitForm(){
+    console.log(this.queueService.kiosk);
+    if(!this.queueService.kiosk){
+      throw new Error('Invalid method!');
+    }
+    
+    const number = await this.queueService.addToQueue({
+      fullname: 'John Doe',
+      type:this.selectedType ,
+      gender: 'male',
+      services:[]
+    });
+
+    alert(`Your code is ${this.selectedType == 'regular' ?'R':'P'}-${number}`)
+  }
+
   generateQueueNumber(): string {
     const today = new Date().toDateString();
     const queueKey = `${this.departmentName}_${today}`;
@@ -122,6 +147,8 @@ export class KioskFormsComponent implements OnInit {
       return `P-${departmentQueueData.lastPriorityQueueNumber}`;
     }
   }
+
+ 
 
   resetQueueNumberIfNewDay(): void {
     const today = new Date().toDateString();

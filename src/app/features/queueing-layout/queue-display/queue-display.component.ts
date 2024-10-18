@@ -4,6 +4,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ThirdPartyService } from '../../../services/thirdparty.service';
 import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { QueueService } from '../../../services/queue.service';
+import { Subscription } from 'rxjs';
 
 interface Counter {
   label: string;
@@ -38,6 +40,11 @@ interface Colors {
 
 }
 
+interface Division{
+  id:string;
+  name:string;
+}
+
 @Component({
   standalone: true,
   selector: 'app-queue-display',
@@ -47,8 +54,9 @@ interface Colors {
 })
 export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
  
+  // VARIABLES
  
-  @Input() title = 'Registrar Division';
+  @Input() division?:Division;
  
   @Input() colors:Colors = {
     primary_bg: '#2F4A2C',
@@ -133,58 +141,18 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   intervalWeather:any;
 
   intervalSwitchter:any;
-  constructor(private thirdPartyService: ThirdPartyService, private sanitizer: DomSanitizer) {}
 
+  subscription?: Subscription;
 
+  loading:boolean = false;
   
+  constructor(
+    private queueService:QueueService,
+    private thirdPartyService: ThirdPartyService,
+    private sanitizer: DomSanitizer
+  ) {}
 
-  private isValidYouTubeUrl(url: string): boolean {
-    const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
-    return regex.test(url);
-  }
-  private getYouTubeVideoId(url: string): string {
-    let videoId = '';
-    if (url.includes('youtube.com/watch?v=')) {
-      videoId = url.split('v=')[1];
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1];
-    }
-    const ampersandPosition = videoId.indexOf('&');
-    if (ampersandPosition !== -1) {
-      videoId = videoId.substring(0, ampersandPosition);
-    }
-    return videoId;
-  }
-
-  videoSalt(){
-    return `?salt${Date.now()}`;
-  }
-
-  safeYoutubeUrl?:SafeResourceUrl;
-
-  getSafeYoutubeUrl(url?:string) {
-    if (this.isValidYouTubeUrl(url ??'')) {
-      const videoId = this.getYouTubeVideoId(url!);
-      const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
-      this.safeYoutubeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
-    } else{
-      this.safeYoutubeUrl = undefined;
-    }
-  }
-
-  formatUnixTimestamp(timestamp: number): string {
-    const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
-    const options: Intl.DateTimeFormatOptions = {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-    };
-    return date.toLocaleString('en-US', options);
-
-   
-
-}
-
+  // NG FUNCTIONS
 
   ngOnDestroy(): void {
     clearInterval(this.intervalCurrency);
@@ -192,7 +160,9 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     // clearInterval(this.intervalVideo);
     clearInterval(this.intervalWeather);
     clearInterval(this.intervalSwitchter);
+    this.subscription?.unsubscribe();
   }
+
   ngOnInit(): void {
     this.getSafeYoutubeUrl(this.videoUrl);
     this.updateTime();
@@ -269,9 +239,65 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
           this.switcher = 'currency';
         }
     }, this.weatherCurrencySwitchTimer);
+
+
+    // Backend init
+    this.loadQueue();
+
   }
 
   ngAfterViewInit(): void {}
+
+  // FRONT END FUNCTIONS
+
+  private isValidYouTubeUrl(url: string): boolean {
+    const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
+    return regex.test(url);
+  }
+  private getYouTubeVideoId(url: string): string {
+    let videoId = '';
+    if (url.includes('youtube.com/watch?v=')) {
+      videoId = url.split('v=')[1];
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1];
+    }
+    const ampersandPosition = videoId.indexOf('&');
+    if (ampersandPosition !== -1) {
+      videoId = videoId.substring(0, ampersandPosition);
+    }
+    return videoId;
+  }
+
+  videoSalt(){
+    return `?salt${Date.now()}`;
+  }
+
+  safeYoutubeUrl?:SafeResourceUrl;
+
+  getSafeYoutubeUrl(url?:string) {
+    if (this.isValidYouTubeUrl(url ??'')) {
+      const videoId = this.getYouTubeVideoId(url!);
+      const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
+      this.safeYoutubeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+    } else{
+      this.safeYoutubeUrl = undefined;
+    }
+  }
+
+  formatUnixTimestamp(timestamp: number): string {
+    const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
+    const options: Intl.DateTimeFormatOptions = {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+    return date.toLocaleString('en-US', options);
+
+   
+}
+
+
+
 
   computeFillers(midpoint:number,count:number){
     if(midpoint == Math.round(count/2))
@@ -288,8 +314,10 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.loadQueue();  
     if(this.videoPlayer != null)
     this.videoPlayer.nativeElement.src=this.videoUrl??'assets/queue-display/vsu.mp4';
+  
   }
 
   updateTime(): void {
@@ -349,6 +377,37 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
       }
     }
   }
+
+
+  // BACKEND FUNCTIONS
+  
+
+  async loadQueue(){
+    if(!this.division){ 
+      return;
+    }
+
+    this.loading= true;
+    this.subscription?.unsubscribe();
+
+    this.queueService.setDivision(this.division!.id);
+    this.queueService.listenToQueue();
+    this.subscription = this.queueService.queue$.subscribe((queueItems: any[]) => {
+      this.upNextItems = queueItems.reduce((prev: UpNextItem[], item: any) => {
+        return [...prev, {
+          avatar: item.gender === 'male' ? '/assets/queue-display/Male_2.png' : '/assets/queue-display/Female_2.png',
+          ticketNumber: `${item.type === 'regular' ? 'R' : 'P'}-${item.number.toString().padStart(3, '0')}`,
+          personName: item.fullname
+        }];
+
+      }, []);
+      
+    });
+    
+    await this.queueService.getTodayQueues(this.division!.id);
+    this.loading = false;
+  }
+
 
 
 }

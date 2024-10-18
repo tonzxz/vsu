@@ -28,5 +28,8 @@
         secondary_text: content.secondary_text,
         tertiary_text: content.tertiary_text
     }" 
-    [title]="content.division" class="w-full h-full hidden min-[1200px]:block"></app-queue-display>
+    [division]="{
+        name:content.division,
+        id: content.division_id
+    }" class="w-full h-full hidden min-[1200px]:block"></app-queue-display>
 </div>

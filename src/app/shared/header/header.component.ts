@@ -15,4 +15,8 @@ export class HeaderComponent {
   getUserProfile(){
     return this.auth.getUser().profile ?? 'assets/images/noprofile.png';
   }
+
+  getUserName(){
+    return this.auth.getUser().fullname ?? 'Unknown User';
+  }
 }

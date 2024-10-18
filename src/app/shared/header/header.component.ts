@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { UswagonAuthService } from 'uswagon-auth';
+import { UswagonCoreService } from 'uswagon-core';
 
 @Component({
   selector: 'app-header',
@@ -10,10 +11,10 @@ import { UswagonAuthService } from 'uswagon-auth';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-  constructor(private auth:UswagonAuthService) {}
+  constructor(private auth:UswagonAuthService, private API:UswagonCoreService) {}
 
   getUserProfile(){
-    return this.auth.getUser().profile ?? 'assets/images/noprofile.png';
+    return this.auth.getUser().profile!=null ? this.API.getFileURL(this.auth.getUser().profile) : 'assets/images/noprofile.png';
   }
 
   getUserName(){

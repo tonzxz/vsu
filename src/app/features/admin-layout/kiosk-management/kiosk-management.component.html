@@ -1,142 +1,101 @@
-<main class="flex flex-col  bg-white-100">
-
-
-  <section class="bg-white rounded-3xl shadow-lg overflow-hidden transform hover:shadow-xl transition-all duration-300">
-    <nav class="flex border-b border-gray-200 bg-gray-50">
-      <button
-        *ngFor="let tab of tabs"
-        (click)="onTabClick(tab)"
-        [ngClass]="{
-          'bg-[#283c1c] text-white': activeTab === tab,
-          'bg-gray-100 text-gray-700 hover:bg-[#3c4c3a] hover:text-white': activeTab !== tab
-        }"
-        class="flex-1 py-3 px-4 text-base font-medium transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#283c1c]"
-        tabindex="0"
-        role="tab"
-        [attr.aria-selected]="activeTab === tab"
-      >
-        {{ tab }}
+<div class="w-full h-full">
+  <div class="  rounded-3xl shadow-xl overflow-hidden relative">
+    <img src="assets/logo/vsuHeader.png" class="w-full h-full object-contain ">
+  </div>
+  <div class="w-full py-4 px-6 my-4 flex justify-between rounded-lg bg-white shadow-md">
+    <div>
+      <h1 class="font-medium text-2xl  tracking-wide">Kiosk Management</h1>
+      <p class="font-thin " >Manage kiosk for clients. Create, edit, delete and view statuses of each kiosk in this section.</p>
+    </div>
+    <div class="w-16 h-16">
+      <app-lottie-animation [loop]="false" animation="confirmation"></app-lottie-animation>
+    </div>
+  </div>
+  <!-- Flex Container -->
+  <div class="flex flex-col 2xl:flex-row gap-3 w-full h-full pb-4">
+    <!-- Divsion Selection -->
+    <div *ngIf="isSuperAdmin" class="flex  2xl:flex-col gap-3 2xl:flex-[1_1_0%]">
+      <!-- Item -->
+      <button 
+      (click)="selectDivision(division.id)"
+      class=" {{selectedDivision == division.id ? 'bg-green-900 text-white':'bg-white'}}  tracking-wide h-12 rounded-lg shadow-md hover:bg-green-900 hover:text-white cursor-pointer flex items-center justify-between px-4 font-medium" 
+      *ngFor="let division of divisions">
+        {{division.name.toUpperCase()}} <span  class="material-icons hidden 2xl:block"> keyboard_arrow_right </span>
       </button>
-    </nav>
+      <!-- Add -->
+    </div>
+    <!-- Item Selection -->
+    <div class="bg-white rounded-lg shadow-md flex-[4_4_0%] h-full">
+      <div class=" grid grid-cols-3 px-3 py-3 gap-3"> 
+        <button 
+        *ngFor="let kiosk of kiosks; let i = index" 
+        class="group  {{kiosk.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
 
-    <div class="p-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div
-          *ngFor="let counter of counters[activeTab]"
-          class="flex flex-col justify-between p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-xl cursor-pointer transform hover:scale-105 relative"
-          [ngClass]="{
-            'bg-[#283c1c]': counter.isActive,
-            'bg-gray-300': !counter.isActive 
-          }"
-          (click)="counter.isActive ? openCodeEntryPopup(counter) : null"  
+          <!-- Header -->
+          <div class="flex gap-4 items-center">
+            <!-- Lottie Container -->
+            <div class="w-16 h-12 p-2 rounded-lg bg-green-200 group-hover:bg-yellow-200">
+              <app-lottie-animation animation="computer"></app-lottie-animation>
+            </div>
+            <div class="w-5 h-5 rounded-full {{statusMap[kiosk.status]}} bottom-4 right-4"></div>
+            <div class="font-medium  tracking-wide text-xl flex items-center gap-2">
+              KIOSK <span class="font-medium text-4xl">{{i+1}}</span>
+            </div>
+          </div>
+          <!-- Body  -->
+          <div class="flex-1 py-2 gap-1 w-full flex flex-col items-start ">
+            <div>
+              <span class="font-medium">Kiosk Code: </span>
+              <span class="opacity-75">{{kiosk.code}}</span>
+            </div>
+            <div  class="flex-1">
+              <span class="font-medium">Last Online: </span>
+              <span class="opacity-75">{{(kiosk.last_online  | date:'MM/dd/yyyy hh:mm a')  ?? 'Not used yet.'}}</span>
+            </div>
+       
+            <div class="flex w-full  mt-2">
+              <div class="w-full flex justify-between">
+                <button (click)="selectKiosk(kiosk);openDialog('delete')" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-red-500 hover:bg-red-600 ">
+                  <span  class="material-icons"> delete </span>
+                </button>
+                <button (click)="selectKiosk(kiosk);openDialog('maintenance')" class="rounded-lg px-10 py-1 text-white {{kiosk.status !='maintenance' ? 'bg-green-500 hover:bg-green-300': 'bg-orange-500 hover:bg-orange-300'}}">
+                  {{kiosk.status != 'maintenance'? 'Available':'Maintenance'}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </button>
+        <button 
+        (click)="addKiosk()"
+        class="bg-white tracking-wider h-48 font-thin rounded-lg gap-3 shadow-md  hover:bg-green-950 hover:text-white cursor-pointer flex justify-center border-2 border-solid border-black/10 items-center  " 
         >
-          <h2 class="text-2xl font-bold text-white mb-4">{{ counter.name }}</h2>
-          <img
-            src="assets/logo/crossed.png"
-            alt="Delete"
-            class="absolute top-2 right-2 w-6 h-6 cursor-pointer"
-            (click)="confirmDeleteCounter(counter, $event)"
-          />
-          <div class="flex justify-end items-center">
-            <button
-              (click)="toggleCounterStatus(counter); $event.stopPropagation();"
-              class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300"
-              [ngClass]="{
-                'bg-red-500 hover:bg-green-600 text-white': !counter.isActive || (counter.hoverState && !counter.isActive),
-                'bg-green-500 hover:bg-red-600 text-white': counter.isActive || (counter.hoverState && counter.isActive)
-              }"
-              (mouseover)="changeButtonText(counter, true)"
-              (mouseleave)="changeButtonText(counter, false)"
-            >
-              {{ (counter.isActive && !counter.hoverState) ? 'Activate' : 'Deactivate' }}
-            </button>
-          </div>
-          
-          <!-- Indicator for Assigned Code -->
-          <div class="absolute bottom-2 left-2 text-sm" 
-               [ngClass]="{'text-red-500': counter.assignedCode, 'text-green-500': !counter.assignedCode}">
-            {{ counter.assignedCode ? 'Assigned' : 'Available' }}
-          </div>
-        </div>
+        <span class="text-4xl font-medium">
+          +
+        </span>
+        <span class="text-xl">NEW KIOSK</span>
+        </button>
       </div>
-
-      <div 
-        *ngIf="getTotalCounters() >= getMaxCountersForActiveTab()" 
-        class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-xl animate-pulse"
-      >
-        <p class="font-medium text-lg">Maximum Capacity Reached</p>
-        <p class="mt-2">You've reached the maximum of {{ getMaxCountersForActiveTab() }} terminals for the {{ activeTab }} tab. Please delete a terminal to add a new one.</p>
-      </div>
-    </div>
-  </section>
-
-<!-- Code Entry Modal -->
-<div *ngIf="showCodeEntryDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-    <h3 class="text-lg font-semibold mb-4">Enter Code for {{ selectedCounter?.name }}</h3>
-    
-    <!-- Code input field -->
-    <input 
-      type="text" 
-      [(ngModel)]="codeInput" 
-      placeholder="Enter 6-digit code" 
-      class="border border-gray-300 p-2 rounded-lg w-full mb-2"
-    />
-
-    <!-- Error message for invalid code input -->
-    <p *ngIf="codeInputError" class="text-red-500 text-sm mb-2">{{ codeInputError }}</p>
-    
-    <!-- Button container with improved layout -->
-    <div class="mt-4 flex justify-end space-x-2">
-      <button 
-        (click)="cancelCodeEntry()" 
-        class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors duration-300"
-      >
-        Cancel
-      </button>
-      
-      <!-- Unassign Code Button (Visible only if a code is assigned) -->
-      <button 
-        *ngIf="selectedCounter?.assignedCode" 
-        (click)="confirmUnassignCode()" 
-        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300"
-      >
-        Unassign Code
-      </button>
-
-      <button 
-        (click)="assignCode()" 
-        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-      >
-        Assign Code
-      </button>
     </div>
   </div>
 </div>
+<!-- Maintenance Modal -->
+<app-confirmation
+    *ngIf="modalType== 'maintenance'"
+    [type]="'custom'"
+    animation="confirmation"
+    title="Change Kiosk Status"
+    description="Are you sure you want to toggle status of this kiosk?"
+    (onCancel)="closeDialog()"
+    (onConfirm)="toggleMaintenance(selectedKiosk!)"
+></app-confirmation>
+<!-- Delete Modal -->
+<app-confirmation
+    *ngIf="modalType== 'delete'"
+    [type]="'custom'"
+    animation="warning"
+    title="Delete Kiosk?"
+    description="Are you sure you want to PERMANENTLY DELETE this kiosk?"
+    (onCancel)="closeDialog()"
+    (onConfirm)="deleteKiosk(selectedKiosk!)"
+></app-confirmation>
 
-
-<!-- Confirmation Modal for Unassigning Code -->
-<div *ngIf="showUnassignCodeDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-    <h3 class="text-lg font-semibold mb-4">Confirm Unassign Code</h3>
-    <p>Are you sure you want to unassign the code for {{ selectedCounter?.name }}?</p>
-    <div class="mt-4 flex justify-end space-x-2">
-      <button (click)="cancelUnassignCode()" class="bg-gray-300 px-4 py-2 rounded-lg">Cancel</button>
-      <button (click)="unassignCodeConfirmed()" class="bg-red-500 text-white px-4 py-2 rounded-lg">Unassign</button>
-    </div>
-  </div>
-</div>
-
-
-  <!-- Confirmation Modal -->
-  <div *ngIf="showConfirmationDialog" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-      <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
-      <p>Are you sure you want to delete this counter?</p>
-      <div class="mt-4 flex justify-end">
-        <button (click)="cancelDelete()" class="bg-gray-300 px-4 py-2 rounded-lg mr-2">Cancel</button>
-        <button (click)="deleteSelectedCounter()" class="bg-red-500 text-white px-4 py-2 rounded-lg">Yes, Delete</button>
-      </div>
-    </div>
-  </div>
-</main>

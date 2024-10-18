@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import jsPDF from 'jspdf';
 import { UswagonCoreService } from 'uswagon-core';
 import { QueueService } from '../../../services/queue.service';
+import { KioskService } from '../../../services/kiosk.service';
 
 @Component({
   selector: 'app-kiosk-forms',
@@ -37,6 +38,7 @@ export class KioskFormsComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, 
     private queueService:QueueService,
+    private kioskService:KioskService,
     private kenAPI: UswagonCoreService) {}
 
   async ngOnInit() {
@@ -45,8 +47,8 @@ export class KioskFormsComponent implements OnInit {
     }
   );
 
-  if(this.queueService.kiosk != undefined){
-    this.queueService.getTodayQueues(this.queueService.kiosk?.division_id);
+  if(this.kioskService.kiosk != undefined){
+    this.queueService.getTodayQueues(this.kioskService.kiosk?.division_id);
   }else{
     throw new Error('Invalid method');
   }
@@ -113,8 +115,8 @@ export class KioskFormsComponent implements OnInit {
   }
 
   async submitForm(){
-    console.log(this.queueService.kiosk);
-    if(!this.queueService.kiosk){
+    console.log(this.kioskService.kiosk);
+    if(!this.kioskService.kiosk){
       throw new Error('Invalid method!');
     }
     

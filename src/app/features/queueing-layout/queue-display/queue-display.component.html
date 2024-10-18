@@ -135,13 +135,13 @@
               }"
               class="time-container-inner w-full h-full p-2 min-[3500px]:p-4 flex flex-col justify-center ">
                 <!-- Timezone -->
-                <div class="timezone-container text-base 2xl:text-xl font-semibold   min-[3500px]:px-4 min-[3500px]:text-6xl flex flex-col min-[3500px]:gap-4">
+                <div class="timezone-container text-base 2xl:text-xl font-semibold   min-[3500px]:px-4 min-[3500px]:text-6xl flex  min-[3500px]:gap-4">
                   <div class="timezone-text font-bold">{{timeInfo.location.split('(')[0].trim()}}</div>
                   <div
                   [ngStyle]="{
                     'color': colors.tertiary_text,
                   }"
-                  >({{timeInfo.location.split('(')[1].trim()}}</div>
+                  > ({{timeInfo.location.split('(')[1].trim()}}</div>
                 </div>
                 <!-- Current Time -->
                 <div class="current-time-container text-3xl 2xl:text-3xl w-full justify-center  flex font-bold min-[3500px]:text-9xl items-end">
@@ -173,7 +173,7 @@
                   }"
                   class="currency-container-inner w-full rounded-lg shadow-lg flex flex-col h-full min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl">
                     <!-- Currency Header -->
-                    <div class="currency-header flex gap-2 flex-[2_2_0%]  px-4 pt-1 items-center min-[3500px]:px-10 min-[3500px]:pt-6 min-[3500px]:gap-14">
+                    <div class="currency-header flex gap-2 flex-[2_2_0%]  px-4 pt-1 items-center min-[3500px]:px-10 min-[3500px]:py-6 min-[3500px]:gap-14">
                       <div 
                       [ngStyle]="{
                         'color': colors.tertiary_text,
@@ -187,7 +187,7 @@
                       <span class="currency-label font-semibold text-shadow min-[3500px]:text-8xl">{{currency.label}}</span>
                     </div>
                     <!-- Currency Details -->
-                    <div class="currency-details-container flex-[3_3_0%] flex flex-col justify-center items-center min-[3500px]:gap-1">
+                    <div class="currency-details-container flex-[4_4_0%] flex flex-col items-center min-[3500px]:gap-1">
                       <!-- Converted -->
                       <div 
                       [ngStyle]="{

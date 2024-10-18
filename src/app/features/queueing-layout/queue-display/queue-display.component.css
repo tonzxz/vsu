@@ -192,6 +192,9 @@
     font-size: 0.8rem;
   }
  
+  .currency-value{
+    font-size:1.5rem;
+  }
 }
 @container queue-main (min-width: 2000px) and (max-width:3000px){
   .banner-title{
@@ -243,6 +246,29 @@
   }
   .queue-list-container{
     gap: 2rem;
+  }
+  .timezone-container{
+    font-size: 3.5rem;
+    line-height: 1.5;
+  }
+
+  .currency-label{
+    font-size: 5rem;
+  }
+  .time-container-inner{
+    padding: 5rem 1rem;
+  }
+  .currency-icon-container{
+    width: 5rem;
+    height: 5rem;
+  }
+  .currency-value{
+    font-size: 5rem;
+  }
+
+  .current-time-milli{
+    font-size:2.7rem;
+    line-height: 1.5;
   }
 
   .waiting{

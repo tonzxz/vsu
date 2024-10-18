@@ -15,7 +15,7 @@ export class AppComponent {
   constructor(private API:UswagonCoreService){
     this.API.initialize({
       ...environment,
-      loaderDelay: 1000,
+      loaderDelay: 500,
     })
   }
 }

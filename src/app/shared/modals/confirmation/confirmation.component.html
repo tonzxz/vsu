@@ -19,7 +19,14 @@
                 <div class="text-center font-medium text-xl"> You are about to logout </div>
                 <div  class="text-center font-thin" > Are you sure you want to logout? </div>
             </div>
-          
+
+            <!-- Custom Modal -->
+            <div *ngIf="type =='custom'"  class="flex flex-col items-center">
+                <app-lottie-animation class="w-40 h-40" [loop]="false" [animation]="animation"></app-lottie-animation>
+                <div class="text-center font-medium text-xl"> {{title}} </div>
+                <div  class="text-center font-thin" > {{description}} </div>
+            </div>
+            
         </div>
         <div class="flex justify-center gap-2 mt-2">
             <button class="text-white px-4 py-1 rounded-md bg-red-600 cursor-pointer hover:bg-red-500" (click)="cancel()" >Cancel</button>

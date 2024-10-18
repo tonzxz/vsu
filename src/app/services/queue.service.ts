@@ -2,15 +2,9 @@ import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
+import { KioskService } from './kiosk.service';
 
 
-interface Kiosk{
-  id:string;
-  division_id:string;
-  division:string;
-  number:number;
-  last_online:string;
-}
 
 interface Queue{
   id:string;
@@ -31,7 +25,7 @@ interface Queue{
 })
 export class QueueService  {
 
-  constructor(private API:UswagonCoreService,private auth:UswagonAuthService) {}
+  constructor(private API:UswagonCoreService,private auth:UswagonAuthService, private kioskService:KioskService) {}
 
 
   public lastRegularQueueNumber:number = 0;
@@ -119,13 +113,13 @@ export class QueueService  {
         })
   {
     const id = this.API.createUniqueID32();
-    this.incrementQueueNumber(info.type,this.kiosk?.division_id!);
+    this.incrementQueueNumber(info.type,this.kioskService.kiosk?.division_id!);
     const response = await this.API.create({
       tables: 'queue',
       values:{
         id: id,
-        division_id: this.kiosk?.division_id,
-        kiosk_id:this.kiosk?.id,
+        division_id: this.kioskService.kiosk?.division_id,
+        kiosk_id:this.kioskService.kiosk?.id,
         department_id: info.department_id,
         fullname: info.fullname,
         number: info.type == 'regular' ? this.lastRegularQueueNumber: this.lastPriorityQueueNumber,
@@ -147,7 +141,7 @@ export class QueueService  {
       }
     });
     if(!servicesResponse.success){
-      this.decrementQueueNumber(info.type,this.kiosk?.division_id!);
+      this.decrementQueueNumber(info.type,this.kioskService.kiosk?.division_id!);
       throw new Error('Something went wrong.')
     }
    }
@@ -155,10 +149,10 @@ export class QueueService  {
 
     
     if(!response.success){
-      this.decrementQueueNumber(info.type,this.kiosk?.division_id!);
+      this.decrementQueueNumber(info.type,this.kioskService.kiosk?.division_id!);
       throw new Error('Something went wrong.');
     }else{
-      this.updateQueue(this.kiosk?.division_id!);
+      this.updateQueue(this.kioskService.kiosk?.division_id!);
       return info.type == 'regular' ?  this.lastRegularQueueNumber:this.lastPriorityQueueNumber;
     }
   }
@@ -327,30 +321,6 @@ export class QueueService  {
     }
   }
 
-  // KIOSK specific
-
-  public kiosk?:Kiosk;
-
-  async kioskLogin(code:string){
-    const response = await this.API.read({
-      selectors: ['divisions.name as division,kiosks.*'],
-      tables: 'kiosks, divisions',
-      conditions: `
-        WHERE kiosks.division_id = divisions.id 
-        AND kiosks.code = '${code}'  AND status = 'available'
-      `
-    });
-    if(response.success){
-      if(response.output.length > 0){
-        this.kiosk = response.output[0];
-        localStorage.setItem('kiosk', JSON.stringify(this.kiosk));
-        return response.output[0];
-      }else{
-        throw new Error('Invalid kiosk code.');
-      }
-    }else{
-      throw new Error(response.output);
-    }
-  }
+  
 
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +80,7 @@ export class ContentService {
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'divisions',
-      conditions: `WHERE id != '${user.division_id}'`,
+      conditions: `WHERE id != '${environment.administrators}'`,
     });
 
     if(response.success){

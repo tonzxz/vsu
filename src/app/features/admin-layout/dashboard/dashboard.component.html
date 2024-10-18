@@ -75,7 +75,7 @@
       <!-- Screen Preview -->
       <div class="bg-white p-6 rounded-lg shadow flex flex-col items-end">
         <h3 class="text-lg font-semibold mb-2 w-full text-left">Screen Preview</h3>
-        <div class="h-8 rounded-t-lg w-[90%] flex overflow-hidden mr-2 ">
+        <div *ngIf="divisions.length" class="h-8 rounded-t-lg w-[90%] flex overflow-hidden mr-2 ">
           <button
           (click)="changeContent(division.id)" 
           class="w-full h-full  font-medium {{division.id == selectedDivision ? 'bg-green-500' : 'bg-green-600'}} hover:bg-green-500 text-xs text-white flex-1 "

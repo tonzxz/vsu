@@ -37,7 +37,7 @@ export class LoginAsComponent implements OnInit {
     if(this.selectedRole ==  'desk_attendants'){
       this.auth.initialize({api:environment.api, apiKey: environment.apiKey, loginTable:['desk_attendants'],
         app:environment.app, 
-          redirect:  {'desk_attendants': '/desk-attendant/dashboard',}
+          redirect:  {'desk_attendants': '/desk-attendant',}
   
       });
     }else{

@@ -2,7 +2,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         <!-- Profile Picture and Welcome Text -->
         <div class="flex items-center space-x-4">
-            <img src="assets/logo/vsu.png" alt="Right Image" class="w-14 h-14 object-cover rounded-full">
+            <img [src]="divisionLogo ?? 'assets/logo/vsu.png'" alt="Right Image" class="w-14 h-14 object-cover rounded-full">
             <h2 class="text-2xl font-medium text-[#283c1c]">
                 <span class="font-normal">Welcome </span>
                 <span>{{getUserName()}}!</span>

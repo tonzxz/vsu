@@ -81,7 +81,11 @@ export const routes: Routes = [
     // children: [
     //   { path: 'display/:role', component: QueueDisplayComponent }, 
     // ]
-  }
+  },
+  {
+    path: '**', // Wildcard route
+    redirectTo: '/login',
+  },
 ];
 
 @NgModule({

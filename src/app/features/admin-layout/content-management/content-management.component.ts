@@ -257,7 +257,7 @@ export class ContentManagementComponent implements OnInit {
         this.contentLoading = false;
       }else{
         this.selectedDivision = this.auth.getUser().division_id;
-        this.divisions = await this.contentService.getDivision(this.selectedDivision!);
+        this.divisions =[ await this.contentService.getDivision(this.selectedDivision!)];
         const content = await this.contentService.getContentSetting();
         if(!content) {
           this.previousSettings ={

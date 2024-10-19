@@ -98,7 +98,8 @@ export class ContentService {
     });
 
     if(response.success){
-      return response.output;
+      if(response.output.length <= 0) return null;
+      return response.output[0];
     }else{
       throw new Error('Error getting divisions.');
     }

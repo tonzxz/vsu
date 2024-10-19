@@ -3,6 +3,28 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
+import { UswagonAuthService } from 'uswagon-auth';
+import { UswagonCoreService } from 'uswagon-core';
+import { TerminalService } from '../../../services/terminal.service';
+import { ContentService } from '../../../services/content.service';
+
+
+interface Terminal{
+  id:string;
+  division_id:string;
+  number:string;
+  status:string;  
+  start_time?:string;
+  end_time?:string;
+  attendant?:string;
+}
+
+interface Division{
+  id:string;
+  name:string;
+}
+
 
 interface Ticket {
   number: number;
@@ -28,7 +50,8 @@ interface ClientDetails {
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    MatTabsModule
+    MatTabsModule,
+    LottieAnimationComponent,
   ]
 })
 export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
@@ -67,22 +90,57 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   private timerInterval: any;
   private dateInterval: any;
+  private statusInterval:any;
+  terminals: Terminal[]=[];
+  statusMap:any = {
+    'available' : 'bg-orange-500',
+    'maintenance' : 'bg-red-500',
+    'active' : 'bg-green-500',
+  }
+
+
+  constructor( 
+    private auth:UswagonAuthService,private API:UswagonCoreService,
+    private terminalService:TerminalService, private contentService:ContentService) {}
 
   ngOnInit(): void {
     this.updateCurrentDate();
     this.dateInterval = setInterval(() => this.updateCurrentDate(), 60000);
+    this.loadContent();
   }
 
   ngOnDestroy(): void {
     this.clearIntervals();
   }
 
+  async loadContent(){
+    this.API.setLoading(true);
+    this.terminals = (await this.terminalService.getAllTerminals(this.auth.getUser().division_id));
+    const lastSession = await this.terminalService.getActiveSession()
+    if(lastSession){
+      this.selectedCounter = this.terminals.findIndex(terminal=>terminal.id == lastSession.terminal_id);
+      this.refreshTerminalStatus();
+      if(this.statusInterval){
+        clearInterval(this.statusInterval);
+      }
+      this.statusInterval = setInterval(()=>this.refreshTerminalStatus(), 1000);
+    }
+    this.API.setLoading(false);    
+  }
+
+  refreshTerminalStatus(){
+    this.terminalService.updateTerminalSession(this.terminals[this.selectedCounter!].id);
+  }
+
   /**
    * Selects a counter and initializes related states.
    * @param counter The counter number selected by the user.
    */
-  selectCounter(counter: number): void {
+  async selectCounter(counter: number) {
     this.selectedCounter = counter;
+    this.API.setLoading(true);
+    await this.terminalService.startTerminalSession(this.terminals[counter].id);
+    this.API.setLoading(false);
   }
 
   /**
@@ -265,6 +323,9 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if (this.dateInterval) {
       clearInterval(this.dateInterval);
       this.dateInterval = null;
+    }
+    if(this.statusInterval){
+      clearInterval(this.statusInterval);
     }
   }
 

@@ -46,8 +46,7 @@ export class TerminalManagementComponent implements OnInit {
 
   selectedTerminal?:Terminal;
 
-  // Injecting ChangeDetectorRef to trigger manual change detection
-  constructor(private cdr: ChangeDetectorRef, 
+  constructor( 
     private auth:UswagonAuthService,private API:UswagonCoreService,
     private terminalService:TerminalService, private contentService:ContentService) {}
   ngOnInit(): void {

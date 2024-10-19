@@ -44,9 +44,7 @@ export class KioskFormsComponent implements OnInit {
   async ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.departmentName = params['department'] || 'Department Name';
-      if(params['reset']){
-        localStorage.removeItem('kiosk');
-      }
+      
     }
   );
 

@@ -12,7 +12,7 @@ export const kioskGuard: CanActivateFn = (route, state) => {
   if(kiosk){
     kioskService.kiosk = JSON.parse(kiosk) as any;
   }
-  if(route.url.toString() == 'selection'){
+  if(route.url.toString().includes ('selection')){
     if(kiosk){
       
       router.navigate(['/kiosk/forms'],{ queryParams: { department: kioskService.kiosk!.division } });
@@ -20,7 +20,7 @@ export const kioskGuard: CanActivateFn = (route, state) => {
     }
   }
   
-  if(route.url.toString() == 'forms'){
+  if(route.url.toString().includes( 'forms')){
     if(!kiosk){
       router.navigate(['/kiosk/selection']);
     }

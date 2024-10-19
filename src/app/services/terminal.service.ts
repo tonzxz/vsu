@@ -49,7 +49,7 @@ async deleteTerminal(id:string){
   });
 
   if(!response.success){
-    throw new Error('Unable to add terminal');
+    throw new Error('Unable to delete terminal');
   }
 }
 

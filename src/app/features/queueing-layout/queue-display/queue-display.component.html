@@ -94,10 +94,11 @@
       <!-- Right Side -->
       <div class="right-side flex-[1_1_0%] flex flex-col justify-center items-center w-full gap-2 py-4 min-[3500px]:gap-8">
         <!-- Widget Row -->
-        <div  class="widget-row flex flex-[2_2_0%] gap-3 w-full min-[3500px]:gap-8">
+        <div  class="widget-row flex flex-[2_2_0%] gap-3 w-full min-[3500px]:gap-8 relative">
           <!-- Video -->
           <div class="video-container flex-[5_5_0%] flex items-center">
-            <iframe
+            <div class="w-full h-full video animate-pop object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl relative overflow-hidden">
+              <iframe
               #iframePlayer
               [ngStyle]="{'border-color': colors.primary_text + '80',}"
               *ngIf="safeYoutubeUrl"
@@ -105,7 +106,7 @@
               autoplay
               loop
               frameborder="0"
-              class="video aspect-video animate-pop w-full h-full object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
+              class="absolute w-full h-full object-cover"
             ></iframe>
             <video
             *ngIf="!safeYoutubeUrl"
@@ -113,10 +114,13 @@
             autoplay
             loop
             [muted]="mute"
-            #videoPlayer width="100%" height="100%" class="video animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
+            class="absolute w-full h-full object-cover"
+            #videoPlayer    controls="false">
               <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
               Your browser does not support the video tag.
             </video> 
+            </div>
+           
           </div>
           
           <div 

@@ -80,12 +80,12 @@ export class KioskService {
  }
  async deleteKiosk(id:string){
    const response = await this.API.delete({
-     tables: 'terminals',
+     tables: 'kiosks',
      conditions: `WHERE id = '${id}'`
    });
  
    if(!response.success){
-     throw new Error('Unable to add kiosk');
+     throw new Error('Unable to delete kiosk');
    }
  }
  

@@ -260,7 +260,7 @@
               'backgroundColor': colors.secondary_bg
             }"
             class="queue-container-inner h-full rounded-lg shadow-lg w-full overflow-hidden px-3 py-2 flex flex-col min-[3500px]:rounded-3xl  min-[3500px]:px-20 min-[3500px]:py-16">
-              <h1 class="queue-title font-medium min-[3500px]:font-semibold">UP NEXT</h1>
+              <h1 class="queue-title font-medium min-[3500px]:font-semibold "  *ngIf="upNextItems.length > 0">UP NEXT</h1>
               <div class="font-thin w-full h-full flex justify-center items-center" *ngIf="upNextItems.length <= 0">
                 <div
                 class="px-2 py-1 text-center flex flex-col items-center justify-center"

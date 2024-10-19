@@ -26,6 +26,10 @@ export class AdminLayoutComponent implements OnInit, OnDestroy{
     })
   }
 
+  showUploadProgress(){
+    return this.API.uploadProgress;
+  }
+
   ngOnDestroy(): void {
     this.loading$!.unsubscribe();
   }

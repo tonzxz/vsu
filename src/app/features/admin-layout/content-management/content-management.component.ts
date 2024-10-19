@@ -84,12 +84,12 @@ export class ContentManagementComponent implements OnInit {
   }
 
   colors:ContentColors={
-    primary_bg: '#000000',
-    secondary_bg: '#000000',
-    tertiary_bg: '#000000',
-    primary_text: '#000000',
+    primary_bg: '#2F4A2C',
+    secondary_bg: '#FFFFFF',
+    tertiary_bg: '#FBDF30',
+    primary_text: '#FFFFFF',
     secondary_text: '#000000',
-    tertiary_text: '#000000',
+    tertiary_text: '#FBDF30',
   }
   
   files:ContentFiles= {}

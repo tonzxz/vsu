@@ -272,8 +272,11 @@
   }
 
   .waiting{
-    width: 30rem;
-    height: 30rem;
+    width: 35rem;
+    height: 35rem;
+  }
+  .loader-text{
+    font-size: 4rem;
   }
 }
 

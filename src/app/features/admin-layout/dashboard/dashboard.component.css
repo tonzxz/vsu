@@ -31,3 +31,11 @@
 .bg-gray-50 {
   background-color: #f9fafb;
 }
+.chart-container {
+  position: relative;
+  height: 300px; /* Adjust height as needed */
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}

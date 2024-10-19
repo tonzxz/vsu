@@ -1,141 +1,162 @@
-<section class="w-full min-h-screen p-8 bg-gray-50">
+<section class="w-full min-h-screen p-8">
   <div class="w-full max-w-7xl mx-auto">
-
-    <!-- Welcome Header -->
-    <header class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-semibold text-gray-900">Welcome {{ currentUser.firstName }} 🎉</h1>
-      <div class="flex items-center">
-        <i class="fa fa-user-circle text-3xl text-gray-700"></i>
-      </div>
-    </header>
-
     <!-- Overall Metrics Overview and Queue Status -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
       <!-- Metrics -->
       <div class="lg:col-span-2">
-        <h2 class="text-xl font-semibold mb-4">Overall Metrics Overview</h2>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-neutral-800">Overall Metrics Overview</h2>
+          <!-- Filter Dropdown -->
+          <select
+            [(ngModel)]="selectedFilter"
+            (change)="onFilterChange()"
+            class="border border-gray-300 rounded-md p-2 bg-white text-gray-700">
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+          </select>
+        </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <ng-container *ngFor="let metric of overallMetrics$ | async">
-            <div class="p-4 bg-white rounded-lg shadow">
-              <h3 class="text-gray-700 text-sm font-medium">{{ metric.title }}</h3>
-              <p class="text-3xl font-bold text-gray-900 mt-2">{{ metric.value }}</p>
+            <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+              <h3 class="text-neutral-600 text-sm font-medium">{{ metric.title }}</h3>
+              <p class="text-4xl font-bold text-neutral-900 mt-2">{{ metric.value }}</p>
             </div>
           </ng-container>
         </div>
+
+        <!-- Service Over Time Chart -->
+        <section class="mt-8">
+          <h2 class="text-2xl font-bold text-neutral-800 mb-4">Service Over Time</h2>
+          <div class="chart-container w-full bg-white rounded-xl shadow-sm p-6">
+            <canvas #canvasElement></canvas>
+          </div>
+        </section>
       </div>
 
       <!-- Queue Status -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-lg font-semibold mb-4">Queue Status</h3>
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <h3 class="text-xl font-bold text-neutral-800 mb-6">Queue Status</h3>
         <div class="grid grid-cols-1 gap-4">
           <ng-container *ngFor="let queue of queueAnalytics$ | async">
-            <div class="p-4 bg-gray-50 rounded-lg shadow">
-              <h4 class="text-gray-800 font-medium">{{ queue.office }}</h4>
-              <p class="text-sm text-gray-600">Average wait time: {{ queue.avgWaitTime }}</p>
-              <p class="text-sm text-gray-600">In-Queue: {{ queue.waitingCount }}</p>
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm flex items-start">
+              <div class="mr-4 text-gray-400">
+                <i class="fa fa-clock text-2xl"></i>
+              </div>
+              <div>
+                <h4 class="text-neutral-800 font-medium">{{ queue.office }}</h4>
+                <p class="text-sm text-neutral-600">Average wait time: {{ queue.avgWaitTime }}</p>
+                <p class="text-sm text-neutral-600">In-Queue: {{ queue.waitingCount }}</p>
+              </div>
             </div>
           </ng-container>
         </div>
-      </div>
-    </section>
-
-    <!-- Service Over Time Chart -->
-    <section class="mb-10">
-      <h2 class="text-xl font-semibold mb-4">Service Over Time</h2>
-      <div class="w-full bg-white rounded-lg shadow p-6">
-        <canvas #canvasElement></canvas>
       </div>
     </section>
 
     <!-- Terminal and Kiosk Management Overview and Screen Preview -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
       <!-- Terminal and Kiosk Management Overview -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-lg font-semibold mb-4">Terminal and Kiosk Management Overview</h3>
-        <table class="w-full table-auto">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="p-4 text-left text-sm text-gray-600">Name</th>
-              <th class="p-4 text-left text-sm text-gray-600">Location</th>
-              <th class="p-4 text-left text-sm text-gray-600">Counter</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let kiosk of kioskStatus$ | async">
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <h3 class="text-xl font-bold text-neutral-800 mb-6">Terminal and Kiosk Management Overview</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full table-auto">
+            <thead class="bg-gray-100 text-gray-600">
               <tr>
-                <td class="p-4">{{ kiosk.id }}</td>
-                <td class="p-4">{{ kiosk.location }}</td>
-                <td class="p-4">{{ kiosk.ticketsIssued }}</td>
+                <th class="p-4 text-left text-sm">Name</th>
+                <th class="p-4 text-left text-sm">Location</th>
+                <th class="p-4 text-left text-sm">Counter</th>
               </tr>
-            </ng-container>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let kiosk of kioskStatus$ | async">
+                <tr class="border-b last:border-none hover:bg-gray-50 transition-colors">
+                  <td class="p-4 flex items-center">
+                    <span
+                      class="inline-block w-3 h-3 rounded-full mr-2"
+                      [ngClass]="{
+                        'bg-green-500': kiosk.status === 'Operational',
+                        'bg-red-500': kiosk.status !== 'Operational'
+                      }"
+                      aria-label="Status indicator"></span>
+                    <span class="text-neutral-800">{{ kiosk.id }}</span>
+                  </td>
+                  <td class="p-4 text-neutral-600">{{ kiosk.location }}</td>
+                  <td class="p-4 text-neutral-600">{{ kiosk.ticketsIssued > 0 ? 'Counter 1' : 'N/A' }}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Screen Preview -->
-      <div class="bg-white p-6 rounded-lg shadow flex flex-col items-end">
-        <h3 class="text-lg font-semibold mb-2 w-full text-left">Screen Preview</h3>
-        <div *ngIf="divisions.length" class="h-8 rounded-t-lg w-[90%] flex overflow-hidden mr-2 ">
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <h3 class="text-xl font-bold text-neutral-800 mb-4">Screen Preview</h3>
+        <div *ngIf="divisions.length" class="flex overflow-hidden mb-4">
           <button
-          (click)="changeContent(division.id)" 
-          class="w-full h-full  font-medium {{division.id == selectedDivision ? 'bg-green-500' : 'bg-green-600'}} hover:bg-green-500 text-xs text-white flex-1 "
-          *ngFor="let division of divisions">
-            {{division.name}}
+            *ngFor="let division of divisions"
+            (click)="changeContent(division.id)"
+            class="px-4 py-2 rounded-t-md font-medium text-white flex-1 text-center transition-colors duration-200"
+            [ngClass]="{
+              'bg-green-500': division.id === selectedDivision,
+              'bg-green-600 hover:bg-green-500': division.id !== selectedDivision
+            }">
+            {{ division.name }}
           </button>
         </div>
-        <div class="relative w-full rounded-lg overflow-hidden">
-          <div *ngIf="!content" class="bg-black text-white font-thin flex items-center justify-center w-full aspect-[3840/2180]">
-            This division's display has not been configured.
-          </div>
-          <app-queue-display 
-              *ngIf="content"
-              [showAnnouncement]="content.announcement_on == 't'"
-              [showBackground]="content.background_on == 't'"
-              [showTime]="content.time == 't'" 
-              [showWeather]="content.weather == 't'" 
-              [showCurrency]="content.currency == 't'" 
-              [announcements]="content.announcements ?? ''" 
-              [videoUrl]="content.video"
-              [backgroundUrl]="content.background"
-              [logoUrl]="content.logo"
-              [mute]="true"
-              [disableAPI]="true"
-              [colors]="{
-                  primary_bg: content.primary_bg,
-                  secondary_bg: content.secondary_bg,
-                  tertiary_bg: content.tertiary_bg,
-                  primary_text: content.primary_text,
-                  secondary_text: content.secondary_text,
-                  tertiary_text: content.tertiary_text
-              }" 
-              [division]="{
-                id:content.division_id,
-                name:content.division}"
-              class="w-full h-full"></app-queue-display>
+        <div class="relative w-full h-72 rounded-lg overflow-hidden bg-black flex items-center justify-center">
+          <app-queue-display
+            *ngIf="content"
+            [showAnnouncement]="content.announcement_on === 't'"
+            [showBackground]="content.background_on === 't'"
+            [showTime]="content.time === 't'"
+            [showWeather]="content.weather === 't'"
+            [showCurrency]="content.currency === 't'"
+            [announcements]="content.announcements ?? ''"
+            [videoUrl]="content.video"
+            [backgroundUrl]="content.background"
+            [logoUrl]="content.logo"
+            [mute]="true"
+            [disableAPI]="true"
+            [colors]="{
+              primary_bg: content.primary_bg,
+              secondary_bg: content.secondary_bg,
+              tertiary_bg: content.tertiary_bg,
+              primary_text: content.primary_text,
+              secondary_text: content.secondary_text,
+              tertiary_text: content.tertiary_text
+            }"
+            [division]="{
+              id: content.division_id,
+              name: content.division
+            }"
+            class="w-full h-full"></app-queue-display>
         </div>
       </div>
     </section>
 
     <!-- Desk Attendant Performance Metrics -->
-    <section class="mb-10">
-      <h3 class="text-lg font-semibold mb-4">Desk Attendant Performance Metrics</h3>
-      <div class="bg-white rounded-lg shadow p-6">
+    <section class="mb-12">
+      <h3 class="text-xl font-bold text-neutral-800 mb-6">Desk Attendant Performance Metrics</h3>
+      <div class="bg-white rounded-xl shadow-sm p-6">
         <table class="w-full table-auto">
-          <thead class="bg-gray-100">
+          <thead class="bg-gray-100 text-gray-600">
             <tr>
-              <th class="p-4 text-left text-sm text-gray-600">Name</th>
-              <th class="p-4 text-left text-sm text-gray-600">Location</th>
-              <th class="p-4 text-left text-sm text-gray-600">Service Provided</th>
-              <th class="p-4 text-left text-sm text-gray-600">Avg. Wait Time</th>
+              <th class="p-4 text-left text-sm">Name</th>
+              <th class="p-4 text-left text-sm">Location</th>
+              <th class="p-4 text-left text-sm">Service Provided</th>
+              <th class="p-4 text-left text-sm">Avg. Wait Time</th>
             </tr>
           </thead>
           <tbody>
             <ng-container *ngFor="let staff of staffPerformance$ | async">
-              <tr>
+              <tr class="border-b last:border-none hover:bg-gray-50 transition-colors">
                 <td class="p-4">{{ staff.name }}</td>
-                <td class="p-4">{{ staff.office }}</td>
-                <td class="p-4">{{ staff.ticketsServed }}</td>
-                <td class="p-4">{{ staff.avgServiceTime }}</td>
+                <td class="p-4 text-neutral-600">{{ staff.office }}</td>
+                <td class="p-4 text-neutral-600">{{ staff.ticketsServed }}</td>
+                <td class="p-4 text-neutral-600">{{ staff.avgServiceTime }}</td>
               </tr>
             </ng-container>
           </tbody>

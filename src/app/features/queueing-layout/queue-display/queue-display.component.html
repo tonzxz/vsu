@@ -13,6 +13,7 @@
   *ngIf="!safeYoutubeUrl"
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
   autoplay
+  loop
   [muted]="true"
   #videoPlayer width="100%" height="100%" class="w-full h-full video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
     <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
@@ -110,6 +111,7 @@
             *ngIf="!safeYoutubeUrl"
             [ngStyle]="{'border-color': colors.primary_text + '80',}"
             autoplay
+            loop
             [muted]="mute"
             #videoPlayer width="100%" height="100%" class="video animate-pop aspect-video object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
               <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">

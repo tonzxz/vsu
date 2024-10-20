@@ -1,4 +1,4 @@
-<div *ngIf="!loading && ((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0)" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
+<div *ngIf="!loading && ((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0) && !isPreview" class="main-container flex flex-col justify-center items-center aspect-[3840/2180] relative">
   <iframe
   #iframePlayer
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
@@ -7,17 +7,31 @@
   autoplay
   loop
   frameborder="0"
-  class="video aspect-video animate-pop w-full h-full object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
+  class="video aspect-[3840/2180] animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
   ></iframe>
   <video
   *ngIf="!safeYoutubeUrl"
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
   autoplay
   loop
-  #videoPlayer width="100%" height="100%" class="w-full h-full video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
+  #videoPlayer width="100%" height="100%" class="aspect-[3840/2180] video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
     <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
     Your browser does not support the video tag.
   </video> 
+  <!-- Announcements -->
+  <div 
+  *ngIf="showAnnouncement"
+  [ngStyle]="{ 'border-color': colors.primary_text + '30',}"
+  class="announcement-banner absolute bottom-2 min-[3500px]:bottom-8 h-7 flex items-center w-full z-50  overflow-hidden text-red-600 bg-white border-dashed border-y-2 min-[3500px]:border-y-8 shadow-sm 
+    min-[3500px]:h-28 
+  ">
+    <div class="w-full h-full relative">
+      <div  class="announcement-text absolute inline-flex min-w-[200%] animate-scroll-tailing h-full tracking-widest font-semibold min-[3500px]:text-6xl items-center  whitespace-nowrap"> 
+        <span class="flex-1 whitespace-nowrap  px-2 min-[3500px]:px-6 inline-block ">{{announcements}} </span> 
+        <span class="flex-1 whitespace-nowrap  px-2 min-[3500px]:px-6 inline-block ">{{announcements}} </span> 
+     </div>
+    </div>
+  </div>
 </div>
 
 <div *ngIf="loading" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
@@ -27,7 +41,7 @@
 </div>
 
 <!-- Main Container -->
-<div *ngIf="!loading && !((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0)" class="main-container flex flex-col w-full h-full relative aspect-[3840/2180] z-0"
+<div *ngIf="!loading && (!((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0) || isPreview)" class="main-container flex flex-col w-full h-full relative aspect-[3840/2180] z-0"
   [ngStyle]="{'backgroundColor': colors.primary_bg}"
 > 
   <!-- Layout Container -->

@@ -106,8 +106,8 @@
             {{ division.name }}
           </button>
         </div>
-        <div class="relative w-full h-72 rounded-lg overflow-hidden border-2 border-solid border-black/20 flex items-center justify-center">
-          <div *ngIf="!content" class="w-full h-full bg-black flex font-thin justify-center items-center text-white">Division's display has not yet been configured.</div>
+        <div class="aspect-[3840/2180] relative w-full  rounded-lg overflow-hidden border-2 border-solid border-black/20 flex items-center justify-center">
+          <div *ngIf="!content" class="aspect-[3840/2180] w-full bg-black flex font-thin justify-center items-center text-white">Division's display has not yet been configured.</div>
           <app-queue-display
             *ngIf="content"
             [showAnnouncement]="content.announcement_on === 't'"
@@ -133,7 +133,7 @@
               id: content.division_id,
               name: content.division
             }"
-            class="w-full h-full"></app-queue-display>
+            class="aspect-[3840/2180] w-full"></app-queue-display>
         </div>
       </div>
     </section>

@@ -252,12 +252,15 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     }, this.weatherCurrencySwitchTimer);
 
 
-    // Backend init
-    this.loadQueue();
+  
 
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    // Backend init
+    
+    if(!this.isPreview)  this.loadQueue();
+  }
 
   // FRONT END FUNCTIONS
 
@@ -394,12 +397,20 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   
 
   async loadQueue(){
+  
     if(!this.division){ 
       return;
     }
 
     this.loading= true;
-    this.subscription?.unsubscribe();
+    this.dataLoaded = false;
+    if(this.subscription){
+      this.subscription?.unsubscribe();
+    }
+    if(this.terminalInterval){
+      clearInterval(this.terminalInterval)
+    }
+
 
     this.queueService.setDivision(this.division!.id);
     this.queueService.listenToQueue();

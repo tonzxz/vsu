@@ -328,7 +328,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.loadQueue();  
+    if(!this.isPreview)  this.loadQueue();  
     if(this.videoPlayer != null)
     this.videoPlayer.nativeElement.src=this.videoUrl??'assets/queue-display/vsu.mp4';
   

@@ -86,6 +86,20 @@ export class KioskService {
      throw new Error('Unable to add terminal');
    }
  }
+
+ async updateKiosk(id:string, code:string){
+  const response = await this.API.update({
+    tables: 'kiosks',
+    values:{
+      code:code
+    }  ,
+    conditions: `WHERE id = '${id}'`
+  });
+
+  if(!response.success){
+    throw new Error('Unable to add terminal');
+  }
+}
  async deleteKiosk(id:string){
    const response = await this.API.delete({
      tables: 'kiosks',

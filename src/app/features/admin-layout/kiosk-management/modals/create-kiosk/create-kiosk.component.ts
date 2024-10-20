@@ -36,9 +36,13 @@ export class CreateKioskComponent implements OnInit {
 
   async submitForm(){
     this.submittingForm = true;
-    await this.kioskService.addKiosk(
-      this.kiosk.code
-    )
+    if(this.kiosk.id){
+      await this.kioskService.updateKiosk(this.kiosk.id,this.kiosk.code);
+    }else{
+      await this.kioskService.addKiosk(
+        this.kiosk.code
+      )
+    }
     this.onClose.emit(true);
   }
 }

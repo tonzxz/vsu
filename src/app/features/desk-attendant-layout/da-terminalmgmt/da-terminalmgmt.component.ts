@@ -70,7 +70,7 @@ interface ClientDetails {
 export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   selectedCounter?: Terminal;
   counters: number[] = [1, 2, 3, 4, 5];
-  currentNumber: number = 110;
+  currentTicket?: Ticket;
   lastCalledNumber: string = 'N/A';
   currentDate: string = '';
   timer: string = '00:00:00';
@@ -183,6 +183,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       this.tickets = queueItems;
     });
 
+    this.queueService.listenToQueue();
+
     await this.queueService.getTodayQueues();
 
      
@@ -242,7 +244,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if (this.tickets.length > 0) {
       const nextTicket = this.tickets.shift();
       if (nextTicket) {
-        this.currentNumber = nextTicket.number;
+        this.currentTicket = nextTicket;
         this.isNextClientActive = false;
         this.isClientDoneActive = true;
         this.isCallNumberActive = true;
@@ -285,8 +287,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.isManualSelectActive = true;
     this.isReturnTopActive = false;
     this.isReturnBottomActive = false;
-    this.lastCalledNumber = this.currentNumber.toString();
-    this.currentNumber = this.tickets[0]?.number || 0;
+    this.lastCalledNumber = this.currentTicket!.number.toString().padStart(3, '0');
+    this.currentTicket= this.tickets[0];
     this.currentClientDetails = null;
     this.stopTimer();
   }
@@ -295,8 +297,9 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
    * Simulates calling the current number.
    */
   callNumber(): void {
-    console.log(`Calling number ${this.currentNumber}`);
-    this.isCallNumberActive = false;
+    console.log(`Calling number ${this.currentTicket?.number}`);
+    this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.number.toString().padStart(3, '0')}`)
+    // this.isCallNumberActive = false;
   }
 
   /**
@@ -313,7 +316,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   returnTop(): void {
     if (this.currentClientDetails) {
       const currentTicket: Ticket = {
-        number: this.currentNumber,
+        number: this.currentTicket!.number,
         timestamp: new Date().toLocaleString(),
         type: 'regular',
       };
@@ -328,7 +331,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   returnBottom(): void {
     if (this.currentClientDetails) {
       const currentTicket: Ticket = {
-        number: this.currentNumber,
+        number: this.currentTicket!.number,
         timestamp: new Date().toLocaleString(),
         type: 'regular',
       };

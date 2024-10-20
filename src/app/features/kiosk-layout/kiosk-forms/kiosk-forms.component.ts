@@ -1,13 +1,14 @@
 //kiosk-forms.components.ts
 import { Component, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import jsPDF from 'jspdf';
 import { UswagonCoreService } from 'uswagon-core';
 import { QueueService } from '../../../services/queue.service';
 import { KioskService } from '../../../services/kiosk.service';
+import { DivisionService } from '../../../services/division.service';
 
 @Component({
   selector: 'app-kiosk-forms',
@@ -39,45 +40,26 @@ export class KioskFormsComponent implements OnInit {
   constructor(private route: ActivatedRoute, 
     private queueService:QueueService,
     private kioskService:KioskService,
-    private kenAPI: UswagonCoreService) {}
+    private divisionService:DivisionService,
+    private API: UswagonCoreService) {}
 
   async ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.departmentName = params['department'] || 'Department Name';
-      
+      this.departmentName = params['department'] || 'Department Name';       
+      }
+    );
+
+    if(this.kioskService.kiosk != undefined){
+      this.divisionService.setDivision({
+        id: this.kioskService.kiosk.division_id,
+        name:this.kioskService.kiosk.division,
+      })
+      this.queueService.getTodayQueues();
+
+    }else{
+      throw new Error('Invalid method');
     }
-  );
 
-  if(this.kioskService.kiosk != undefined){
-    this.queueService.getTodayQueues();
-  }else{
-    throw new Error('Invalid method');
-  }
-
-
-  this.kenAPI.initializeForm(
-    ['role', 'password'])
-  
-  this.kenAPI.handleFormValue('role', 'desk_attendant');
-  this.kenAPI.handleFormValue('password','test'); 
-
-  const data = await this.kenAPI.read({
-    selectors: ['*'],
-    tables: 'users',
-    conditions: `WHERE role='${this.kenAPI.coreForm['role']}'`
-  })
-  
-
-  if(data.success) {
-    for(let user of data.output){
-      alert(JSON.stringify(`${user.firstname}  `));
-      console.log('hehe', user.role);
-    }
-  }  
- 
-  
-    this.resetQueueNumberIfNewDay();
-    this.kenAPI.addSocketListener
   }
 
   handleButtonClick(type: 'regular'|'priority'): void {
@@ -183,19 +165,5 @@ export class KioskFormsComponent implements OnInit {
   }
 
 
-  async kenButton() {
 
-    const data = await this.kenAPI.read({
-      selectors: ['*'],
-      tables: 'users',
-      conditions: `WHERE role='${this.kenAPI.coreForm['role']}'`
-    })
-
-    if(data.success) {
-      for(let user of data.output){
-        alert(JSON.stringify(`${user.firstname}  `));
-        console.log('hehe', user.role);
-      }
-    }
-  }
 }

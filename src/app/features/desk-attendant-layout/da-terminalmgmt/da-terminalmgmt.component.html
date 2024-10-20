@@ -65,7 +65,7 @@
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="text-center bg-[#f0f4ed] p-6 rounded-xl shadow-md">
             <h3 class="text-lg font-semibold mb-2 text-[#283c1c]">Current Number</h3>
-            <p class="text-5xl font-bold text-[#283c1c]">{{ currentNumber }}</p>
+            <p class="text-5xl font-bold text-[#283c1c]">{{ currentTicket?.number?.toString()?.padStart(3, '0') ?? 'N/A' }}</p>
           </div>
           <div class="text-center bg-[#f0f4ed] p-6 rounded-xl shadow-md">
             <h3 class="text-lg font-semibold mb-2 text-[#283c1c]">Last Called</h3>
@@ -156,10 +156,10 @@
                       </thead>
                       <tbody>
                         <tr *ngFor="let ticket of tickets; let last = last" [ngClass]="{'border-b border-[#dfe9d8]': !last}">
-                          <td class="p-3 text-[#283c1c]">{{ ticket.number }}</td>
+                          <td class="p-3 text-[#283c1c]">{{ ticket.number.toString().padStart(3, '0')}}</td>
                           <td class="p-3 text-[#283c1c]">{{ ticket.timestamp }}</td>
                           <td class="p-3" [ngClass]="{ 'text-[#8b2e2e] font-semibold': ticket.type === 'priority', 'text-[#4a6d32] font-semibold': ticket.type === 'regular' }">
-                            {{ ticket.type }}
+                            {{ ticket.type.toUpperCase() }}
                           </td>
                         </tr>
                       </tbody>

@@ -149,6 +149,14 @@ export class KioskService {
        });
     
      if(response.success){
+        for(let kiosk of response.output){
+          const now = new Date(); 
+          const lastActive = new Date(kiosk.last_online);
+          const diffInMinutes = (now.getTime() - lastActive.getTime()) / 60000; 
+          if(diffInMinutes < 1.5 && kiosk.status != 'maintenance'){
+            kiosk.status = 'online';
+          }
+        }
        return response.output;
      }else{
        throw new Error('Unable to fetch kiosks');

@@ -57,13 +57,14 @@
             <div class="flex w-full  mt-2">
               <div class="w-full flex justify-between">
                 <div class="flex gap-2">
-                  <button (click)="selectKiosk(kiosk);openDialog('delete')" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-red-500 hover:bg-red-600 ">
+                  <button *ngIf="kiosk.status != 'online'" (click)="selectKiosk(kiosk);openDialog('delete')" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-red-500 hover:bg-red-600 ">
                     <span  class="material-icons"> delete </span>
                   </button>
                   <button  (click)="updateKiosk(kiosk)" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-green-500 hover:bg-green-600 ">
                     <span  class="material-icons"> edit </span>
                   </button>
                 </div>
+                <div *ngIf="kiosk.status == 'online'"></div>
                 <button (click)="selectKiosk(kiosk);openDialog('maintenance')" class="rounded-lg px-10 py-1 text-white {{statusMap[kiosk.status!]}}">
                   {{kiosk.status != 'maintenance'? 'Available':'Maintenance'}}
                 </button>

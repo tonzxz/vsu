@@ -361,6 +361,7 @@ export class ContentManagementComponent implements OnInit {
   }
 
   closeDialog(){
+
     this.modalType = undefined;
   }
 
@@ -378,6 +379,7 @@ export class ContentManagementComponent implements OnInit {
     this.inputFields = {...this.previousSettings!.inputFields};
     this.toggles = {...this.previousSettings!.toggles};
     this.modalType = undefined;
+    this.API.sendFeedback('success','Changes has been reverted successfully.',5000);
   }
   private isValidYouTubeUrl(url: string): boolean {
     const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
@@ -420,5 +422,8 @@ export class ContentManagementComponent implements OnInit {
       'event': 'content-changes'
     })
     this.API.setLoading(false);
+    // if(this.modalType == 'publish'){
+      this.API.sendFeedback('success','Content has been updated successfully!', 5000)
+    // }
   }
 }

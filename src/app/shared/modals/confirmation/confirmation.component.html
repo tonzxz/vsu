@@ -7,7 +7,7 @@
 
             <!-- Revert or Publish Modal -->
             <div *ngIf="type =='publish' || type == 'revert'" class="flex flex-col items-center" >
-                <app-lottie-animation class="w-40 h-40" animation="confirmation" [loop]="false"></app-lottie-animation>
+                <app-lottie-animation class="w-40 h-40" animation="yellowWarning" [loop]="false"></app-lottie-animation>
                 <div class="text-center font-medium text-xl"> {{ type == 'publish' ? 'Publish': 'Revert'}} Changes </div>
                 <div  class="text-center font-thin" >Are you sure you want to {{type}} your changes? </div>
             </div>

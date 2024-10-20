@@ -116,6 +116,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     await this.terminalService.addTerminal(this.selectedDivision!);
     this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
     this.API.setLoading(false);
+    this.API.sendFeedback('success', 'New terminal has been added!',5000);
   }
 
   async toggleMaintenance(terminal:Terminal){
@@ -124,6 +125,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     await this.terminalService.updateTerminalStatus(terminal.id,terminal.status == 'available' ? 'maintenance' : 'available');
     this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
     this.API.setLoading(false);
+    this.API.sendFeedback('success', 'Terminal status has been updated!',5000);
   }
   async deleteTerminal(terminal:Terminal){
     this.closeDialog();
@@ -131,6 +133,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     await this.terminalService.deleteTerminal(terminal.id);
     this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
     this.API.setLoading(false);
+    this.API.sendFeedback('success', 'Terminal status has been deleted!',5000);
   }
 
   selectTerminal(terminal:Terminal){

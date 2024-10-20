@@ -1,6 +1,5 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { QueueService } from '../services/queue.service';
 import { KioskService } from '../services/kiosk.service';
 
 export const kioskGuard: CanActivateFn = (route, state) => {

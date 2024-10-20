@@ -88,11 +88,13 @@ export class KioskManagementComponent implements OnInit {
     this.API.setLoading(true);
     await this.kioskService.updateKioskStatus(item.id!,item.status == 'available' ? 'maintenance' : 'available');
     await this.closeDialog(true);
+    this.API.sendFeedback('success', 'Kiosk status has been updated!',5000);
   }
   async deleteKiosk(item:Kiosk){
     this.API.setLoading(true);
     await this.kioskService.deleteKiosk(item.id!);
     await this.closeDialog(true);
+    this.API.sendFeedback('success', 'Kiosk has been deleted!',5000);
   }
 
   selectKiosk(item:Kiosk){
@@ -105,6 +107,13 @@ export class KioskManagementComponent implements OnInit {
     this.modalType = type;
   }
   async closeDialog(shouldRefresh:boolean){
+    if(this.openKioskModal && shouldRefresh){
+      if(this.selectedKiosk){
+        this.API.sendFeedback('success', 'Kiosk has been updated!',5000);
+      }else{
+        this.API.sendFeedback('success', 'New kiosk has been added!',5000);
+      }
+    }
     this.openKioskModal = false;
     this.modalType = undefined;
     if(shouldRefresh){

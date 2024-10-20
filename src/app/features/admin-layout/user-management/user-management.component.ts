@@ -194,7 +194,7 @@ export class UserManagementComponent implements OnInit {
       if (response && response.success) {
         this.users = this.users.filter(u => u.id !== user.id);
         this.filteredUsers = this.filteredUsers.filter(u => u.id !== user.id);
-
+        this.API.sendFeedback('success', 'User has been deleted!',5000);
         console.log('User deleted successfully:', user.fullname);
       } else {
         console.error('Failed to delete user:', response.output);
@@ -219,7 +219,9 @@ export class UserManagementComponent implements OnInit {
       const index = this.users.findIndex(u => u.id === partialUser.id);
       if (index !== -1) {
         this.users[index] = { ...this.users[index], ...partialUser };
+        this.API.sendFeedback('success', 'User has been updated!',5000);
       }
+      
     } else {
       const newUser: User = {
         ...partialUser,
@@ -227,6 +229,7 @@ export class UserManagementComponent implements OnInit {
         is_online: false,
         number: ''
       } as User;
+      this.API.sendFeedback('success', 'New user has been added!',5000);
       this.users.push(newUser);
     }
     this.closeModal();

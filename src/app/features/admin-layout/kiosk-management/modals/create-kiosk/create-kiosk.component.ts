@@ -63,13 +63,7 @@ export class CreateKioskComponent implements OnInit, OnDestroy {
         )
       }
     }catch(e:any){
-      this.errorMessage = e.message;
-      if(this.errorMessageTimeout){
-        clearTimeout(this.errorMessageTimeout)
-      }
-      this.errorMessageTimeout = setTimeout(()=>{
-        this.errorMessage = undefined;
-      },5000)
+      this.API.sendFeedback('error','This code is already in use!',5000);
       return;
     }
     this.onClose.emit(true);

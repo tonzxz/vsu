@@ -12,7 +12,6 @@
         <div class=" grid grid-cols-3 px-3 py-3 gap-3"> 
           <button 
           (click)="selectCounter(i)"
-          [disabled]="terminal.status!='available'"
           *ngFor="let terminal of terminals; let i = index" 
           class="group  {{terminal.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
             <!-- Header -->
@@ -56,9 +55,9 @@
   <div *ngIf="selectedCounter" class="w-full mx-auto">
     <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
       <header class="bg-[#283c1c] text-white p-6 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Registrar Terminal - Counter {{ selectedCounter + 1 }}</h1>
-        <button mat-icon-button (click)="resetCounter()" class="bg-[#3a5728] p-2 rounded-full hover:bg-[#4a6d32] transition-colors focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50" aria-label="Reset Counter">
-          <mat-icon>swap_horiz</mat-icon>
+        <h1 class="text-2xl font-bold">{{division?.name?.replaceAll('Division','')?.trim()}} Terminal - Counter {{ selectedCounter + 1 }}</h1>
+        <button mat-icon-button (click)="openTerminateModal()" class="bg-[#3a5728] p-2 rounded-full hover:bg-[#4a6d32] transition-colors focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50" aria-label="Reset Counter">
+          <mat-icon>power_settings_new</mat-icon>
         </button>
       </header>
 
@@ -194,3 +193,13 @@
     </div>
   </div>
 </div>
+
+<app-confirmation
+*ngIf="terminateModal"
+type="custom"
+(onCancel)="closeTerminateModal()"
+(onConfirm)="resetCounter()"
+title="Terminate your session?"
+description="Are you sure you want to terminate your session?"
+animation="yellowWarning"
+></app-confirmation>

@@ -28,7 +28,7 @@ export class DeskAttendantLayoutComponent {
       this.isLoading=loading;
       this.cdr.detectChanges();
     })
-    this.API.sendFeedback('success',`Hi, ${this.auth.getUser().fullname}`,5000)
+    this.API.sendFeedback('success',`Hi, ${this.auth.getUser().fullname} 👋`,5000)
   }
 
   showUploadProgress(){

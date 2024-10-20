@@ -18,37 +18,42 @@ export class ContentService {
       _division = this.auth.getUser().division_id;
     }
 
+   try{
     const response = await this.API.read({
-        selectors: ['contents.*', 'divisions.name as division'],
-        tables: 'contents, divisions',
-        conditions: `WHERE contents.division_id = '${_division}' AND divisions.id = contents.division_id`,
-      });
+      selectors: ['contents.*', 'divisions.name as division'],
+      tables: 'contents, divisions',
+      conditions: `WHERE contents.division_id = '${_division}' AND divisions.id = contents.division_id`,
+    });
 
-      if(response.success){
-        if(response.output.length > 0){
-          const content = response.output[0];
+    if(response.success){
+      if(response.output.length > 0){
+        const content = response.output[0];
 
-          if(content.video){
-            content.video = this.API.getFileURL(content.video);
-          }
-          if(content.background){
-            content.background = this.API.getFileURL(content.background);
-          }
-          if(content.logo){
-            content.logo = this.API.getFileURL(content.logo);
-          }
-          
-          return content;
-        }else{
-          return null;
+        if(content.video){
+          content.video = this.API.getFileURL(content.video);
         }
+        if(content.background){
+          content.background = this.API.getFileURL(content.background);
+        }
+        if(content.logo){
+          content.logo = this.API.getFileURL(content.logo);
+        }
+        
+        return content;
       }else{
-        throw new Error('Error getting content.');
+        return null;
       }
+    }else{
+      throw new Error('Error getting content.');
+    }
+  }catch(e:any){
+     throw new Error('Something went wrong.');
+   }
   }
 
   async getContentSettings(){
-    const response = await this.API.read({
+    try{
+      const response = await this.API.read({
         selectors: ['contents.*', 'divisions.name as division'],
         tables: 'contents, divisions',
         conditions: `WHERE contents.division_id = divisions.id`,
@@ -73,6 +78,9 @@ export class ContentService {
       }else{
         throw new Error('Error getting content.');
       }
+    }catch(e:any){
+      throw new Error('Something went wrong');
+    }
   }
 
   // async getDivisions(){

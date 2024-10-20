@@ -25,24 +25,28 @@ export class DivisionService {
   }
 
   async getDivisions():Promise<Division[]>{
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'divisions',
-      conditions: `WHERE id != '${this.adminID}'`,
-    });
-
-    if(response.success){
-      this.divisions = response.output as Division[];
-      if(this.divisions.length>0){
-        this.selectedDivision = this.divisions[0];
+    try{
+      const response = await this.API.read({
+        selectors: ['*'],
+        tables: 'divisions',
+        conditions: `WHERE id != '${this.adminID}'`,
+      });
+  
+      if(response.success){
+        this.divisions = response.output as Division[];
+        if(this.divisions.length>0){
+          this.selectedDivision = this.divisions[0];
+        }
+        return this.divisions;
+      }else{
+        throw new Error('Error getting divisions.');
       }
-      return this.divisions;
-    }else{
-      throw new Error('Error getting divisions.');
+    }catch(e:any){
+      throw new Error('Something went wrong.');
     }
   }
 
-  async getDivision(id?:string):Promise<Division|null>{
+  async getDivision(id?:string):Promise<Division|undefined>{
     if(this.isSuperAdmin){
       if(this.selectedDivision){
         return this.selectedDivision;
@@ -53,17 +57,22 @@ export class DivisionService {
         return this.selectedDivision;
       }
     }
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'divisions',
-      conditions: `WHERE id = '${ id ? id: this.auth.getUser().division_id}' `,
-    });
-
-    if(response.success){
-      if(response.output.length <= 0) return null;
-      return response.output[0];
-    }else{
-      throw new Error('Error getting divisions.');
+    try{
+      const response = await this.API.read({
+        selectors: ['*'],
+        tables: 'divisions',
+        conditions: `WHERE id = '${ id ? id: this.auth.getUser().division_id}' `,
+      });
+      if(response.success){
+        if(response.output.length <= 0) return undefined;
+        return response.output[0];
+      }else{
+        throw new Error();
+      }
+    }catch(e:any){
+      throw new Error('Something went wrong');
     }
+
+   
   }
 }

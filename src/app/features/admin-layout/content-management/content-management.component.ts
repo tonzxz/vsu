@@ -312,10 +312,10 @@ export class ContentManagementComponent implements OnInit {
       }
       this.API.setLoading(false);
       this.contentLoading = false;
-    }catch(e){
+    }catch(e:any){
       this.API.setLoading(false);
       this.contentLoading = false;
-      throw new Error(e as any);
+      this.API.sendFeedback('error',e.message,5000)
     }
   }
 
@@ -397,33 +397,36 @@ export class ContentManagementComponent implements OnInit {
     if(this.selectedDivision == undefined) return;
     this.modalType = undefined;
     this.API.setLoading(true);
-    await this.contentService.updateContentSettings({
-      division_id: this.selectedDivision!,
-      selectedFiles: {
-        logo: this.files.logo,
-        video: this.files.video,
-        background:this.files.background
-      },
-      colors: {...this.colors},
-      widgets: {
-        time: this.toggles.time,
-        weather: this.toggles.weather,
-        currency: this.toggles.currency
-      },
-      videoOption: this.toggles.videoURL ? 'url': 'file',
-      videoUrl: this.inputFields.youtubeURL,
-      background_on: this.toggles.background,
-      announcement_on:this.toggles.announcements,
-      announcements: this.toggles.announcements ?  this.inputFields.announcements : undefined,
-
-    });
-    await this.loadContents();
-    this.API.socketSend({
-      'event': 'content-changes'
-    })
-    this.API.setLoading(false);
-    // if(this.modalType == 'publish'){
+    try{
+      await this.contentService.updateContentSettings({
+        division_id: this.selectedDivision!,
+        selectedFiles: {
+          logo: this.files.logo,
+          video: this.files.video,
+          background:this.files.background
+        },
+        colors: {...this.colors},
+        widgets: {
+          time: this.toggles.time,
+          weather: this.toggles.weather,
+          currency: this.toggles.currency
+        },
+        videoOption: this.toggles.videoURL ? 'url': 'file',
+        videoUrl: this.inputFields.youtubeURL,
+        background_on: this.toggles.background,
+        announcement_on:this.toggles.announcements,
+        announcements: this.toggles.announcements ?  this.inputFields.announcements : undefined,
+  
+      });
+      await this.loadContents();
+      this.API.socketSend({
+        'event': 'content-changes'
+      })
+      this.API.setLoading(false);
       this.API.sendFeedback('success','Content has been updated successfully!', 5000)
-    // }
+    }catch(e:any){
+      this.API.sendFeedback('error','Something went wrong.', 5000)
+    }
+    
   }
 }

@@ -80,7 +80,7 @@ export class SidebarComponent implements OnInit {
   }
 
   logout(){
-    this.terminalService.terminateRefresh();
+    this.terminalService.terminateTerminalSession();
     this.auth.logout();
   }
 

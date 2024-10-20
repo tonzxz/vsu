@@ -192,7 +192,7 @@ async deleteTerminal(id:string){
     },1000)
   }
 
-  async terminateRefresh(){
+  async terminateTerminalSession(){
     const lastSession = await this.getActiveSession();
     if(lastSession){
       const closeResponse = await this.API.update({

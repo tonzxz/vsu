@@ -4,6 +4,7 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { UswagonAuthModule, UswagonAuthService } from 'uswagon-auth';
 import { ConfirmationComponent } from '../modals/confirmation/confirmation.component';
+import { TerminalService } from '../../services/terminal.service';
 
 interface MenuItem {
   title: string;
@@ -30,6 +31,8 @@ export class SidebarComponent implements OnInit {
   private router = inject(Router);
 
   private auth = inject(UswagonAuthService);
+
+  private terminalService = inject(TerminalService);
   
   menuItems: MenuItem[] = []
 
@@ -77,6 +80,7 @@ export class SidebarComponent implements OnInit {
   }
 
   logout(){
+    this.terminalService.terminateRefresh();
     this.auth.logout();
   }
 

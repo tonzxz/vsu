@@ -6,11 +6,14 @@ import { LottieAnimationComponent } from '../../../shared/components/lottie-anim
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { QueueService } from '../../../services/queue.service';
 import { Subscription } from 'rxjs';
+import { TerminalService } from '../../../services/terminal.service';
 
 interface Counter {
-  label: string;
-  ticketNumber: string;
-  personName: string;
+  id:string;
+  status:'online'|'available'|'maintenance';
+  number: number;
+  ticketNumber?: string;
+  personName?: string;
 }
 
 interface UpNextItem {
@@ -55,6 +58,7 @@ interface Division{
 export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
  
   // VARIABLES
+  
  
   @Input() division?:Division;
  
@@ -69,13 +73,13 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
   // Mock data for queue
   @Input() counters: Counter[] = [
-    { label: '1', ticketNumber: 'P-32', personName: 'Domeng Valdez' },
-    { label: '2', ticketNumber: 'R-30', personName: 'Burnok Binawian' },
-    { label: '3', ticketNumber: 'R-31', personName: 'John Doe' },
-    { label: '4', ticketNumber: 'P-29', personName: 'Jane Doe' },
-    { label: '5', ticketNumber: 'R-40', personName: 'Alice Johnson' },
-    { label: '6', ticketNumber: 'P-21', personName: 'Bob Brown' },
-    { label: '7', ticketNumber: 'R-20', personName: 'Charlie White' },
+    { number: 1, ticketNumber: 'P-32', personName: 'Domeng Valdez',id:'',status:'online' },
+    { number : 1, ticketNumber: 'P-01', personName: 'Domeng Valdez',id:'',status:'online' },
+    { number : 1, ticketNumber: 'P-02', personName: 'Domeng Valdez',id:'',status:'online' },
+    { number : 1, ticketNumber: 'P-04', personName: 'Domeng Valdez',id:'',status:'online' },
+    { number : 1, ticketNumber: 'P-05', personName: 'Domeng Valdez',id:'',status:'online' },
+    { number : 1, ticketNumber: 'P-07', personName: 'Domeng Valdez',id:'',status:'online' },
+    { number : 1, ticketNumber: 'P-10', personName: 'Domeng Valdez',id:'',status:'online' },
   ];
 
 
@@ -96,6 +100,12 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   @Input() videoUrl?: string; 
   @Input() disableAPI:boolean = false;
   @Input() mute:boolean = false;
+
+
+  dataLoaded:boolean = false;
+  terminalInterval:any;
+
+
   currencySwitchTimer:number = 12000;
   weatherSwitchTimer:number = 12000;
   
@@ -148,6 +158,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   
   constructor(
     private queueService:QueueService,
+    private terminalService:TerminalService,
     private thirdPartyService: ThirdPartyService,
     private sanitizer: DomSanitizer
   ) {}
@@ -392,6 +403,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
     this.queueService.setDivision(this.division!.id);
     this.queueService.listenToQueue();
+    
     this.subscription = this.queueService.queue$.subscribe((queueItems: any[]) => {
       this.upNextItems = queueItems.reduce((prev: UpNextItem[], item: any) => {
         return [...prev, {
@@ -403,11 +415,51 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
       }, []);
       
     });
-    
-    await this.queueService.getTodayQueues(this.division!.id);
-    this.loading = false;
-  }
 
+    await this.queueService.getTodayQueues(this.division!.id);
+
+    this.terminalInterval = setInterval(async ()=>{
+      let existingTerminals:string[] = []
+      const updatedTerminals = await this.terminalService.getAllTerminals(this.division!.id);
+      // Update existing terminals
+      updatedTerminals.forEach((updatedTerminal:any) => {
+        existingTerminals.push(updatedTerminal.id);
+        const existingTerminal = this.counters.find(t => t.id === updatedTerminal.id);
+        if (existingTerminal) {
+          // Update properties of the existing terminal
+          Object.assign(existingTerminal, {
+            id: updatedTerminal.id,
+            status: updatedTerminal.status,
+            ticketNumber: updatedTerminal.ticket,
+            personName: updatedTerminal.fullname,
+            number:updatedTerminal.number
+          });
+        } else {
+          // Optionally handle new terminals
+          this.counters.push({
+            id: updatedTerminal.id,
+            status: updatedTerminal.status,
+            ticketNumber: updatedTerminal.ticket,
+            personName: updatedTerminal.fullname,
+            number:updatedTerminal.number
+          });
+        }
+      });
+      this.counters = this.counters.filter((counter)=>existingTerminals.includes(counter.id));
+      if(!this.dataLoaded){
+        this.loading = false;
+        this.dataLoaded = true;
+      }
+    },1000)   
+    
+
+    
+    
+  }
+  
+  countOnlineCounters(){
+    return this.counters.filter(counter=>counter.status =='online').length;
+  }
 
 
 }

@@ -94,11 +94,11 @@
       <!-- Screen Preview -->
       <div class="bg-white p-6 rounded-xl shadow-sm">
         <h3 class="text-xl font-bold text-neutral-800 mb-4">Screen Preview</h3>
-        <div *ngIf="divisions.length" class="flex overflow-hidden mb-4">
+        <div *ngIf="divisions.length" class="flex overflow-hidden mb-4 rounded-e-md rounded-s-md">
           <button
             *ngFor="let division of divisions"
             (click)="changeContent(division.id)"
-            class="px-4 py-2 rounded-t-md font-medium text-white flex-1 text-center transition-colors duration-200"
+            class="px-4 py-2 font-medium text-white flex-1 text-center transition-colors duration-200"
             [ngClass]="{
               'bg-green-500': division.id === selectedDivision,
               'bg-green-600 hover:bg-green-500': division.id !== selectedDivision
@@ -106,7 +106,8 @@
             {{ division.name }}
           </button>
         </div>
-        <div class="relative w-full h-72 rounded-lg overflow-hidden bg-black flex items-center justify-center">
+        <div class="relative w-full h-72 rounded-lg overflow-hidden border-2 border-solid border-black/20 flex items-center justify-center">
+          <div *ngIf="!content" class="w-full h-full bg-black flex font-thin justify-center items-center text-white">Division's display has not yet been configured.</div>
           <app-queue-display
             *ngIf="content"
             [showAnnouncement]="content.announcement_on === 't'"

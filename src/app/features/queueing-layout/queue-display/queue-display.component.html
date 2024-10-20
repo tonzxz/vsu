@@ -1,4 +1,4 @@
-<div *ngIf="!loading && ((upNextItems.length <= 0 && counters.length <= 0)||counters.length<=0)" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
+<div *ngIf="!loading && ((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0)" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
   <iframe
   #iframePlayer
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
@@ -14,7 +14,6 @@
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
   autoplay
   loop
-  [muted]="true"
   #videoPlayer width="100%" height="100%" class="w-full h-full video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
     <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
     Your browser does not support the video tag.
@@ -28,7 +27,7 @@
 </div>
 
 <!-- Main Container -->
-<div *ngIf="!loading && !((upNextItems.length <= 0 && counters.length <= 0)||counters.length<=0)" class="main-container flex flex-col w-full h-full relative aspect-[3840/2180] z-0"
+<div *ngIf="!loading && !((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0)" class="main-container flex flex-col w-full h-full relative aspect-[3840/2180] z-0"
   [ngStyle]="{'backgroundColor': colors.primary_bg}"
 > 
   <!-- Layout Container -->
@@ -61,6 +60,7 @@
             <!-- Counter -->
             <ng-container *ngFor="let item of counters;let i = index" >
               <div 
+              *ngIf="item.status == 'online'"
               [ngStyle]="{
                 'border-color': colors.primary_text + '80',
               }"
@@ -77,10 +77,10 @@
                 <div 
                 [ngStyle]="{
                   'backgroundColor': colors.secondary_bg,
-                  'color': colors.secondary_text
+                  'color': item.ticketNumber ? colors.secondary_text : colors.tertiary_bg + '80',
                 }"
                 class="serving-item-content w-full flex-1 flex justify-center px-3 items-center min-[3500px]:px-10 ">
-                  <span class="serving-item-content-text tracking-wide text-lg 2xl:text-xl font-medium text-shadow min-[3500px]:text-8xl min-[3500px]:font-semibold">{{item.ticketNumber}}</span>
+                  <span class="serving-item-content-text tracking-wide text-lg 2xl:text-xl font-medium text-shadow min-[3500px]:text-8xl min-[3500px]:font-semibold">{{item.ticketNumber ?? 'VACANT'}}</span>
                   <!-- <span class="tracking-wide text-xs 2xl:text-sm text-shadow min-[3500px]:text-5xl min-[3500px]:font-medium">{{item.personName}}</span> -->
                 </div>
               </div>
@@ -97,7 +97,7 @@
         <div  class="widget-row flex flex-[2_2_0%] gap-3 w-full min-[3500px]:gap-8 relative">
           <!-- Video -->
           <div class="video-container flex-[5_5_0%] flex items-center">
-            <div class="w-full h-full video animate-pop object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl relative overflow-hidden">
+            <div class="w-full h-full video animate-pop object-cover rounded-lg shadow-lg  border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl relative overflow-hidden">
               <iframe
               #iframePlayer
               [ngStyle]="{'border-color': colors.primary_text + '80',}"

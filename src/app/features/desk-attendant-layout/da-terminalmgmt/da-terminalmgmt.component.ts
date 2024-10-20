@@ -15,8 +15,7 @@ interface Terminal{
   division_id:string;
   number:string;
   status:string;  
-  start_time?:string;
-  end_time?:string;
+  last_active?:string;
   attendant?:string;
 }
 
@@ -95,7 +94,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   statusMap:any = {
     'available' : 'bg-orange-500',
     'maintenance' : 'bg-red-500',
-    'active' : 'bg-green-500',
+    'online' : 'bg-green-500',
   }
 
 
@@ -115,22 +114,29 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   async loadContent(){
     this.API.setLoading(true);
-    this.terminals = (await this.terminalService.getAllTerminals(this.auth.getUser().division_id));
+    this.statusInterval = setInterval(async ()=>{
+      const exisitingTerminals:string[] = [];
+      const updatedTerminals = await this.terminalService.getAllTerminals(this.auth.getUser().division_id);
+      // Update existing terminals
+      updatedTerminals.forEach((updatedTerminal:any) => {
+        exisitingTerminals.push(updatedTerminal.id);
+        const existingTerminal = this.terminals.find(t => t.id === updatedTerminal.id);
+        if (existingTerminal) {
+          Object.assign(existingTerminal, updatedTerminal);
+        } else {
+          this.terminals.push(updatedTerminal);
+        }
+      });
+      this.terminals = this.terminals.filter(terminal=> exisitingTerminals.includes(terminal.id))
+    },1000)   
     const lastSession = await this.terminalService.getActiveSession()
     if(lastSession){
       this.selectedCounter = this.terminals.findIndex(terminal=>terminal.id == lastSession.terminal_id);
-      this.refreshTerminalStatus();
-      if(this.statusInterval){
-        clearInterval(this.statusInterval);
-      }
-      this.statusInterval = setInterval(()=>this.refreshTerminalStatus(), 1000);
+      this.terminalService.refreshTerminalStatus(lastSession.id);
     }
     this.API.setLoading(false);    
   }
 
-  refreshTerminalStatus(){
-    this.terminalService.updateTerminalSession(this.terminals[this.selectedCounter!].id);
-  }
 
   /**
    * Selects a counter and initializes related states.
@@ -139,7 +145,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   async selectCounter(counter: number) {
     this.selectedCounter = counter;
     this.API.setLoading(true);
-    await this.terminalService.startTerminalSession(this.terminals[counter].id);
+    const session_id = await this.terminalService.startTerminalSession(this.terminals[counter].id);
+    this.terminalService.refreshTerminalStatus(session_id);
     this.API.setLoading(false);
   }
 

@@ -110,7 +110,7 @@ async deleteTerminal(id:string){
     const lastSession = await this.getActiveSession();
     if(lastSession){
       const closeResponse = await this.API.update({
-        tables: 'terminals',
+        tables: 'terminal_sessions',
         values:{
           status: 'closed'
         }  ,
@@ -196,13 +196,13 @@ async deleteTerminal(id:string){
     const lastSession = await this.getActiveSession();
     if(lastSession){
       const closeResponse = await this.API.update({
-        tables: 'terminals',
+        tables: 'terminal_sessions',
         values:{
           status: 'closed'
         }  ,
         conditions: `WHERE id = '${lastSession.id}'`
       });
-    
+      // alert(lastSession.id);
       if(!closeResponse.success){
         throw new Error('Unable to update terminal session');
       }

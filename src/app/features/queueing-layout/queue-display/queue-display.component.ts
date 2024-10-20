@@ -430,7 +430,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
       
     });
 
-    await this.queueService.getTodayQueues(this.division!.id);
+    await this.queueService.getTodayQueues();
 
     this.terminalInterval = setInterval(async ()=>{
       let existingTerminals:string[] = []

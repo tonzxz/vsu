@@ -11,6 +11,7 @@ import { ContentService } from '../../../services/content.service';
 import { DivisionService } from '../../../services/division.service';
 import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
 import { Subscription } from 'rxjs';
+import { QueueService } from '../../../services/queue.service';
 
 
 interface Terminal{
@@ -29,9 +30,18 @@ interface Division{
 
 
 interface Ticket {
+  id?:string;
+  division_id?:string;
   number: number;
-  datetime: string;
-  type: 'Priority' | 'Regular';
+  status?:string;
+  timestamp?:string;
+  type: 'priority' | 'regular';
+  fullname?:string;
+  department_id?:string;
+  kiosk_id?:string;
+  gender?:string;
+  student_id?:string;
+  // timestamp: string;
 }
 
 interface ClientDetails {
@@ -71,18 +81,18 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   terminateModal:boolean = false;
 
   tickets: Ticket[] = [
-    { number: 112, datetime: '9/29/2024, 9:13:24 PM', type: 'Priority' },
-    { number: 113, datetime: '9/29/2024, 9:15:10 PM', type: 'Priority' },
-    { number: 114, datetime: '9/29/2024, 9:20:45 PM', type: 'Regular' },
-    { number: 115, datetime: '9/29/2024, 9:25:30 PM', type: 'Regular' },
-    { number: 116, datetime: '9/29/2024, 9:30:15 PM', type: 'Priority' },
-    { number: 117, datetime: '9/29/2024, 9:35:00 PM', type: 'Priority' },
-    { number: 118, datetime: '9/29/2024, 9:40:45 PM', type: 'Regular' },
-    { number: 119, datetime: '9/29/2024, 9:45:30 PM', type: 'Regular' },
-    { number: 120, datetime: '9/29/2024, 9:50:15 PM', type: 'Regular' },
-    { number: 121, datetime: '9/29/2024, 9:55:00 PM', type: 'Regular' },
-    { number: 122, datetime: '9/29/2024, 10:00:45 PM', type: 'Regular' },
-    { number: 123, datetime: '9/29/2024, 10:05:30 PM', type: 'Regular' },
+    { number: 112, timestamp: '9/29/2024, 9:13:24 PM', type: 'priority' },
+    { number: 113, timestamp: '9/29/2024, 9:15:10 PM', type: 'priority' },
+    { number: 114, timestamp: '9/29/2024, 9:20:45 PM', type: 'regular' },
+    { number: 115, timestamp: '9/29/2024, 9:25:30 PM', type: 'regular' },
+    { number: 116, timestamp: '9/29/2024, 9:30:15 PM', type: 'priority' },
+    { number: 117, timestamp: '9/29/2024, 9:35:00 PM', type: 'priority' },
+    { number: 118, timestamp: '9/29/2024, 9:40:45 PM', type: 'regular' },
+    { number: 119, timestamp: '9/29/2024, 9:45:30 PM', type: 'regular' },
+    { number: 120, timestamp: '9/29/2024, 9:50:15 PM', type: 'regular' },
+    { number: 121, timestamp: '9/29/2024, 9:55:00 PM', type: 'regular' },
+    { number: 122, timestamp: '9/29/2024, 10:00:45 PM', type: 'regular' },
+    { number: 123, timestamp: '9/29/2024, 10:05:30 PM', type: 'regular' },
   ];
 
   currentClientDetails: ClientDetails | null = null;
@@ -98,6 +108,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   private timerInterval: any;
   private dateInterval: any;
   private statusInterval:any;
+  private subscription?:Subscription;
 
   lastSession?:any;
 
@@ -112,6 +123,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   constructor( 
     private dvisionService:DivisionService,
     private API:UswagonCoreService,
+    private queueService:QueueService,
     private terminalService:TerminalService) {}
 
   ngOnInit(): void {
@@ -122,6 +134,9 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearIntervals();
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   async loadContent(){
@@ -162,6 +177,13 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       }
     },1000)   
 
+
+      
+    this.subscription = this.queueService.queue$.subscribe((queueItems: Ticket[]) => {
+      this.tickets = queueItems;
+    });
+
+    await this.queueService.getTodayQueues();
 
      
   }
@@ -231,7 +253,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         // Set current client details
         this.currentClientDetails = {
           name: 'Jhielo A. Gonzales',
-          date: nextTicket.datetime,
+          date: nextTicket.timestamp!,
           services: [
             {
               name: 'Request Documents',
@@ -292,8 +314,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if (this.currentClientDetails) {
       const currentTicket: Ticket = {
         number: this.currentNumber,
-        datetime: new Date().toLocaleString(),
-        type: 'Regular',
+        timestamp: new Date().toLocaleString(),
+        type: 'regular',
       };
       this.tickets.unshift(currentTicket);
       this.nextClient();
@@ -307,8 +329,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if (this.currentClientDetails) {
       const currentTicket: Ticket = {
         number: this.currentNumber,
-        datetime: new Date().toLocaleString(),
-        type: 'Regular',
+        timestamp: new Date().toLocaleString(),
+        type: 'regular',
       };
       this.tickets.push(currentTicket);
       this.nextClient();

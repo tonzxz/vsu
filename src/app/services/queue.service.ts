@@ -48,10 +48,10 @@ export class QueueService  {
         this.lastPriorityQueueNumber = message.lastPriorityQueueNumber as number;
       }
       if(message.event =='queue-attend'){
-        this.getTodayQueues(this.divisionService.selectedDivision!.id);
+        this.getTodayQueues();
       }
       if(message.event =='update-queue'){
-        this.getTodayQueues(this.divisionService.selectedDivision!.id);
+        this.getTodayQueues();
       }        
     });
   }
@@ -230,11 +230,11 @@ export class QueueService  {
     }
   }
 
-  async getTodayQueues(division:string){
+  async getTodayQueues(){
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE division_id = '${division}' AND timestamp::date = CURRENT_DATE`
+      conditions: `WHERE division_id = '${this.divisionService.selectedDivision}' AND timestamp::date = CURRENT_DATE`
     });
     if(response.success){
       const queue = response.output as Queue[];

@@ -261,7 +261,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.divisions = this.divisionService.divisions;
       this.contents = await this.contentService.getContentSettings();
       if (this.contents.length > 0) {
-        this.content = this.contents.find(content => content.division_id === this.divisions[0].id);
+        this.content = this.contents.find(content => content.division_id ===this.selectedDivision);
       }
       
     } else {

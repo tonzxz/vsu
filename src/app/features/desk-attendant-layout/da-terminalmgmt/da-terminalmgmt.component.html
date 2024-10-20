@@ -157,8 +157,8 @@
                       <tbody>
                         <tr *ngFor="let ticket of tickets; let last = last" [ngClass]="{'border-b border-[#dfe9d8]': !last}">
                           <td class="p-3 text-[#283c1c]">{{ ticket.number }}</td>
-                          <td class="p-3 text-[#283c1c]">{{ ticket.datetime }}</td>
-                          <td class="p-3" [ngClass]="{ 'text-[#8b2e2e] font-semibold': ticket.type === 'Priority', 'text-[#4a6d32] font-semibold': ticket.type === 'Regular' }">
+                          <td class="p-3 text-[#283c1c]">{{ ticket.timestamp }}</td>
+                          <td class="p-3" [ngClass]="{ 'text-[#8b2e2e] font-semibold': ticket.type === 'priority', 'text-[#4a6d32] font-semibold': ticket.type === 'regular' }">
                             {{ ticket.type }}
                           </td>
                         </tr>

@@ -49,7 +49,7 @@ export class KioskFormsComponent implements OnInit {
   );
 
   if(this.kioskService.kiosk != undefined){
-    this.queueService.getTodayQueues(this.kioskService.kiosk?.division_id);
+    this.queueService.getTodayQueues();
   }else{
     throw new Error('Invalid method');
   }

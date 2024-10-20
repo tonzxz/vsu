@@ -11,7 +11,7 @@
         <h2 class="text-3xl font-semibold mb-8 text-center text-[#283c1c]">Available Counters</h2>
         <div class=" grid grid-cols-3 px-3 py-3 gap-3"> 
           <button 
-          (click)="selectCounter(i+1)"
+          (click)="selectCounter(i)"
           [disabled]="terminal.status!='available'"
           *ngFor="let terminal of terminals; let i = index" 
           class="group  {{terminal.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">

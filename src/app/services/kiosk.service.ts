@@ -9,6 +9,7 @@ interface Kiosk{
   division_id:string;
   division:string;
   number:number;
+  status:string;
   last_online:string;
 }
 
@@ -33,19 +34,22 @@ export class KioskService {
       tables: 'kiosks, divisions',
       conditions: `
         WHERE kiosks.division_id = divisions.id 
-        AND kiosks.code = '${code}'  AND status = 'available'
+        AND kiosks.code = '${code}'  
       `
     });
     if(response.success){
       if(response.output.length > 0){
         this.kiosk = response.output[0];
+        if(this.kiosk!.status == 'maintenance'){
+          throw new Error('Kiosk is in maintenance.');
+        }
         localStorage.setItem('kiosk', JSON.stringify(this.kiosk));
         return response.output[0];
       }else{
         throw new Error('Invalid kiosk code.');
       }
     }else{
-      throw new Error(response.output);
+      throw new Error('Something went wrong.');
     }
   }
 

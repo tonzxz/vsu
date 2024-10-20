@@ -55,6 +55,19 @@ export class KioskService {
 
 
  async addKiosk(code:string){
+  const checkResponse = await this.API.read({
+    selectors:['*'],
+    tables:'kiosks',
+    conditions:`WHERE code = '${code}'`
+  })
+
+  if(checkResponse.success){
+    if(checkResponse.output.length>0){
+      throw new Error('Code is already in use');
+    }
+  }else{
+    throw new Error('Something went wrong');
+  }
    const id = this.API.createUniqueID32();
    const currentDivision = await this.divisionService.getDivision();
    const response = await this.API.create({
@@ -68,8 +81,7 @@ export class KioskService {
    });
  
    if(!response.success){
-    alert(response.output);
-     throw new Error('Unable to add kiosks');
+     throw new Error('Something went wrong');
    }
  }
  
@@ -88,6 +100,21 @@ export class KioskService {
  }
 
  async updateKiosk(id:string, code:string){
+  const checkResponse = await this.API.read({
+    selectors:['*'],
+    tables:'kiosks',
+    conditions:`WHERE code = '${code}'`
+  })
+
+  if(checkResponse.success){
+    if(checkResponse.output.length>0){
+      throw new Error('Code is already in use');
+    }
+  }else{
+    throw new Error('Something went wrong');
+  }
+  
+
   const response = await this.API.update({
     tables: 'kiosks',
     values:{
@@ -97,7 +124,7 @@ export class KioskService {
   });
 
   if(!response.success){
-    throw new Error('Unable to add terminal');
+    throw new Error('Something went wrong.');
   }
 }
  async deleteKiosk(id:string){

@@ -17,7 +17,7 @@
     <div *ngIf="isSuperAdmin" class="flex  2xl:flex-col gap-3 2xl:flex-[1_1_0%]">
       <!-- Item -->
       <button 
-      (click)="selectDivision(division.id)"
+      (click)="selectDivision(division)"
       class=" {{selectedDivision == division.id ? 'bg-green-900 text-white':'bg-white'}}  tracking-wide h-12 rounded-lg shadow-md hover:bg-green-900 hover:text-white cursor-pointer flex items-center justify-between px-4 font-medium" 
       *ngFor="let division of divisions">
         {{division.name.toUpperCase()}} <span  class="material-icons hidden 2xl:block"> keyboard_arrow_right </span>

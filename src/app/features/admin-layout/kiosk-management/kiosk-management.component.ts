@@ -52,10 +52,11 @@ export class KioskManagementComponent implements OnInit {
     this.API.setLoading(false);    
   }
 
-  async selectDivision(id:string){
-    this.selectedDivision = id;
+  async selectDivision(division:Division){
+    this.selectedDivision = division.id;
+    this.divisionService.setDivision(division)
     this.API.setLoading(true);
-    this.kiosks = (await this.kioskService.getAllKiosks(id));
+    this.kiosks = (await this.kioskService.getAllKiosks(division.id));
     this.API.setLoading(false);
   }
 

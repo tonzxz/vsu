@@ -70,6 +70,8 @@ export class ContentManagementComponent implements OnInit {
 
   isSuperAdmin:boolean = this.auth.getUser().role == 'superadmin';
 
+  showEditSection:boolean = true;
+
   toggles:ContentToggles= {
     announcements:false,
     time:false,
@@ -197,12 +199,6 @@ export class ContentManagementComponent implements OnInit {
     }
   }
 
-
-
-
-
-
-
   async loadContents(){
     this.contentLoading = true;
     this.API.setLoading(true);
@@ -323,6 +319,10 @@ export class ContentManagementComponent implements OnInit {
   
   // UI Functions
 
+  toggleEditor(){
+    this.showEditSection = !this.showEditSection;
+  }
+
   toggleCollapse(key:'uploads'|'widgets'|'colors'|'announcements'){
     if(this.collapsables[key] == true) return;
     this.collapsables[key] = !this.collapsables[key];
@@ -370,6 +370,7 @@ export class ContentManagementComponent implements OnInit {
         this.publishChanges();
       }else{
         this.revertChanges();
+        this.API.sendFeedback('success','Changes has been reverted successfully.',5000);
       }
   }
 
@@ -379,7 +380,6 @@ export class ContentManagementComponent implements OnInit {
     this.inputFields = {...this.previousSettings!.inputFields};
     this.toggles = {...this.previousSettings!.toggles};
     this.modalType = undefined;
-    this.API.sendFeedback('success','Changes has been reverted successfully.',5000);
   }
   private isValidYouTubeUrl(url: string): boolean {
     const regex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;

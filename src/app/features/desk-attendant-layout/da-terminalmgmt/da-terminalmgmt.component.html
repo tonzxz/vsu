@@ -1,14 +1,13 @@
-<div class="min-h-screen bg-white p-6">
+
   <!-- Counter Selection Screen -->
   <div *ngIf="!selectedCounter" class="max-w-full mx-auto">
     <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
       <header class="bg-[#283c1c] text-white p-8">
-        <h1 class="text-4xl font-bold text-center">Registrar Terminals</h1>
+        <h1 class="text-4xl font-bold text-center">{{division?.name?.replaceAll('Division','')?.trim()}} Terminals</h1>
         <p class="text-center mt-2 text-[#a3c089]">Please select a counter to proceed</p>
       </header>
 
       <main class="p-8">
-        <h2 class="text-3xl font-semibold mb-8 text-center text-[#283c1c]">Available Counters</h2>
         <div class=" grid grid-cols-3 px-3 py-3 gap-3"> 
           <button 
           (click)="selectCounter(i)"
@@ -192,7 +191,6 @@
       </main>
     </div>
   </div>
-</div>
 
 <app-confirmation
 *ngIf="terminateModal"

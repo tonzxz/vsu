@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
+import { DivisionService } from './division.service';
 
 
 interface Kiosk{
@@ -16,7 +17,9 @@ interface Kiosk{
 })
 export class KioskService {
 
-  constructor(private API:UswagonCoreService, private auth:UswagonAuthService) { }
+  constructor(
+    private divisionService: DivisionService,
+    private API:UswagonCoreService, private auth:UswagonAuthService) { }
 
   // KIOSK specific
 
@@ -47,14 +50,15 @@ export class KioskService {
   }
 
 
- async addKiosk(division_id:string){
+ async addKiosk(code:string){
    const id = this.API.createUniqueID32();
+   const currentDivision = await this.divisionService.getDivision();
    const response = await this.API.create({
      tables: 'kiosks',
      values:{
        id:id,
-       division_id:division_id,
-       code:'sometest',
+       division_id: currentDivision!.id,
+       code:code,
        status:'available'
      }  
    });

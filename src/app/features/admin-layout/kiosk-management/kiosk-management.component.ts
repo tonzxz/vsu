@@ -7,28 +7,17 @@ import { UswagonAuthService } from 'uswagon-auth';
 import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
 import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
 import { KioskService } from '../../../services/kiosk.service';
+import { CreateKioskComponent } from './modals/create-kiosk/create-kiosk.component';
+import { DivisionService } from '../../../services/division.service';
+import { Division, Kiosk } from './types/kiosks.types';
 
-
-interface Kiosk{
-  id:string;
-  division_id:string;
-  number:string;
-  status:string;  
-  last_online?:string;  
-  code:string;
-}
-
-interface Division{
-  id:string;
-  name:string;
-}
 
 @Component({
   selector: 'app-a-kiosk-management',
   templateUrl: './kiosk-management.component.html',
   styleUrls: ['./kiosk-management.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, LottieAnimationComponent, ConfirmationComponent]
+  imports: [CommonModule, FormsModule, LottieAnimationComponent, ConfirmationComponent,CreateKioskComponent]
 })
 export class KioskManagementComponent implements OnInit {
 
@@ -37,15 +26,17 @@ export class KioskManagementComponent implements OnInit {
   selectedDivision?:string;
 
   kiosks: Kiosk[]=[];
-
-
-
   isSuperAdmin:boolean = this.auth.accountLoggedIn() == 'superadmin';
 
   selectedKiosk?:Kiosk;
 
+  modalType?:'maintenance'|'delete';
+
+  openKioskModal:boolean = false;
+
   // Injecting ChangeDetectorRef to trigger manual change detection
-  constructor(private cdr: ChangeDetectorRef, 
+  constructor(
+    private divisionService:DivisionService,
     private auth:UswagonAuthService,private API:UswagonCoreService,
     private kioskService:KioskService, private contentService:ContentService) {}
   ngOnInit(): void {
@@ -54,12 +45,9 @@ export class KioskManagementComponent implements OnInit {
 
   async loadContent(){
     this.API.setLoading(true);
-    this.divisions =(await this.contentService.getDivisions()) as Division[];
-    if(this.isSuperAdmin){
-      this.selectedDivision = this.divisions[0].id;
-    }else{
-      this.selectedDivision = this.auth.getUser().division_id;
-    }
+    this.selectedDivision =(await this.divisionService.getDivision())?.id;
+    this.divisions =(this.divisionService.divisions) as Division[];
+
     this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
     this.API.setLoading(false);    
   }
@@ -74,7 +62,7 @@ export class KioskManagementComponent implements OnInit {
   statusMap:any = {
     'available' : 'bg-orange-500',
     'maintenance' : 'bg-red-500',
-    'active' : 'bg-green-500',
+    'online' : 'bg-green-500',
   }
 
   capitalizeFirstLetters(input: string): string {
@@ -85,39 +73,44 @@ export class KioskManagementComponent implements OnInit {
   }
   
 
-  async addKiosk(){
-    this.API.setLoading(true);
-    await this.kioskService.addKiosk(this.selectedDivision!);
-    this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
-    this.API.setLoading(false);
+  addKiosk(){
+    this.selectedKiosk = undefined;
+    this.openKioskModal = true;
+  }
+
+  updateKiosk(kiosk:Kiosk){
+    this.selectedKiosk = kiosk;
+    this.openKioskModal = true;
   }
 
   async toggleMaintenance(item:Kiosk){
-    this.closeDialog();
     this.API.setLoading(true);
-    await this.kioskService.updateKioskStatus(item.id,item.status == 'available' ? 'maintenance' : 'available');
-    this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
-    this.API.setLoading(false);
+    await this.kioskService.updateKioskStatus(item.id!,item.status == 'available' ? 'maintenance' : 'available');
+    await this.closeDialog(true);
   }
   async deleteKiosk(item:Kiosk){
-    this.closeDialog();
     this.API.setLoading(true);
-    await this.kioskService.deleteKiosk(item.id);
-    this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
-    this.API.setLoading(false);
+    await this.kioskService.deleteKiosk(item.id!);
+    await this.closeDialog(true);
   }
 
   selectKiosk(item:Kiosk){
     this.selectedKiosk = item;
   }
 
-  modalType?:'maintenance'|'delete';
+  
 
   openDialog(type:'maintenance'|'delete'){
     this.modalType = type;
   }
-  closeDialog(){
+  async closeDialog(shouldRefresh:boolean){
+    this.openKioskModal = false;
     this.modalType = undefined;
+    if(shouldRefresh){
+      this.API.setLoading(true);
+      this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
+      this.API.setLoading(false);
+    }
   }
 
 }

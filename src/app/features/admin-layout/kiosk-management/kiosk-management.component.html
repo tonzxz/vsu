@@ -28,6 +28,7 @@
     <div class="bg-white rounded-lg shadow-md flex-[4_4_0%] h-full">
       <div class=" grid grid-cols-3 px-3 py-3 gap-3"> 
         <button 
+ 
         *ngFor="let kiosk of kiosks; let i = index" 
         class="group  {{kiosk.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
 
@@ -37,7 +38,7 @@
             <div class="w-16 h-12 p-2 rounded-lg bg-green-200 group-hover:bg-yellow-200">
               <app-lottie-animation animation="computer"></app-lottie-animation>
             </div>
-            <div class="w-5 h-5 rounded-full {{statusMap[kiosk.status]}} bottom-4 right-4"></div>
+            <div class="w-5 h-5 rounded-full {{statusMap[kiosk.status!]}} bottom-4 right-4"></div>
             <div class="font-medium  tracking-wide text-xl flex items-center gap-2">
               KIOSK <span class="font-medium text-4xl">{{i+1}}</span>
             </div>
@@ -55,10 +56,15 @@
        
             <div class="flex w-full  mt-2">
               <div class="w-full flex justify-between">
-                <button (click)="selectKiosk(kiosk);openDialog('delete')" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-red-500 hover:bg-red-600 ">
-                  <span  class="material-icons"> delete </span>
-                </button>
-                <button (click)="selectKiosk(kiosk);openDialog('maintenance')" class="rounded-lg px-10 py-1 text-white {{kiosk.status !='maintenance' ? 'bg-green-500 hover:bg-green-300': 'bg-orange-500 hover:bg-orange-300'}}">
+                <div class="flex gap-2">
+                  <button (click)="selectKiosk(kiosk);openDialog('delete')" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-red-500 hover:bg-red-600 ">
+                    <span  class="material-icons"> delete </span>
+                  </button>
+                  <button  (click)="updateKiosk(kiosk)" class="rounded-lg px-2 flex items-center justify-center py-1 text-white bg-green-500 hover:bg-green-600 ">
+                    <span  class="material-icons"> edit </span>
+                  </button>
+                </div>
+                <button (click)="selectKiosk(kiosk);openDialog('maintenance')" class="rounded-lg px-10 py-1 text-white {{statusMap[kiosk.status!]}}">
                   {{kiosk.status != 'maintenance'? 'Available':'Maintenance'}}
                 </button>
               </div>
@@ -85,7 +91,7 @@
     animation="confirmation"
     title="Change Kiosk Status"
     description="Are you sure you want to toggle status of this kiosk?"
-    (onCancel)="closeDialog()"
+    (onCancel)="closeDialog(false)"
     (onConfirm)="toggleMaintenance(selectedKiosk!)"
 ></app-confirmation>
 <!-- Delete Modal -->
@@ -95,7 +101,14 @@
     animation="warning"
     title="Delete Kiosk?"
     description="Are you sure you want to PERMANENTLY DELETE this kiosk?"
-    (onCancel)="closeDialog()"
+    (onCancel)="closeDialog(false)"
     (onConfirm)="deleteKiosk(selectedKiosk!)"
 ></app-confirmation>
 
+<app-create-kiosk
+  *ngIf="openKioskModal"
+  [exisitingkiosk]="selectedKiosk"
+  (onClose)="closeDialog($event)"
+>
+
+</app-create-kiosk>

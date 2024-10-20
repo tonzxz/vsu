@@ -75,35 +75,35 @@ export class ContentService {
       }
   }
 
-  async getDivisions(){
-    const user = this.auth.getUser();
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'divisions',
-      conditions: `WHERE id != '${environment.administrators}'`,
-    });
+  // async getDivisions(){
+  //   const user = this.auth.getUser();
+  //   const response = await this.API.read({
+  //     selectors: ['*'],
+  //     tables: 'divisions',
+  //     conditions: `WHERE id != '${environment.administrators}'`,
+  //   });
 
-    if(response.success){
-      return response.output;
-    }else{
-      throw new Error('Error getting divisions.');
-    }
-  }
+  //   if(response.success){
+  //     return response.output;
+  //   }else{
+  //     throw new Error('Error getting divisions.');
+  //   }
+  // }
 
-  async getDivision(id:string){
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'divisions',
-      conditions: `WHERE id = '${id}' `,
-    });
+  // async getDivision(id:string){
+  //   const response = await this.API.read({
+  //     selectors: ['*'],
+  //     tables: 'divisions',
+  //     conditions: `WHERE id = '${id}' `,
+  //   });
 
-    if(response.success){
-      if(response.output.length <= 0) return null;
-      return response.output[0];
-    }else{
-      throw new Error('Error getting divisions.');
-    }
-  }
+  //   if(response.success){
+  //     if(response.output.length <= 0) return null;
+  //     return response.output[0];
+  //   }else{
+  //     throw new Error('Error getting divisions.');
+  //   }
+  // }
 
   async updateContentSettings( settings: {division_id: string ,selectedFiles: { [key: string]: File | undefined  }, colors:{[key:string]:string}, widgets:{weather: boolean,time: boolean,currency: boolean,} , 
     announcement_on:boolean, background_on:boolean,

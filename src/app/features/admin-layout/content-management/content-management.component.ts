@@ -8,6 +8,7 @@ import { UswagonCoreService } from 'uswagon-core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
 import { QueueDisplayComponent } from '../../queueing-layout/queue-display/queue-display.component';
+import { DivisionService } from '../../../services/division.service';
 
 interface ContentColors {
   primary_bg: string,
@@ -60,8 +61,10 @@ interface ContentSettings {
 })
 export class ContentManagementComponent implements OnInit {
 
-  constructor(private auth:UswagonAuthService, private contentService:ContentService, 
-    private dialog: MatDialog,  
+  constructor(
+    private divisionService:DivisionService,
+    private auth:UswagonAuthService, 
+    private contentService:ContentService,   
     private API:UswagonCoreService){}
 
 
@@ -206,8 +209,8 @@ export class ContentManagementComponent implements OnInit {
     try{
       if(this.isSuperAdmin){
         if(this.divisions.length <=0){
-          this.divisions = await this.contentService.getDivisions();
-          this.selectedDivision = this.divisions[0].id;
+          this.divisions = await this.divisionService.getDivisions();
+          this.selectedDivision = this.divisionService.selectedDivision?.id;
         }
         this.contents = await this.contentService.getContentSettings();
         const content = this.contents.find((_content)=> _content.division_id ==this.selectedDivision);
@@ -256,8 +259,9 @@ export class ContentManagementComponent implements OnInit {
         this.API.setLoading(false);
         this.contentLoading = false;
       }else{
-        this.selectedDivision = this.auth.getUser().division_id;
-        this.divisions =[ await this.contentService.getDivision(this.selectedDivision!)];
+        const userDivision = await this.divisionService.getDivision();
+        this.selectedDivision = userDivision?.id;
+        this.divisions =[ userDivision];
         const content = await this.contentService.getContentSetting();
         if(!content) {
           this.previousSettings ={

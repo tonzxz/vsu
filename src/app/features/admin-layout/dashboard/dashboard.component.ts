@@ -7,6 +7,7 @@ import { QueueDisplayComponent } from '../../queueing-layout/queue-display/queue
 import { UswagonCoreService } from 'uswagon-core';
 import { ContentService } from '../../../services/content.service';
 import { UswagonAuthService } from 'uswagon-auth';
+import { DivisionService } from '../../../services/division.service';
 
 interface QueueAnalytics {
   office: string;
@@ -64,6 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private API: UswagonCoreService,
+    private divisionService:DivisionService,
     private contentService: ContentService,
     private auth: UswagonAuthService,
     private cdr: ChangeDetectorRef
@@ -255,12 +257,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   async loadContents() {
     this.API.setLoading(true);
     if (this.isSuperAdmin) {
-      this.divisions = await this.contentService.getDivisions();
+      this.selectedDivision = (await this.divisionService.getDivision())!.id ;
+      this.divisions = this.divisionService.divisions;
       this.contents = await this.contentService.getContentSettings();
       if (this.contents.length > 0) {
         this.content = this.contents.find(content => content.division_id === this.divisions[0].id);
       }
-      this.selectedDivision = this.divisions[0].id;
+      
     } else {
       this.content = await this.contentService.getContentSetting();
     }

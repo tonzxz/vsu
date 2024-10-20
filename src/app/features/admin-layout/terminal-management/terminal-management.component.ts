@@ -6,6 +6,7 @@ import { LottieAnimationComponent } from '../../../shared/components/lottie-anim
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
 import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
+import { DivisionService } from '../../../services/division.service';
 
 // Interface defining the structure of a Counter object
 
@@ -47,6 +48,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
   dataLoaded:boolean = false;
 
   constructor( 
+    private divisionService:DivisionService,
     private auth:UswagonAuthService,private API:UswagonCoreService,
     private terminalService:TerminalService, private contentService:ContentService) {}
   ngOnInit(): void {
@@ -60,12 +62,8 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
 
   async loadContent(){
     this.API.setLoading(true);
-    this.divisions =(await this.contentService.getDivisions()) as Division[];
-    if(this.isSuperAdmin){
-      this.selectedDivision = this.divisions[0].id;
-    }else{
-      this.selectedDivision = this.auth.getUser().division_id;
-    }
+    this.selectedDivision = (await this.divisionService.getDivision())?.id;
+    this.divisions = this.divisionService.divisions;
     if(this.statusInterval){
       clearInterval(this.statusInterval);
     }

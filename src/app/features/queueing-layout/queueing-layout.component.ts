@@ -7,6 +7,7 @@ import { UswagonCoreService } from 'uswagon-core';
 import { LottieAnimationComponent } from '../../shared/components/lottie-animation/lottie-animation.component';
 import { QueueService } from '../../services/queue.service';
 import { ActivatedRoute } from '@angular/router';
+import { DivisionService } from '../../services/division.service';
 
 interface Division{
   id:string;
@@ -33,7 +34,9 @@ export class QueueingLayoutComponent implements OnInit,OnDestroy{
   ngOnDestroy(): void {
     this.loading$!.unsubscribe();
   }
-  constructor(private contentService:ContentService, private API:UswagonCoreService,private cdr: ChangeDetectorRef, private queueServe:QueueService,private route: ActivatedRoute){}
+  constructor(
+    private divisionService:DivisionService,
+    private contentService:ContentService, private API:UswagonCoreService,private cdr: ChangeDetectorRef, private queueServe:QueueService,private route: ActivatedRoute){}
   
   ngOnInit(): void {
     this.loading$ = this.API.isLoading$.subscribe(loading=>{
@@ -73,7 +76,7 @@ export class QueueingLayoutComponent implements OnInit,OnDestroy{
     this.selectedDivision = localStorage.getItem('division') ?? undefined;
 
     this.API.setLoading(true);
-    this.divisions = await this.contentService.getDivisions();
+    this.divisions = await this.divisionService.getDivisions();
     const contents = await this.contentService.getContentSettings();
 
     this.contentMap = contents.reduce((prev:any,item:any)=>{

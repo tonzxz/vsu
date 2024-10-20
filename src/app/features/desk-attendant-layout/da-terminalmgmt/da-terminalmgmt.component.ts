@@ -114,6 +114,13 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   async loadContent(){
     this.API.setLoading(true);
+    this.terminals = await this.terminalService.getAllTerminals(this.auth.getUser().division_id);
+    const lastSession = await this.terminalService.getActiveSession()
+    if(lastSession){
+      this.selectedCounter = this.terminals.findIndex(terminal=>terminal.id == lastSession.terminal_id);
+      this.terminalService.refreshTerminalStatus(lastSession.id);
+    }
+    this.API.setLoading(false);  
     this.statusInterval = setInterval(async ()=>{
       const exisitingTerminals:string[] = [];
       const updatedTerminals = await this.terminalService.getAllTerminals(this.auth.getUser().division_id);
@@ -129,12 +136,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       });
       this.terminals = this.terminals.filter(terminal=> exisitingTerminals.includes(terminal.id))
     },1000)   
-    const lastSession = await this.terminalService.getActiveSession()
-    if(lastSession){
-      this.selectedCounter = this.terminals.findIndex(terminal=>terminal.id == lastSession.terminal_id);
-      this.terminalService.refreshTerminalStatus(lastSession.id);
-    }
-    this.API.setLoading(false);    
+ 
+     
   }
 
 

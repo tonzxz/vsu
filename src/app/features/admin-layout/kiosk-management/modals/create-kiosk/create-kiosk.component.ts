@@ -63,7 +63,7 @@ export class CreateKioskComponent implements OnInit, OnDestroy {
         )
       }
     }catch(e:any){
-      this.API.sendFeedback('error','This code is already in use!',5000);
+      this.API.sendFeedback('error', e.message,5000);
       return;
     }
     this.onClose.emit(true);

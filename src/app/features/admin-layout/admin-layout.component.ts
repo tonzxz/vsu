@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { LottieAnimationComponent } from '../../shared/components/lottie-animation/lottie-animation.component';
 import { SnackbarComponent } from '../../shared/snackbar/snackbar.component';
+import { UswagonAuthService } from 'uswagon-auth';
 
 @Component({
   selector: 'app-admin-layout',
@@ -16,7 +17,9 @@ import { SnackbarComponent } from '../../shared/snackbar/snackbar.component';
   styleUrls: ['./admin-layout.component.css']
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy{
-  constructor(private route: ActivatedRoute, private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
+  constructor(private route: ActivatedRoute, 
+    private auth:UswagonAuthService,
+    private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
   role = this.route.snapshot.data['requiredRole'];
   isLoading:boolean= false;
   loading$?:Subscription;
@@ -25,6 +28,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy{
       this.isLoading=loading;
       this.cdr.detectChanges();
     })
+    this.API.sendFeedback('success', `Hi, ${this.auth.getUser().fullname}!`,5000)
+    this.cdr.detectChanges();
   }
 
   showUploadProgress(){

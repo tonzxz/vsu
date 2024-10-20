@@ -6,16 +6,20 @@ import { LottieAnimationComponent } from '../../shared/components/lottie-animati
 import { CommonModule } from '@angular/common';
 import { UswagonCoreService } from 'uswagon-core';
 import { Subscription } from 'rxjs';
+import { SnackbarComponent } from '../../shared/snackbar/snackbar.component';
+import { UswagonAuthService } from 'uswagon-auth';
 
 @Component({
   selector: 'app-desk-attendant-layout',
   standalone: true,
-  imports: [SidebarComponent,RouterOutlet,HeaderComponent, LottieAnimationComponent,CommonModule],
+  imports: [SidebarComponent,RouterOutlet,HeaderComponent, LottieAnimationComponent,CommonModule,SnackbarComponent],
   templateUrl: './desk-attendant-layout.component.html',
   styleUrl: './desk-attendant-layout.component.css'
 })
 export class DeskAttendantLayoutComponent {
-  constructor(private route: ActivatedRoute, private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
+  constructor(private route: ActivatedRoute, 
+    private auth:UswagonAuthService,
+    private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
   role = this.route.snapshot.data['requiredRole'];
   isLoading:boolean= false;
   loading$?:Subscription;
@@ -24,6 +28,7 @@ export class DeskAttendantLayoutComponent {
       this.isLoading=loading;
       this.cdr.detectChanges();
     })
+    this.API.sendFeedback('success',`Hi, ${this.auth.getUser().fullname}`,5000)
   }
 
   showUploadProgress(){

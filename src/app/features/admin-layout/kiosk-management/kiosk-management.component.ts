@@ -86,15 +86,23 @@ export class KioskManagementComponent implements OnInit {
 
   async toggleMaintenance(item:Kiosk){
     this.API.setLoading(true);
-    await this.kioskService.updateKioskStatus(item.id!,item.status == 'available' ? 'maintenance' : 'available');
-    await this.closeDialog(true);
-    this.API.sendFeedback('success', 'Kiosk status has been updated!',5000);
+    try{
+      await this.kioskService.updateKioskStatus(item.id!,item.status == 'available' ? 'maintenance' : 'available');
+      await this.closeDialog(true);
+      this.API.sendFeedback('success', 'Kiosk status has been updated!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('success', e.message,5000);
+    }
   }
   async deleteKiosk(item:Kiosk){
     this.API.setLoading(true);
-    await this.kioskService.deleteKiosk(item.id!);
-    await this.closeDialog(true);
-    this.API.sendFeedback('success', 'Kiosk has been deleted!',5000);
+    try{
+      await this.kioskService.deleteKiosk(item.id!);
+      await this.closeDialog(true);
+      this.API.sendFeedback('success', 'Kiosk has been deleted!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('success', e.message,5000);
+    }
   }
 
   selectKiosk(item:Kiosk){

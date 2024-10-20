@@ -63,7 +63,7 @@ export class KioskService {
 
   if(checkResponse.success){
     if(checkResponse.output.length>0){
-      throw new Error('Code is already in use');
+      throw new Error('This code is already in use!');
     }
   }else{
     throw new Error('Something went wrong');
@@ -108,7 +108,7 @@ export class KioskService {
 
   if(checkResponse.success){
     if(checkResponse.output.length>0){
-      throw new Error('Code is already in use');
+      throw new Error('This code is already in use!');
     }
   }else{
     throw new Error('Something went wrong');

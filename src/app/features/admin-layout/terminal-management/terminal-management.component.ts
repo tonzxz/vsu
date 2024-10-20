@@ -113,27 +113,39 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
 
   async addTerminal(){
     this.API.setLoading(true);
-    await this.terminalService.addTerminal(this.selectedDivision!);
-    this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+    try{
+      await this.terminalService.addTerminal(this.selectedDivision!);
+      this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+      this.API.sendFeedback('success', 'New terminal has been added!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('error',e.message, 5000);
+    }
     this.API.setLoading(false);
-    this.API.sendFeedback('success', 'New terminal has been added!',5000);
   }
 
   async toggleMaintenance(terminal:Terminal){
     this.closeDialog();
     this.API.setLoading(true);
-    await this.terminalService.updateTerminalStatus(terminal.id,terminal.status == 'available' ? 'maintenance' : 'available');
-    this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+    try{
+      await this.terminalService.updateTerminalStatus(terminal.id,terminal.status == 'available' ? 'maintenance' : 'available');
+      this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+      this.API.sendFeedback('success', 'Terminal status has been updated!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('error',e.message, 5000);
+    }
     this.API.setLoading(false);
-    this.API.sendFeedback('success', 'Terminal status has been updated!',5000);
   }
   async deleteTerminal(terminal:Terminal){
     this.closeDialog();
     this.API.setLoading(true);
-    await this.terminalService.deleteTerminal(terminal.id);
-    this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+    try{
+      await this.terminalService.deleteTerminal(terminal.id);
+      this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+      this.API.sendFeedback('success', 'Terminal has been deleted!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('error',e.message, 5000);
+    }
     this.API.setLoading(false);
-    this.API.sendFeedback('success', 'Terminal has been deleted!',5000);
   }
 
   selectTerminal(terminal:Terminal){

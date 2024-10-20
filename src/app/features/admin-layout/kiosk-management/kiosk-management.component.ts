@@ -107,19 +107,20 @@ export class KioskManagementComponent implements OnInit {
     this.modalType = type;
   }
   async closeDialog(shouldRefresh:boolean){
-    if(this.openKioskModal && shouldRefresh){
-      if(this.selectedKiosk){
-        this.API.sendFeedback('success', 'Kiosk has been updated!',5000);
-      }else{
-        this.API.sendFeedback('success', 'New kiosk has been added!',5000);
-      }
-    }
+    const fromKiosk = this.openKioskModal;
     this.openKioskModal = false;
     this.modalType = undefined;
     if(shouldRefresh){
       this.API.setLoading(true);
       this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
       this.API.setLoading(false);
+    }
+    if(fromKiosk && shouldRefresh){
+      if(this.selectedKiosk){
+        this.API.sendFeedback('success', 'Kiosk has been updated!',5000);
+      }else{
+        this.API.sendFeedback('success', 'New kiosk has been added!',5000);
+      }
     }
   }
 

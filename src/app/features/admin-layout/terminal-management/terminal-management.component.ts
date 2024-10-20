@@ -133,7 +133,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     await this.terminalService.deleteTerminal(terminal.id);
     this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
     this.API.setLoading(false);
-    this.API.sendFeedback('success', 'Terminal status has been deleted!',5000);
+    this.API.sendFeedback('success', 'Terminal has been deleted!',5000);
   }
 
   selectTerminal(terminal:Terminal){

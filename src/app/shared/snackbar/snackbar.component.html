@@ -14,5 +14,6 @@
                 <span  class="material-icons text-lg leading-none"> close </span>
             </div>
         </div>
+        <audio [volume]="0.4" id="{{feedback.id}}" [src]="feedback.type =='error' ? 'assets/audio/pop-notif.wav': 'assets/audio/notif.mp3'" autoplay></audio>
     </ng-container>
 </div>

@@ -10,6 +10,7 @@ import { TerminalService } from '../../../services/terminal.service';
 import { ContentService } from '../../../services/content.service';
 import { DivisionService } from '../../../services/division.service';
 import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
+import { Subscription } from 'rxjs';
 
 
 interface Terminal{
@@ -57,7 +58,7 @@ interface ClientDetails {
   ]
 })
 export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
-  selectedCounter: number | null = null;
+  selectedCounter?: Terminal;
   counters: number[] = [1, 2, 3, 4, 5];
   currentNumber: number = 110;
   lastCalledNumber: string = 'N/A';
@@ -97,6 +98,9 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   private timerInterval: any;
   private dateInterval: any;
   private statusInterval:any;
+
+  lastSession?:any;
+
   terminals: Terminal[]=[];
   statusMap:any = {
     'available' : 'bg-orange-500',
@@ -107,7 +111,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   constructor( 
     private dvisionService:DivisionService,
-    private auth:UswagonAuthService,private API:UswagonCoreService,
+    private API:UswagonCoreService,
     private terminalService:TerminalService) {}
 
   ngOnInit(): void {
@@ -122,17 +126,19 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   async loadContent(){
     this.API.setLoading(true);
-    this.terminals = await this.terminalService.getAllTerminals(this.auth.getUser().division_id);
     this.division = await this.dvisionService.getDivision() ;
-    const lastSession = await this.terminalService.getActiveSession()
-    if(lastSession){
-      this.selectedCounter = this.terminals.findIndex(terminal=>terminal.id == lastSession.terminal_id);
-      this.terminalService.refreshTerminalStatus(lastSession.id);
+    this.terminals = await this.terminalService.getAllTerminals();
+    
+    this.lastSession = await this.terminalService.getActiveSession()
+    if(this.lastSession){
+      this.selectedCounter = this.terminals.find(terminal=>terminal.id == this.lastSession.terminal_id);
+      this.terminalService.refreshTerminalStatus(this.lastSession.id);
     }
+
     this.API.setLoading(false);  
     this.statusInterval = setInterval(async ()=>{
       const exisitingTerminals:string[] = [];
-      const updatedTerminals = await this.terminalService.getAllTerminals(this.auth.getUser().division_id);
+      const updatedTerminals = await this.terminalService.getAllTerminals();
       // Update existing terminals
       updatedTerminals.forEach((updatedTerminal:any) => {
         exisitingTerminals.push(updatedTerminal.id);
@@ -143,9 +149,20 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
           this.terminals.push(updatedTerminal);
         }
       });
+      // get last session
       this.terminals = this.terminals.filter(terminal=> exisitingTerminals.includes(terminal.id))
+      if(this.lastSession){
+        const terminal =  this.terminals.find(terminal=>terminal.id == this.lastSession.terminal_id);
+        if(terminal?.status == 'maintenance'){
+          this.terminalService.terminateTerminalSession();
+          this.selectedCounter = undefined;
+          this.lastSession = undefined;
+          this.API.sendFeedback('error','Your terminal is for maintenance. You have been logout!',5000)
+        }
+      }
     },1000)   
- 
+
+
      
   }
 
@@ -162,22 +179,25 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
    * Selects a counter and initializes related states.
    * @param counter The counter number selected by the user.
    */
-  async selectCounter(counter: number) {
-    if(this.terminals[counter].status == 'maintenance'){
+  async selectCounter(counter: Terminal) {
+    if(counter.status == 'maintenance'){
       this.API.sendFeedback('warning', 'This terminal is under maintenance', 5000);
       return; 
     }
-    if(this.terminals[counter].status == 'online'){
+    if(counter.status == 'online'){
       this.API.sendFeedback('warning', 'This terminal is used by another attendant', 5000);
       return; 
     }
     this.selectedCounter = counter;
     this.API.setLoading(true);
-    const session_id = await this.terminalService.startTerminalSession(this.terminals[counter].id);
-    this.terminalService.refreshTerminalStatus(session_id);
+    await this.terminalService.startTerminalSession(counter.id);
+    this.lastSession = await this.terminalService.getActiveSession()
+    this.terminalService.refreshTerminalStatus(this.lastSession.id);
     this.API.setLoading(false);
-    this.API.sendFeedback('success',`You are now logged in to Terminal ${this.selectedCounter + 1}`,5000);
+    const index = this.terminals.findIndex(terminal=>terminal.id == counter.id);
+    this.API.sendFeedback('success',`You are now logged in to Terminal ${index + 1}`,5000);
   }
+
 
   /**
    * Resets the selected counter and stops the timer.
@@ -185,7 +205,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   async resetCounter() {
     this.closeTerminateModal();
     this.API.setLoading(true);
-    this.selectedCounter = null;
+    this.selectedCounter = undefined;
     await this.terminalService.terminateTerminalSession();
     this.stopTimer();
     this.resetActionButtons();

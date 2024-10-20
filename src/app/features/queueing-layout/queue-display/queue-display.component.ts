@@ -7,6 +7,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { QueueService } from '../../../services/queue.service';
 import { Subscription } from 'rxjs';
 import { TerminalService } from '../../../services/terminal.service';
+import { DivisionService } from '../../../services/division.service';
 
 interface Counter {
   id:string;
@@ -157,6 +158,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   loading:boolean = false;
   
   constructor(
+    private divisionService:DivisionService,
     private queueService:QueueService,
     private terminalService:TerminalService,
     private thirdPartyService: ThirdPartyService,
@@ -291,7 +293,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   getSafeYoutubeUrl(url?:string) {
     if (this.isValidYouTubeUrl(url ??'')) {
       const videoId = this.getYouTubeVideoId(url!);
-      const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
+      const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&controls=0&playlist=${videoId}`;
       this.safeYoutubeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
     } else{
       this.safeYoutubeUrl = undefined;
@@ -329,8 +331,9 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
   ngOnChanges(changes: SimpleChanges): void {
     if(!this.isPreview)  this.loadQueue();  
-    if(this.videoPlayer != null)
-    this.videoPlayer.nativeElement.src=this.videoUrl??'assets/queue-display/vsu.mp4';
+    this.getSafeYoutubeUrl(this.videoUrl);
+    // if(this.videoPlayer != null)
+    // this.videoPlayer.nativeElement.src=this.videoUrl??'assets/queue-display/vsu.mp4';
   
   }
 
@@ -412,7 +415,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     }
 
 
-    this.queueService.setDivision(this.division!.id);
+    this.divisionService.setDivision(this.division);
     this.queueService.listenToQueue();
     
     this.subscription = this.queueService.queue$.subscribe((queueItems: any[]) => {
@@ -431,7 +434,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
     this.terminalInterval = setInterval(async ()=>{
       let existingTerminals:string[] = []
-      const updatedTerminals = await this.terminalService.getAllTerminals(this.division!.id);
+      const updatedTerminals = await this.terminalService.getAllTerminals();
       // Update existing terminals
       updatedTerminals.forEach((updatedTerminal:any) => {
         existingTerminals.push(updatedTerminal.id);

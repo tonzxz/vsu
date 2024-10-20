@@ -65,6 +65,7 @@ export class DivisionService {
       });
       if(response.success){
         if(response.output.length <= 0) return undefined;
+        this.selectedDivision = response.output[0] as Division;
         return response.output[0];
       }else{
         throw new Error();

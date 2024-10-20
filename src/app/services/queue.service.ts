@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
 import { KioskService } from './kiosk.service';
+import { DivisionService } from './division.service';
 
 
 
@@ -25,36 +26,32 @@ interface Queue{
 })
 export class QueueService  {
 
-  constructor(private API:UswagonCoreService,private auth:UswagonAuthService, private kioskService:KioskService) {}
+  constructor(private API:UswagonCoreService,private auth:UswagonAuthService, 
+    private divisionService:DivisionService,
+    private kioskService:KioskService) {}
 
 
-  public lastRegularQueueNumber:number = 0;
-  public lastPriorityQueueNumber:number = 0;
-  public queue:Queue[]=[];
+  private lastRegularQueueNumber:number = 0;
+  private lastPriorityQueueNumber:number = 0;
+  private queue:Queue[]=[];
   private queueSubject = new BehaviorSubject<Queue[]>([]);
   public queue$ = this.queueSubject.asObservable();
-  private division?:string;
 
- 
-
-  setDivision(division_id:string){
-    this.division = division_id;
-  }
 
   // Socket Events
   listenToQueue(){
     this.API.addSocketListener('live-queue-events-listener', (message)=>{
-      if(message.division!= this.division) return;
+      if(message.division!= this.divisionService.selectedDivision!.id) return;
 
       if(message.event =='queue-counter' ){
         this.lastRegularQueueNumber = message.lastRegularQueueNumber as number;
         this.lastPriorityQueueNumber = message.lastPriorityQueueNumber as number;
       }
       if(message.event =='queue-attend'){
-        this.getTodayQueues(this.division!);
+        this.getTodayQueues(this.divisionService.selectedDivision!.id);
       }
       if(message.event =='update-queue'){
-        this.getTodayQueues(this.division!);
+        this.getTodayQueues(this.divisionService.selectedDivision!.id);
       }        
     });
   }

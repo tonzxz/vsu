@@ -2,30 +2,46 @@ import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
+import { DivisionService } from './division.service';
+import { BehaviorSubject } from 'rxjs';
 
+
+interface Terminal{
+  id:string;
+  division_id:string;
+  number:string;
+  status:string;  
+  last_active?:string;
+  attendant?:string;
+}
 @Injectable({
   providedIn: 'root'
 })
 export class TerminalService {
 
  constructor(
-  // private datePipe:DatePipe,
-  private API:UswagonCoreService,private auth:UswagonAuthService) { }
+  private API:UswagonCoreService,private auth:UswagonAuthService, private divisionService:DivisionService) { }
 
- user:any = this.auth.getUser();
- isSuperAdmin:boolean = this.auth.accountLoggedIn() == 'superadmin';
+// private terminalsSubject = new BehaviorSubject<Terminal[]>([]);
+// public terminals$ = this.terminalsSubject.asObservable();
 
-
-listenToTerminalOpen(division:string){
+listenToTerminalUpdates(){
   this.API.addSocketListener('live-terminal-listener', (message)=>{
-    if(message.division!= division) return;
+    if(message.division != this.divisionService.selectedDivision?.id) return;
 
-    if(message.event == 'terminal-open'){
-
+    if(message.event == 'terminal-maintenance'){
+      // this.getAllTerminals();
     }
   });
 }
 
+
+updateMaintenance(){
+  this.API.socketSend({
+    event: 'terminal-maintenance',
+    division: this.divisionService.selectedDivision?.id
+  })
+}
 
 async addTerminal(division_id:string){
   const id = this.API.createUniqueID32();
@@ -67,7 +83,7 @@ async deleteTerminal(id:string){
   }
 }
 
- async getAllTerminals(division_id:string){
+ async getAllTerminals(){
       const response = await this.API.read({
         selectors: ['divisions.name as division, MAX(terminal_sessions.last_active) as last_active, desk_attendants.fullname as attendant, terminals.*'],
         tables: 'terminals',
@@ -75,7 +91,7 @@ async deleteTerminal(id:string){
           LEFT JOIN divisions ON divisions.id = terminals.division_id
           LEFT JOIN terminal_sessions ON terminal_sessions.terminal_id = terminals.id AND terminal_sessions.status !='closed'
           LEFT JOIN desk_attendants ON terminal_sessions.attendant_id = desk_attendants.id
-          WHERE terminals.division_id = '${division_id}' 
+          WHERE terminals.division_id = '${this.divisionService.selectedDivision?.id}' 
           GROUP BY terminals.id, divisions.id, terminal_sessions.terminal_id,desk_attendants.id
           ORDER BY terminals.number ASC , MAX(terminal_sessions.last_active) DESC
           `});
@@ -90,15 +106,18 @@ async deleteTerminal(id:string){
           seen.add(item.id); // Mark as seen
           return true; // Keep first occurrence
       });
+      let i = 1;
       for(let session of response.output){
         const now = new Date(); 
         const lastActive = new Date(session.last_active);
         const diffInMinutes = (now.getTime() - lastActive.getTime()) / 60000; 
-        if(diffInMinutes < 1.5 && session.status != 'closed'){
+        if(diffInMinutes < 1.5 && session.status != 'maintenance'){
           session.status = 'online';
         }
+        session.number = i;
+        i +=1;
       }
-      // console.log(response)
+ 
       return response.output;
     }else{
       throw new Error('Unable to fetch terminals');
@@ -144,9 +163,9 @@ async deleteTerminal(id:string){
   
   async getActiveSession(){ 
     const response = await this.API.read({
-      selectors: ['*'],
+      selectors: ['terminal_sessions.*'],
       tables: 'terminal_sessions',
-      conditions: `WHERE attendant_id = '${this.auth.getUser().id}' AND status != 'closed'
+      conditions: `WHERE terminal_sessions.attendant_id = '${this.auth.getUser().id}' AND terminal_sessions.status != 'closed' 
         ORDER BY last_active DESC
       `
     });

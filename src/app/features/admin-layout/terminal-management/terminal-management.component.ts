@@ -70,7 +70,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     
     this.statusInterval = setInterval(async ()=>{
       const exisitingTerminals:string[] = [];
-      const updatedTerminals = await this.terminalService.getAllTerminals(this.selectedDivision!);
+      const updatedTerminals = await this.terminalService.getAllTerminals();
 
       // Update existing terminals
       updatedTerminals.forEach((updatedTerminal:any) => {
@@ -90,10 +90,11 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     },1000)   
   }
 
-  async selectDivision(id:string){
-    this.selectedDivision = id;
+  async selectDivision(division:Division){
+    this.selectedDivision = division.id;
+    this.divisionService.setDivision(division);
     this.API.setLoading(true);
-    this.terminals = (await this.terminalService.getAllTerminals(id));
+    this.terminals = (await this.terminalService.getAllTerminals());
     this.API.setLoading(false);
   }
 
@@ -115,7 +116,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     this.API.setLoading(true);
     try{
       await this.terminalService.addTerminal(this.selectedDivision!);
-      this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+      this.terminals = (await this.terminalService.getAllTerminals());
       this.API.sendFeedback('success', 'New terminal has been added!',5000);
     }catch(e:any){
       this.API.sendFeedback('error',e.message, 5000);
@@ -127,8 +128,8 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     this.closeDialog();
     this.API.setLoading(true);
     try{
-      await this.terminalService.updateTerminalStatus(terminal.id,terminal.status == 'available' ? 'maintenance' : 'available');
-      this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+      await this.terminalService.updateTerminalStatus(terminal.id,terminal.status == 'maintenance' ? 'available' : 'maintenance');
+      this.terminals = (await this.terminalService.getAllTerminals());
       this.API.sendFeedback('success', 'Terminal status has been updated!',5000);
     }catch(e:any){
       this.API.sendFeedback('error',e.message, 5000);
@@ -140,7 +141,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     this.API.setLoading(true);
     try{
       await this.terminalService.deleteTerminal(terminal.id);
-      this.terminals = (await this.terminalService.getAllTerminals(this.selectedDivision!));
+      this.terminals = (await this.terminalService.getAllTerminals());
       this.API.sendFeedback('success', 'Terminal has been deleted!',5000);
     }catch(e:any){
       this.API.sendFeedback('error',e.message, 5000);

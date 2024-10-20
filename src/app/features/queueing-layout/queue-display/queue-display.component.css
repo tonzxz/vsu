@@ -114,7 +114,7 @@
 
 }
 
-@container queue-main (min-width: 500px) and (max-width:2000px){
+@container queue-main (min-width: 500px) and (max-width:600px){
   .currency-value,.serving-item-content-text,.current-time-container, .currency-value, .weather-left-container, .queue-item-ticket{
     font-size: 0.9em;
   }
@@ -124,65 +124,111 @@
 
 }
 
-@container queue-main (min-width: 600px) and (max-width: 2000px) {
-
-  .main-content *{
-    line-height: 1;
-  }
-
-  
-  .loader{
-    width: 12rem;
-    height: 12rem;
-  }
-
-  .waiting{
-    width: 8rem;
-    height: 8rem;
-  }
-
-
+@container queue-main (min-width:600px) and (max-width:800px){
   .banner-title{
-    font-size: 1.6rem;
-  }
-  .banner-label{
     font-size: 1.2rem;
   }
   .banner-logo{
-    width: 6rem;
-    height: 6rem;
+    width: 4rem;
+    height: 4rem;
   }
-  .division-banner{
-    gap:1.3em;
+  .banner-label{
+    font-size: 0.8rem;
   }
-  .queue-title {
-    font-size: 1.2rem;
+  
+  .serving-item-header,.serving-item-content-text{
+    font-size: 0.8rem;
+   }
+   .serving-item-label{
+    font-size: 0.2rem;
+   }
+   .currency-value,.serving-item-content-text,.current-time-container, .currency-value, .weather-left-container, .queue-item-ticket{
+    font-size: 0.9em;
+  }
+  .timezone-container,   .timezone-text{
+    font-size: 0.6rem;
+  }
+  .current-time-milli{
+    font-size: 0.4rem;
+  }
+  .currency-label{
+    font-size:0.9rem;
+  }
+
+  .currency-icon-container{
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.8rem;
   }
   .queue-container-inner{
-    gap:0.2rem;
-    padding:1.2rem;
+    padding:0.6rem;
+  }   
+
+  .main-content{
+    padding:0.6rem;
+  }
+  .weather-left-container{
+    font-size: 0.8rem;
   }
 
-  .weather-left-container,   .currency-label,
-  .banner-label{
-     font-size: 1.5rem;
-   }
-   .announcement-text{
-    font-size: 1rem;
-   }
+  .currency-info,.weather-am-pm{
+    font-size: 0.6rem;
+  }
+  .weather-temperature{
+    font-size: 0.6rem;
+  }
 
-   .serving-item-content-text{
+  .right-side{
+    padding: 0.6rem 0rem;
+  }
+  .queue-item-icon{
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .queue-item-ticket{
+    font-size: 0.8rem;
+  }
+  .queue-item-container{
+    padding: 0.2rem 0.4rem;
+  }
+  .serving-title,.queue-title {
+    font-size: 0.8rem;
+  }
+
+  .announcement-text{
+    font-size: 0.5rem;
+  }
+  .announcement-banner{
+    height: 0.8rem;
+  }
+
+}
+@container queue-main (min-width:800px) and (max-width:2000px){
+  .banner-title{
+    font-size: 1.6rem;
+  }
+  .banner-logo{
+    width: 6rem;
+    height: 5rem;
+  }
+  .banner-label{
+    font-size: 1.5rem;
+  }
+  
+  .serving-item-content-text{
     font-size: 1.2rem;
    }
-
-   .queue-item-icon{
-    width: 1.8rem;
-    height: 1.8rem;
+   .weather-left-container,   .currency-label{
+    font-size: 1.5rem;
   }
-
- .timezone-text,.timezone-container{
+  .timezone-text,.timezone-container{
     font-size: 1rem;
   }
+  
+  .announcement-text{
+    font-size: 1rem;
+   }
 
   .current-time-container{
     font-size: 1.7rem;
@@ -195,6 +241,46 @@
   .currency-value{
     font-size:1.5rem;
   }
+  .queue-container-inner{
+    gap:0.2rem;
+    padding:1.2rem;
+  }
+  .queue-item-icon{
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .queue-title {
+    font-size: 1.2rem;
+  }
+}
+
+@container queue-main (min-width: 600px) and (max-width: 2000px) {
+
+  .main-content *{
+    line-height: 1;
+  }
+
+
+  .loader{
+    width: 12rem;
+    height: 12rem;
+  }
+
+  .waiting{
+    width: 8rem;
+    height: 8rem;
+  }
+
+ 
+  .division-banner{
+    gap:1.3em;
+  }
+
+
+
+
+
+
 }
 @container queue-main (min-width: 2000px) and (max-width:3000px){
   .banner-title{

@@ -4,7 +4,7 @@
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
   *ngIf="safeYoutubeUrl"
   [src]="safeYoutubeUrl"
-  autoplay
+  allow="autoplay"
   loop
   frameborder="0"
   class="video aspect-[3840/2180] animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
@@ -109,7 +109,7 @@
       <!-- Right Side -->
       <div class="right-side flex-[1_1_0%] flex flex-col justify-center items-center w-full gap-2 py-4 min-[3500px]:gap-8">
         <!-- Widget Row -->
-        <div  class="widget-row flex flex-[2_2_0%] gap-3 w-full min-[3500px]:gap-8 relative">
+        <div  class="widget-row flex flex-[4_4_0%] gap-3 w-full min-[3500px]:gap-8 relative">
           <!-- Video -->
           <div class="video-container flex-[5_5_0%] flex items-center">
             <div class="w-full h-full video animate-pop object-cover rounded-lg shadow-lg  border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl relative overflow-hidden">
@@ -118,7 +118,7 @@
               [ngStyle]="{'border-color': colors.primary_text + '80',}"
               *ngIf="safeYoutubeUrl"
               [src]="safeYoutubeUrl"
-              autoplay
+              allow="autoplay"
               loop
               frameborder="0"
               class="absolute w-full h-full object-cover"
@@ -134,8 +134,7 @@
               <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
               Your browser does not support the video tag.
             </video> 
-            </div>
-           
+            </div>         
           </div>
           
           <div 
@@ -271,7 +270,7 @@
         
         <!-- Qeuue Row -->
         <div 
-        class="queue-flex-container flex-[3_3_0%] flex items-center   w-full">
+        class="queue-flex-container flex-[6_6_0%] flex items-center   w-full">
           <div    
           class="queue-container-outer border-dashed border-2 min-[3500px]:border-8  w-full h-full rounded-lg  min-[3500px]:rounded-3xl overflow-hidden  animate-pop"
           [ngStyle]="{'border-color': colors.primary_text + '80',}">

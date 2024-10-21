@@ -456,9 +456,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
         existingTerminals.push(updatedTerminal.id);
         const existingTerminal = this.counters.find(t => t.id === updatedTerminal.id);
         const ticket = this.attendedQueue.find(t=> t.terminal_id ==  updatedTerminal.id);
-        if(ticket){
-          console.log(updatedTerminal.id,ticket.id);
-        }
+  
         if (existingTerminal) {
           // Update properties of the existing terminal
           Object.assign(existingTerminal, {

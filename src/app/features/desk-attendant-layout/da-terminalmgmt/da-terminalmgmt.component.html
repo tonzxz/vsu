@@ -84,21 +84,27 @@
             <div class="bg-[#f0f4ed] rounded-xl shadow-md p-6">
               <h2 class="text-xl font-semibold mb-4 text-[#283c1c]">Actions</h2>
               <nav class="space-y-3">
-                <button *ngIf="isNextClientActive"
+                <button 
+                [disabled]="actionLoading"
+                *ngIf="isNextClientActive"
                         (click)="nextClient()" 
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#283c1c] text-white hover:bg-[#3a5728] active:bg-[#4a6d32] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="Next Client">
                   <mat-icon class="mr-3">navigate_next</mat-icon>
                   <span>Next Client</span>
                 </button>
-                <button *ngIf="isClientDoneActive"
+                <button 
+                [disabled]="actionLoading"
+                *ngIf="isClientDoneActive"
                         (click)="clientDone()"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#4a6d32] text-white hover:bg-[#5c8540] active:bg-[#6e9d4e] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="Client Done">
                   <mat-icon class="mr-3">done</mat-icon>
                   <span>Client Done</span>
                 </button>
-                <button *ngIf="isCallNumberActive"
+                <button 
+                [disabled]="actionLoading"
+                *ngIf="isCallNumberActive"
                         (click)="callNumber()"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#5c8540] text-white hover:bg-[#6e9d4e] active:bg-[#80b55c] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="Call Number">
@@ -121,12 +127,15 @@
                 </button> -->
                 <button *ngIf="isReturnBottomActive"
                         (click)="returnBottom()"
+                        [disabled]="actionLoading"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#3a5728] text-white hover:bg-[#4a6d32] active:bg-[#5c8540] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="Return Bottom">
                   <mat-icon class="mr-3">arrow_downward</mat-icon>
                   <span>Return Bottom</span>
                 </button>
-                <button *ngIf="currentTicket" (click)="noShow()"
+                <button 
+                  [disabled]="actionLoading"
+                  *ngIf="currentTicket" (click)="noShow()"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#8b2e2e] text-white hover:bg-[#a33636] active:bg-[#bb3e3e] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#d46a6a] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="No Show">
                   <mat-icon class="mr-3">highlight_off</mat-icon>

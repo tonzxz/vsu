@@ -112,6 +112,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
   lastSession?:any;
 
+  actionLoading:boolean = false;
   terminals: Terminal[]=[];
   statusMap:any = {
     'available' : 'bg-orange-500',
@@ -251,6 +252,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.closeTerminateModal();
     this.API.setLoading(true);
     this.selectedCounter = undefined;
+    this.currentTicket = undefined;
     await this.terminalService.terminateTerminalSession();
     this.stopTimer();
     this.resetActionButtons();
@@ -261,12 +263,12 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   /**
    * Moves to the next client in the queue.
    */
-  nextClient(): void {
+  async nextClient() {
+    if( this.actionLoading ) return;
     if (this.tickets.length > 0) {
-      
-      const nextTicket = this.tickets.shift();
-      if (nextTicket) {
-        this.currentTicket = nextTicket;
+        this.actionLoading = true;
+      // if (nextTicket) {
+        this.currentTicket =  await  this.queueService.nextQueue();;
         this.isNextClientActive = false;
         this.isClientDoneActive = true;
         this.isCallNumberActive = true;
@@ -274,12 +276,12 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         this.isReturnTopActive = true;
         this.isReturnBottomActive = true;
         
-        this.queueService.nextQueue();
+       
 
         // Set current client details
         this.currentClientDetails = {
           name: 'Jhielo A. Gonzales',
-          date: nextTicket.timestamp!,
+          date: this.currentTicket?.timestamp!,
           services: [
             {
               name: 'Request Documents',
@@ -297,8 +299,11 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         };
 
         this.startTimer();
-      }
+      // }
+      this.actionLoading = false;
+      this.API.sendFeedback('success', `Proceeding to Next Client!`,5000);
     }
+    
   }
 
 
@@ -317,10 +322,14 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   /**
    * Marks the current client as done and updates states accordingly.
    */
-  clientDone(): void {
+  async clientDone() {
+    if(this.actionLoading) return;
+    this.actionLoading = true;
+    await this.queueService.resolveAttendedQueue('finished');
     this.resetInterface();
-    this.queueService.resolveAttendedQueue('finished');
     this.stopTimer();
+    this.actionLoading = false;
+    this.API.sendFeedback('success', `Transaction successful!`,5000);
   }
 
   /**
@@ -350,21 +359,27 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   /**
    * Returns the current ticket to the bottom of the queue.
    */
-  returnBottom(): void {
+  async returnBottom() {
+    if(this.actionLoading) return;
+    this.actionLoading = true;
+    await this.queueService.resolveAttendedQueue('bottom');
     this.resetInterface();
-    this.queueService.resolveAttendedQueue('bottom');
     this.stopTimer();
+    this.actionLoading = false;
+    this.API.sendFeedback('warning', `Client has been put to bottom of queue.`,5000);
   }
 
   /**
    * Handles the "No Show" action by moving to the next client.
    */
-  noShow(): void {
-
-    this.resetInterface();
+  async noShow() {
+    if(this.actionLoading) return;
+    this.actionLoading =true;
+    await this.queueService.resolveAttendedQueue('skipped');
     this.currentClientDetails = null;
-    this.queueService.resolveAttendedQueue('skipped');
-  
+    this.resetInterface();
+    this.actionLoading = false;
+    this.API.sendFeedback('error', `Client has been removed from queue.`,5000);
   }
 
   /**

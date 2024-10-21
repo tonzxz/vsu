@@ -4,6 +4,7 @@ import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
 import { DivisionService } from './division.service';
 import { BehaviorSubject } from 'rxjs';
+import { QueueService } from './queue.service';
 
 
 interface Terminal{
@@ -20,6 +21,7 @@ interface Terminal{
 export class TerminalService {
 
  constructor(
+  private queueService:QueueService,
   private API:UswagonCoreService,private auth:UswagonAuthService, private divisionService:DivisionService) { }
 
 // private terminalsSubject = new BehaviorSubject<Terminal[]>([]);
@@ -226,6 +228,7 @@ async deleteTerminal(id:string){
         throw new Error('Unable to update terminal session');
       }
     }
+    this.queueService.resolveAttendedQueue('return');
     clearInterval(this.statusInterval);
   }
 }

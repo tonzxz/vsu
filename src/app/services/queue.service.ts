@@ -223,24 +223,15 @@ export class QueueService  {
       this.attendedQueue = attended;
       if(!createResponse.success) throw new Error(createResponse.output);
     }catch(e:any){
-      alert(e.message);
       throw new Error('Something went wrong. Please try again');
     }
   }
   
-  async resolveAttendedQueue(remark:'finished'|'skipped'|'bottom'){
+  async resolveAttendedQueue(remark:'finished'|'skipped'|'bottom'|'return'){
     const now  = new Date();
+
     try{
       if(this.attendedQueue){
-        const updateResponse = await this.API.update({
-          tables: 'attended_queue',
-          values:{
-            finished_on: remark == 'skipped' ? undefined : new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
-            status: remark,
-          },
-          conditions:`WHERE id = '${this.attendedQueue.id}'`
-        });
-        if(!updateResponse.success) throw new Error(updateResponse.output);
         if(remark=='bottom'){
           const now = new Date();
           const updateResponse = await this.API.update({
@@ -254,24 +245,48 @@ export class QueueService  {
           if(!updateResponse.success){
             throw new Error(updateResponse.output);
           }
-          this.resolveTakenQueue(this.attendedQueue.queue_id)
-          this.getTodayQueues();
-          return;
+       
+        } 
+        if(remark=='return'){
+          const updateResponse = await this.API.update({
+            tables: 'queue',
+            values:{
+              status:'waiting',
+            },
+            conditions:`WHERE id = '${this.attendedQueue.queue_id}'`
+          });
+          if(!updateResponse.success){
+            throw new Error(updateResponse.output);
+          }
         }
+        const updateResponse = await this.API.update({
+          tables: 'attended_queue',
+          values:{
+            finished_on: remark == 'skipped' ? undefined : new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
+            status: remark,
+          },
+          conditions:`WHERE id = '${this.attendedQueue.id}'`
+        });
+   
+        if(!updateResponse.success) throw new Error(updateResponse.output);
+        this.resolveTakenQueue(this.attendedQueue.id);
+        this.attendedQueue = undefined;
+        await this.getTodayQueues();
       }
     }catch(e:any){
-      alert(e.message);
       throw new Error('Something went wrong. Please try again');
     }
   }
 
   async nextQueue(){
     try{
+      // this.API.setLoading(true);
       if(this.queue.length <= 0) return;
       const queue =  this.takeFromQueue();
       await this.addQueueToAttended(queue.id);
-      this.resolveTakenQueue(this.attendedQueue?.queue_id);
-      this.getTodayQueues();
+      this.resolveTakenQueue(queue.id);
+      await this.getTodayQueues();
+      return queue;
     }catch(e){
       throw new Error('Something went wrong.');
     }

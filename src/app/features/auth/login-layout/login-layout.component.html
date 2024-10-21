@@ -79,18 +79,25 @@
                 </h3>
 
                 <div class="relative">
-                  <input id="username" type="text"
+                  <!-- <input id="username" type="text"
                          class="w-full px-4 py-3 text-lg text-left transition duration-200 border rounded-lg shadow-sm text-neutral-700 bg-zinc-100 border-zinc-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                         placeholder="Enter Username or email" />
-                  <span class="absolute inset-y-0 flex items-center pointer-events-none right-3 text-zinc-400">
+                         placeholder="Enter Username or email" /> -->
+                  <uswagon-auth-input 
+                  id="username"
+                  [class]="'w-full px-4 py-3 text-lg text-left transition duration-200 border rounded-lg shadow-sm text-neutral-700 bg-zinc-100 border-zinc-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 z-0'"
+                  placeholder="Enter Username or email"
+                  type="text"  [name]="'identifier'" [aliases]="['username']" [required]="true" />
+                  <span class="absolute inset-y-0 flex items-center pointer-events-none right-3 z-10 text-zinc-400">
                     <i class="fa fa-user"></i>
                   </span>
                 </div>
 
                 <div class="relative">
-                  <input id="password" type="password"
-                         class="w-full px-4 py-3 text-lg text-left transition duration-200 border rounded-lg shadow-sm text-neutral-700 bg-zinc-100 border-zinc-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                         placeholder="Enter password" />
+                  <uswagon-auth-input 
+                  id="username"
+                  [class]="'w-full px-4 py-3 text-lg text-left transition duration-200 border rounded-lg shadow-sm text-neutral-700 bg-zinc-100 border-zinc-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 z-0'"
+                  placeholder="Enter password"
+                  type="password"  [name]="'password'" [required]="true" />
                   <span class="absolute inset-y-0 flex items-center pointer-events-none right-3 text-zinc-400">
                     <i class="fa fa-lock"></i>
                   </span>
@@ -102,15 +109,18 @@
                   <label for="remember" class="select-none">Remember me</label>
                 </div>
 
-                <button type="submit"
-                        class="w-full py-3 text-lg font-bold text-white transition duration-200 bg-green-700 rounded-lg shadow-md hover:bg-green-600">
+                <div 
+                  (click)="login()"
+                        class="w-full py-3 text-lg font-bold flex justify-center text-white transition duration-200 bg-green-700 rounded-lg shadow-md hover:bg-green-600">
                   LOG IN
-                </button>
+              </div>
+
+            
 
                 <!-- Small Buttons for Roles -->
-                <div class="flex flex-wrap justify-center gap-3 mt-4">
+                <div *ngIf="!selectedRole" class="flex flex-wrap justify-center gap-3 mt-4">
                   <button type="button" class="px-4 py-2 text-sm font-semibold text-green-700 bg-green-100 rounded-full hover:bg-green-200 focus:outline-none"
-                          onclick="location.href='/login-as?role=admin'" tabindex="0">
+                          onclick="location.href='/login?role=admin'" tabindex="0">
                     Admin
                   </button>
                   <button type="button" class="px-4 py-2 text-sm font-semibold text-green-700 bg-green-100 rounded-full hover:bg-green-200 focus:outline-none"
@@ -118,7 +128,7 @@
                     Kiosk
                   </button>
                   <button type="button" class="px-4 py-2 text-sm font-semibold text-green-700 bg-green-100 rounded-full hover:bg-green-200 focus:outline-none"
-                          onclick="location.href='/login-as?role=desk_attendants'" tabindex="2">
+                          onclick="location.href='/login?role=desk_attendants'" tabindex="2">
                     Desk Attendant
                   </button>
                   <button type="button" class="px-4 py-2 text-sm font-semibold text-green-700 bg-green-100 rounded-full hover:bg-green-200 focus:outline-none"
@@ -134,4 +144,25 @@
       </div>
     </div>
   </div>
+
+  <div *ngIf="getAuthFeedback()"
+  class="absolute bottom-4 right-4 z-50 flex flex-col gap-4 ">
+     <ng-container  >
+         <div  class="animate-pop flex items-center gap-10 justify-between bg-white rounded-xl  w-auto shadow-md border-2 border-solid {{borderColorMap[getAuthFeedback()!.type]}} h-auto py-2 pl-4 pr-4">
+             <div class="flex gap-4 items-center">
+                 <div class="w-14 h-14 flex items-center">
+                     <app-lottie-animation animation="{{lottieMap[getAuthFeedback()!.type]}}" [loop]="false"></app-lottie-animation>
+                 </div>
+                 <div class="text-{{bgColorMap[getAuthFeedback()!.type]}}-500  text-lg font-medium text-center">
+                     {{getAuthFeedback()!.message}}
+                 </div>
+             </div>
+             <div (click)="closeFeedback()" class="flex items-center rounded-full p-1 bg-gray-200 hover:bg-gray-100 cursor-pointer">
+                 <span  class="material-icons text-lg leading-none"> close </span>
+             </div>
+         </div>
+         <audio [volume]="0.4" [src]="getAuthFeedback()!.type !='success' ? 'assets/audio/pop-notif.wav': 'assets/audio/notif.mp3'" autoplay preload="auto"></audio>
+     </ng-container>
+    </div>
+
 </section>

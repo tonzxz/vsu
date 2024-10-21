@@ -478,7 +478,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
         }
       });
       this.counters = this.counters.filter((counter)=>existingTerminals.includes(counter.id));
-    
+      console.log(this.counters);
       if(!this.dataLoaded){
         this.loading = false;
         this.dataLoaded = true;

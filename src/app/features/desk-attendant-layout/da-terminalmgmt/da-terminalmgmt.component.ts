@@ -115,9 +115,9 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
   actionLoading:boolean = false;
   terminals: Terminal[]=[];
   statusMap:any = {
-    'available' : 'bg-orange-500',
+    'available' : 'bg-green-500',
     'maintenance' : 'bg-red-500',
-    'online' : 'bg-green-500',
+    'online' : 'bg-orange-500',
   }
 
 
@@ -150,6 +150,28 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       this.selectedCounter = this.terminals.find(terminal=>terminal.id == this.lastSession.terminal_id);
       this.terminalService.refreshTerminalStatus(this.lastSession.id);
       this.API.sendFeedback('warning','You have an ongoing session.',5000);
+      const {attendedQueue,queue} =await this.queueService.getQueueOnDesk();
+    
+      this.currentTicket = queue ? {...queue!} : undefined;
+     
+      const lastQueue = await this.queueService.getLastQueueOnDesk();
+  
+      if(lastQueue)[
+        this.lastCalledNumber = (lastQueue.type=='priority' ? 'P' : 'R') +'-' + lastQueue.number.toString().padStart(3, '0')
+      ]
+      if(this.currentTicket){
+        this.startTimer();
+        this.isNextClientActive = false;
+        this.isClientDoneActive = true;
+        this.isCallNumberActive = true;
+        this.isManualSelectActive = false;
+        this.isReturnTopActive = true;
+        this.isReturnBottomActive = true;
+        
+        this.timerStartTime = new Date(attendedQueue?.attended_on!).getTime();
+        
+        this.API.sendFeedback('warning','You have an active transaction.',5000);
+      }
     }
     this.subscription = this.queueService.queue$.subscribe((queueItems: Ticket[]) => {
       this.tickets = [...queueItems];
@@ -158,29 +180,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.queueService.listenToQueue();
 
     await this.queueService.getTodayQueues();
-    const {attendedQueue,queue} =await this.queueService.getQueueOnDesk();
-    
-    this.currentTicket = queue ? {...queue!} : undefined;
    
-    const lastQueue = await this.queueService.getLastQueueOnDesk();
-
-    if(lastQueue)[
-      this.lastCalledNumber = (lastQueue.type=='priority' ? 'P' : 'R') +'-' + lastQueue.number.toString().padStart(3, '0')
-    ]
-
-    if(this.currentTicket){
-      this.startTimer();
-      this.isNextClientActive = false;
-      this.isClientDoneActive = true;
-      this.isCallNumberActive = true;
-      this.isManualSelectActive = false;
-      this.isReturnTopActive = true;
-      this.isReturnBottomActive = true;
-      
-      this.timerStartTime = new Date(attendedQueue?.attended_on!).getTime();
-
-      this.API.sendFeedback('warning','You have an active transaction.',5000);
-    }
 
     this.API.setLoading(false);  
     this.statusInterval = setInterval(async ()=>{

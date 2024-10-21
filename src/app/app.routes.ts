@@ -78,9 +78,6 @@ export const routes: Routes = [
   },
   {
     path: 'queueing-display', component: QueueingLayoutComponent,
-    // children: [
-    //   { path: 'display/:role', component: QueueDisplayComponent }, 
-    // ]
   },
   {
     path: '**', // Wildcard route

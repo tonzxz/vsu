@@ -245,7 +245,6 @@ export class QueueService  {
           if(!updateResponse.success){
             throw new Error(updateResponse.output);
           }
-       
         } 
         if(remark=='return'){
           const updateResponse = await this.API.update({

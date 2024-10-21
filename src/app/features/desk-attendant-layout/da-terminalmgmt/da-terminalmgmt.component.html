@@ -65,7 +65,7 @@
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="text-center bg-[#f0f4ed] p-6 rounded-xl shadow-md">
             <h3 class="text-lg font-semibold mb-2 text-[#283c1c]">Current Number</h3>
-            <p class="text-5xl font-bold text-[#283c1c]">{{ currentTicket?.number?.toString()?.padStart(3, '0') ?? 'N/A' }}</p>
+            <p class="text-5xl font-bold text-[#283c1c]">{{ currentTicket? (currentTicket.type == 'regular' ? 'R':'P') + '-'+ currentTicket.number.toString().padStart(3, '0') : 'N/A' }}</p>
           </div>
           <div class="text-center bg-[#f0f4ed] p-6 rounded-xl shadow-md">
             <h3 class="text-lg font-semibold mb-2 text-[#283c1c]">Last Called</h3>
@@ -112,13 +112,13 @@
                   <mat-icon class="mr-3">edit</mat-icon>
                   <span>Manual Select</span>
                 </button>
-                <button *ngIf="isReturnTopActive"
+                <!-- <button *ngIf="isReturnTopActive"
                         (click)="returnTop()"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#3a5728] text-white hover:bg-[#4a6d32] active:bg-[#5c8540] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="Return Top">
                   <mat-icon class="mr-3">arrow_upward</mat-icon>
                   <span>Return Top</span>
-                </button>
+                </button> -->
                 <button *ngIf="isReturnBottomActive"
                         (click)="returnBottom()"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#3a5728] text-white hover:bg-[#4a6d32] active:bg-[#5c8540] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#a3c089] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
@@ -126,7 +126,7 @@
                   <mat-icon class="mr-3">arrow_downward</mat-icon>
                   <span>Return Bottom</span>
                 </button>
-                <button (click)="noShow()"
+                <button *ngIf="currentTicket" (click)="noShow()"
                         class="w-full py-3 rounded-md flex items-center justify-start px-4 font-medium bg-[#8b2e2e] text-white hover:bg-[#a33636] active:bg-[#bb3e3e] transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#d46a6a] focus:ring-opacity-50 transform hover:-translate-y-0.5 active:translate-y-0"
                         aria-label="No Show">
                   <mat-icon class="mr-3">highlight_off</mat-icon>
@@ -157,7 +157,7 @@
                       <tbody>
                         <tr *ngFor="let ticket of tickets; let last = last" [ngClass]="{'border-b border-[#dfe9d8]': !last}">
                           <td class="p-3 text-[#283c1c]">{{ ticket.number.toString().padStart(3, '0')}}</td>
-                          <td class="p-3 text-[#283c1c]">{{ ticket.timestamp }}</td>
+                          <td class="p-3 text-[#283c1c]">{{ ticket.timestamp | date:'MM-dd-yyyy h:mm:ss a'  }}</td>
                           <td class="p-3" [ngClass]="{ 'text-[#8b2e2e] font-semibold': ticket.type === 'priority', 'text-[#4a6d32] font-semibold': ticket.type === 'regular' }">
                             {{ ticket.type.toUpperCase() }}
                           </td>

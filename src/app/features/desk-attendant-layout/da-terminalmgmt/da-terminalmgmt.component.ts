@@ -149,6 +149,27 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       this.selectedCounter = this.terminals.find(terminal=>terminal.id == this.lastSession.terminal_id);
       this.terminalService.refreshTerminalStatus(this.lastSession.id);
     }
+    this.subscription = this.queueService.queue$.subscribe((queueItems: Ticket[]) => {
+      this.tickets = [...queueItems];
+    });
+
+    this.queueService.listenToQueue();
+
+    await this.queueService.getTodayQueues();
+    const {attendedQueue,queue} =await this.queueService.getQueueOnDesk();
+    this.currentTicket = queue ? {...queue!} : undefined;
+   
+    if(this.currentTicket){
+      this.startTimer();
+      this.isNextClientActive = false;
+        this.isClientDoneActive = true;
+        this.isCallNumberActive = true;
+        this.isManualSelectActive = false;
+        this.isReturnTopActive = true;
+        this.isReturnBottomActive = true;
+
+      this.timerStartTime = new Date(attendedQueue?.attended_on!).getTime();
+    }
 
     this.API.setLoading(false);  
     this.statusInterval = setInterval(async ()=>{
@@ -177,15 +198,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
       }
     },1000)   
 
-
       
-    this.subscription = this.queueService.queue$.subscribe((queueItems: Ticket[]) => {
-      this.tickets = queueItems;
-    });
-
-    this.queueService.listenToQueue();
-
-    await this.queueService.getTodayQueues();
+   
 
      
   }
@@ -242,6 +256,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
    */
   nextClient(): void {
     if (this.tickets.length > 0) {
+      
       const nextTicket = this.tickets.shift();
       if (nextTicket) {
         this.currentTicket = nextTicket;
@@ -251,6 +266,8 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         this.isManualSelectActive = false;
         this.isReturnTopActive = true;
         this.isReturnBottomActive = true;
+        
+        this.queueService.nextQueue();
 
         // Set current client details
         this.currentClientDetails = {
@@ -277,19 +294,25 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Marks the current client as done and updates states accordingly.
-   */
-  clientDone(): void {
+
+  resetInterface(){
     this.isClientDoneActive = false;
     this.isNextClientActive = true;
     this.isCallNumberActive = false;
     this.isManualSelectActive = true;
     this.isReturnTopActive = false;
     this.isReturnBottomActive = false;
-    this.lastCalledNumber = this.currentTicket!.number.toString().padStart(3, '0');
-    this.currentTicket= this.tickets[0];
+    this.lastCalledNumber = (this.currentTicket?.type == 'priority' ? 'P' :'R') +'-' + this.currentTicket!.number.toString().padStart(3, '0');
+    this.currentTicket= undefined;
     this.currentClientDetails = null;
+  }
+
+  /**
+   * Marks the current client as done and updates states accordingly.
+   */
+  clientDone(): void {
+    this.resetInterface();
+    this.queueService.resolveAttendedQueue('finished');
     this.stopTimer();
   }
 
@@ -298,7 +321,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
    */
   callNumber(): void {
     console.log(`Calling number ${this.currentTicket?.number}`);
-    this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.number.toString().padStart(3, '0')}`)
+    this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.type =='priority' ? 'P':'R'}-${this.currentTicket?.number.toString().padStart(3, '0')}`)
     // this.isCallNumberActive = false;
   }
 
@@ -314,39 +337,27 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
    * Returns the current ticket to the top of the queue.
    */
   returnTop(): void {
-    if (this.currentClientDetails) {
-      const currentTicket: Ticket = {
-        number: this.currentTicket!.number,
-        timestamp: new Date().toLocaleString(),
-        type: 'regular',
-      };
-      this.tickets.unshift(currentTicket);
-      this.nextClient();
-    }
+    
   }
 
   /**
    * Returns the current ticket to the bottom of the queue.
    */
   returnBottom(): void {
-    if (this.currentClientDetails) {
-      const currentTicket: Ticket = {
-        number: this.currentTicket!.number,
-        timestamp: new Date().toLocaleString(),
-        type: 'regular',
-      };
-      this.tickets.push(currentTicket);
-      this.nextClient();
-    }
+    this.resetInterface();
+    this.queueService.resolveAttendedQueue('bottom');
+    this.stopTimer();
   }
 
   /**
    * Handles the "No Show" action by moving to the next client.
    */
   noShow(): void {
-    if (this.tickets.length > 0) {
-      this.nextClient();
-    }
+
+    this.resetInterface();
+    this.currentClientDetails = null;
+    this.queueService.resolveAttendedQueue('skipped');
+  
   }
 
   /**

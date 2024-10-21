@@ -54,7 +54,7 @@ export class KioskFormsComponent implements OnInit {
         id: this.kioskService.kiosk.division_id,
         name:this.kioskService.kiosk.division,
       })
-      this.queueService.getTodayQueues();
+      this.queueService.getTodayQueues(true);
 
     }else{
       throw new Error('Invalid method');

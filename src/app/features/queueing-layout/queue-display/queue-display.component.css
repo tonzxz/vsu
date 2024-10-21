@@ -225,7 +225,15 @@
   .timezone-text,.timezone-container{
     font-size: 1rem;
   }
+
+  .time-container-inner{
+    gap: 0.4rem;
+  }
   
+  .weather-icon{
+    width:  2.4rem;
+    height: 2.4rem;
+  }
   .announcement-text{
     font-size: 1rem;
    }

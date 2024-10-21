@@ -74,9 +74,9 @@ export class ContentManagementComponent implements OnInit {
 
   toggles:ContentToggles= {
     announcements:false,
-    time:false,
-    weather:false,
-    currency:false,
+    time:true,
+    weather:true,
+    currency:true,
     videoURL: false,
     background:false,
   }

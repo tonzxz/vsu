@@ -258,7 +258,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   
     // Create an array of days in the correct order
     const result = [];
-    for (let i = 7; i >= 0; i--) { // Iterate from 7 days ago to today
+    for (let i = 6; i >= 0; i--) { // Iterate from 7 days ago to today
       const day = new Date();
       day.setDate(today.getDate() - i);
       const dayKey = day.toISOString().split('T')[0]; // Get YYYY-MM-DD format
@@ -274,24 +274,21 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if(division_id){
       items = items.filter(item=> item.division_id == division_id);
     }
-    const countByWeek: any = {};
-    const now = new Date();
-    items.forEach((item: any) => {
+    const countByWeek = [0, 0, 0, 0]; // Initialize an array for the 4 weeks of the month
+      const now = new Date();
+
+      items.forEach((item) => {
         const date = new Date(item.timestamp);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month and pad with zero
-        
-        if(year == now.getFullYear() && month ==  String(now.getMonth() + 1).padStart(2, '0')){
-          // Get the week number of the month
-          const week = Math.ceil((date.getDate() + 6) / 7); // Calculate week number (1-4)
-          const weekKey = `${year}-${month}-W${week}`; // Create a key for the week
-  
-          countByWeek[weekKey] = (countByWeek[weekKey] || 0) + 1; // Increment the count for that week
-        }
 
-    });
-  
-    return Object.values(countByWeek);
+        if (year === now.getFullYear() && month === String(now.getMonth() + 1).padStart(2, '0')) {
+          // Get the week number of the month (1-4)
+          const week = Math.ceil((date.getDate() + 6) / 7) - 1; // Zero-based index for array
+          countByWeek[week] += 1; // Increment the count for that week
+        }
+      });
+      return countByWeek;
   }
   countItemsPerYear(division_id?:string) {
     let items = this.queueService.allQueue;

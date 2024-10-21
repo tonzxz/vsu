@@ -145,10 +145,11 @@
     </div>
   </div>
 
+
   <div *ngIf="getAuthFeedback()"
   class="absolute bottom-4 right-4 z-50 flex flex-col gap-4 ">
      <ng-container  >
-         <div  class="animate-pop flex items-center gap-10 justify-between bg-white rounded-xl  w-auto shadow-md border-2 border-solid {{borderColorMap[getAuthFeedback()!.type]}} h-auto py-2 pl-4 pr-4">
+         <div  class="animate-pop flex items-center gap-10 min-w-96 justify-between bg-white rounded-xl  w-auto shadow-md border-2 border-solid {{borderColorMap[getAuthFeedback()!.type]}} h-auto py-2 pl-4 pr-4">
              <div class="flex gap-4 items-center">
                  <div class="w-14 h-14 flex items-center">
                      <app-lottie-animation animation="{{lottieMap[getAuthFeedback()!.type]}}" [loop]="false"></app-lottie-animation>

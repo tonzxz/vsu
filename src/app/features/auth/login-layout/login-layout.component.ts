@@ -4,17 +4,19 @@ import { UswagonAuthModule, UswagonAuthService } from 'uswagon-auth';
 import { environment } from '../../../../environment/environment';
 import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login-layout',
   standalone: true,
-  imports: [RouterModule, UswagonAuthModule, LottieAnimationComponent, CommonModule],
+  imports: [RouterModule, UswagonAuthModule, LottieAnimationComponent, CommonModule,FormsModule],
   templateUrl: './login-layout.component.html',
   styleUrls: ['./login-layout.component.css']
 })
 export class LoginLayoutComponent implements OnInit {
-  username: string = '';
-  password: string = '';
+
+  rememberMe:boolean = false;
+
   roles: any[] = [
     { name: 'Admin', route: '/login', role: 'admin', tabindex: 0 },
     { name: 'Kiosk', route: '/kiosk', role: 'kiosk', tabindex: 1 },
@@ -104,6 +106,11 @@ export class LoginLayoutComponent implements OnInit {
   
 
   login(){
+    if(this.rememberMe){
+      this.auth.useLocalStorage();
+    }else{
+      this.auth.useSessionStorage();
+    }
     this.auth.login();
   }
 

@@ -389,7 +389,9 @@ export class ContentManagementComponent implements OnInit {
   checkYoutubeUrl(){
     if(!this.isValidYouTubeUrl(this.inputFields.youtubeURL!)){
       this.inputFields.youtubeURL = undefined;
-      alert('Please paste a valid youtube URL');
+      this.API.sendFeedback('error','Please enter a valid YouTube URL.',5000);
+    }else{
+      
     }
   }
 

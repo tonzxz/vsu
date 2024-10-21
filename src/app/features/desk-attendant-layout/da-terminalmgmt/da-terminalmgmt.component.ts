@@ -341,7 +341,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
    */
   callNumber(): void {
     console.log(`Calling number ${this.currentTicket?.number}`);
-    this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.type =='priority' ? 'P':'R'}-${this.currentTicket?.number.toString().padStart(3, '0')}`)
+    this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.type =='priority' ? 'P':'R'}-${this.currentTicket?.number.toString().padStart(3, '0')}`,5000)
     // this.isCallNumberActive = false;
   }
 

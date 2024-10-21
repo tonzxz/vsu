@@ -310,7 +310,7 @@
                     [showWeather]="toggles.weather" 
                     [showCurrency]="toggles.currency" 
                     [announcements]="inputFields.announcements" 
-                    [videoUrl]="inputFields.videoUrl"
+                    [videoUrl]="!toggles.videoURL ? inputFields.videoUrl : inputFields.youtubeURL"
                     [backgroundUrl]="inputFields.backgroundUrl"
                     [logoUrl]="inputFields.logoUrl"
                     [colors]="colors" 

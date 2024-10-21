@@ -30,15 +30,15 @@
         <button 
  
         *ngFor="let kiosk of kiosks; let i = index" 
-        class="group  {{kiosk.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
+        class="group transition-all hover:scale-110  {{kiosk.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
 
           <!-- Header -->
           <div class="flex gap-4 items-center">
             <!-- Lottie Container -->
-            <div class="w-16 h-12 p-2 rounded-lg bg-green-200 group-hover:bg-yellow-200">
-              <app-lottie-animation animation="computer"></app-lottie-animation>
+            <div class="transition-all w-16 h-12 p-2 rounded-lg bg-green-200 group-hover:bg-yellow-200">
+              <app-lottie-animation animation="tablet"></app-lottie-animation>
             </div>
-            <div class="w-5 h-5 rounded-full {{statusMap[kiosk.status!]}} bottom-4 right-4"></div>
+            <div class="transition-all w-5 h-5 rounded-full {{statusMap[kiosk.status!]}} bottom-4 right-4"></div>
             <div class="font-medium  tracking-wide text-xl flex items-center gap-2">
               KIOSK <span class="font-medium text-4xl">{{i+1}}</span>
             </div>
@@ -74,7 +74,7 @@
         </button>
         <button 
         (click)="addKiosk()"
-        class="bg-white tracking-wider h-48 font-thin rounded-lg gap-3 shadow-md  hover:bg-green-950 hover:text-white cursor-pointer flex justify-center border-2 border-solid border-black/10 items-center  " 
+        class="transition-all hover:scale-110 bg-white tracking-wider h-48 font-thin rounded-lg gap-3 shadow-md  hover:bg-green-950 hover:text-white cursor-pointer flex justify-center border-2 border-solid border-black/10 items-center  " 
         >
         <span class="text-4xl font-medium">
           +

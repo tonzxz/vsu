@@ -149,6 +149,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if(this.lastSession){
       this.selectedCounter = this.terminals.find(terminal=>terminal.id == this.lastSession.terminal_id);
       this.terminalService.refreshTerminalStatus(this.lastSession.id);
+      this.API.sendFeedback('warning','You have an ongoing session.');
     }
     this.subscription = this.queueService.queue$.subscribe((queueItems: Ticket[]) => {
       this.tickets = [...queueItems];
@@ -170,13 +171,15 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if(this.currentTicket){
       this.startTimer();
       this.isNextClientActive = false;
-        this.isClientDoneActive = true;
-        this.isCallNumberActive = true;
-        this.isManualSelectActive = false;
-        this.isReturnTopActive = true;
-        this.isReturnBottomActive = true;
-
+      this.isClientDoneActive = true;
+      this.isCallNumberActive = true;
+      this.isManualSelectActive = false;
+      this.isReturnTopActive = true;
+      this.isReturnBottomActive = true;
+      
       this.timerStartTime = new Date(attendedQueue?.attended_on!).getTime();
+
+      this.API.sendFeedback('warning','You have an active transaction.',5000);
     }
 
     this.API.setLoading(false);  
@@ -301,7 +304,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
         this.startTimer();
       // }
       this.actionLoading = false;
-      this.API.sendFeedback('success', `Proceeding to Next Client!`,5000);
+      this.API.sendFeedback('success', `Transaction started with client.`,5000);
     }
     
   }

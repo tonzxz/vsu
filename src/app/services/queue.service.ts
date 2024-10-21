@@ -46,9 +46,11 @@ export class QueueService  {
   private lastRegularQueueNumber:number = 0;
   private lastPriorityQueueNumber:number = 0;
   public queue:Queue[]=[];
-  private queueSubject = new BehaviorSubject<Queue[]>([]);
+  public allQueue:Queue[]= [];
+  public allTodayQueue:Queue[]= [];
   private takenQueue:string[]= [];
   public attendedQueue?:AttendedQueue;
+  private queueSubject = new BehaviorSubject<Queue[]>([]);
   public queue$ = this.queueSubject.asObservable();
 
 
@@ -292,14 +294,15 @@ export class QueueService  {
   }
 
   // Fetching of QUEUES
-  async getAllQueues(division:string){
+  async getAllQueues(division?:string){
+    const divisionCondition = division? `WHERE division_id = '${division}'` :'';
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE division_id = '${division}'`
+      conditions: divisionCondition
     });
     if(response.success){
-      this.queue = response.output;
+      this.allQueue = response.output;
       return response.output;
     }else{
       throw new Error('Unable to fetch queue');
@@ -347,6 +350,43 @@ export class QueueService  {
   }
   
 
+  async getAllTodayQueues(all:boolean =false){
+    const filter = all ? '':`AND (status = 'waiting' OR status ='bottom')`
+    const response = await this.API.read({
+      selectors: ['*'],
+      tables: 'queue',
+      conditions: `WHERE timestamp::date = CURRENT_DATE ${filter}` 
+    });
+    if(response.success){
+      const queue = response.output as Queue[];
+      this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
+      this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
+
+      const sortedQueue = queue.sort((a,b)=>{ 
+
+        if(a.status == 'bottom' && b.status =='bottom'){
+          return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+        }
+        if (a.type === 'priority' && b.type === 'regular') {
+          if(a.status == 'bottom'){
+            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+          }else{
+            return -1
+          }
+        };
+        if (a.type === 'regular' && b.type === 'priority') return 1;
+
+
+        return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      });
+      const filteredQueue = sortedQueue.filter(queue=>!this.takenQueue.includes(queue.id));
+      this.allTodayQueue = filteredQueue;
+      return filteredQueue;
+    }else{
+      throw new Error('Unable to fetch queue');
+    }
+  }
+  
   
   async geAllAttendedQueues(){
     try{

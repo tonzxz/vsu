@@ -327,10 +327,10 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
    
 }
 
-
-
-
   computeFillers(midpoint:number,count:number){
+    if(count==1){
+      return [];
+    }
     if(midpoint == Math.round(count/2))
       return new Array(5-midpoint);
     return [];
@@ -478,7 +478,6 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
         }
       });
       this.counters = this.counters.filter((counter)=>existingTerminals.includes(counter.id));
-      console.log(this.counters);
       if(!this.dataLoaded){
         this.loading = false;
         this.dataLoaded = true;

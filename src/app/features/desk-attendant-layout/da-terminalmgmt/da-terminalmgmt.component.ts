@@ -149,7 +149,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     if(this.lastSession){
       this.selectedCounter = this.terminals.find(terminal=>terminal.id == this.lastSession.terminal_id);
       this.terminalService.refreshTerminalStatus(this.lastSession.id);
-      this.API.sendFeedback('warning','You have an ongoing session.');
+      this.API.sendFeedback('warning','You have an ongoing session.',5000);
     }
     this.subscription = this.queueService.queue$.subscribe((queueItems: Ticket[]) => {
       this.tickets = [...queueItems];

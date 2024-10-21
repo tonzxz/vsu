@@ -157,8 +157,15 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
 
     await this.queueService.getTodayQueues();
     const {attendedQueue,queue} =await this.queueService.getQueueOnDesk();
+    
     this.currentTicket = queue ? {...queue!} : undefined;
    
+    const lastQueue = await this.queueService.getLastQueueOnDesk();
+
+    if(lastQueue)[
+      this.lastCalledNumber = (lastQueue.type=='priority' ? 'P' : 'R') +'-' + lastQueue.number.toString().padStart(3, '0')
+    ]
+
     if(this.currentTicket){
       this.startTimer();
       this.isNextClientActive = false;

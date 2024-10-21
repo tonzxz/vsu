@@ -394,6 +394,37 @@ export class QueueService  {
     }
   }
 
+  async getLastQueueOnDesk(){
+    const user = this.auth.getUser();
+    try{
+      const response = await this.API.read({
+        selectors: ['queue.status as queue_status,queue.*, attended_queue.*'],
+        tables: 'attended_queue, queue, terminal_sessions',
+        conditions: `
+          WHERE attended_queue.queue_id = queue.id AND queue.division_id = '${this.divisionService.selectedDivision?.id}' 
+          AND terminal_sessions.attendant_id = '${user.id}'  AND attended_queue.status != 'ongoing' 
+          ORDER BY attended_queue.finished_on DESC
+        `
+      });
+      if(response.success){
+        if(response.output.length> 0){
+          return  {
+            id:response.output[0].queue_id,
+            status:response.output[0].queue_statusm,
+            ...response.output[0]
+          } as Queue
+        }else{
+          return undefined;
+        }
+      }else{
+        throw new Error(response.output);
+      }
+    }catch(e:any){
+      alert(e.message);
+      throw new Error('Something went wrong.');
+    }
+  }
+
   
 
 }

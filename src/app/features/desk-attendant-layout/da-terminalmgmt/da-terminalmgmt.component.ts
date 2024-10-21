@@ -317,6 +317,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.lastCalledNumber = (this.currentTicket?.type == 'priority' ? 'P' :'R') +'-' + this.currentTicket!.number.toString().padStart(3, '0');
     this.currentTicket= undefined;
     this.currentClientDetails = null;
+    this.stopTimer();
   }
 
   /**
@@ -327,7 +328,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.actionLoading = true;
     await this.queueService.resolveAttendedQueue('finished');
     this.resetInterface();
-    this.stopTimer();
+    
     this.actionLoading = false;
     this.API.sendFeedback('success', `Transaction successful!`,5000);
   }

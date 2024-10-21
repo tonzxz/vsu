@@ -128,7 +128,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           office: item.name,
           currentTicket:0,
           waitingCount: this.queueService.allTodayQueue.filter(queue=>queue.division_id == item.id).length,
-          avgWaitTime:'5 mins',
+          avgWaitTime: `${this.calculateWaitingTime(item.id)} minutes`,
           status: this.getStatus()
         }
         
@@ -136,7 +136,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     },[])
     return of([
       ...perDivision,
-      { office: 'Total', currentTicket: 45, waitingCount: this.queueService.allTodayQueue.length, avgWaitTime: '5 minutes', status: 'Busy' },
+      { office: 'Total', currentTicket: 45, waitingCount: this.queueService.allTodayQueue.length, avgWaitTime: `${this.calculateWaitingTime()} minutes`, status: 'Busy' },
     ]);
   }
 
@@ -184,6 +184,34 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const filteredData = this.getFilteredData(data);
     return filteredData.reduce((acc: number, val: number) => acc + val, 0);
   }
+
+  calculateWaitingTime(division_id?:string){
+    let totalWaitingTime = 0;
+
+    let items = this.queueService.attendedQueues;
+
+    if(division_id){
+      items = this.queueService.attendedQueues.filter(attended=>  attended.queue!.division_id == division_id);
+    }
+
+    let ignoredItems = 0;
+
+    for (const record of items) {
+        const waitingTime = (new Date(record.attended_on)).getTime() - (new Date(record.queue!.timestamp!)).getTime();
+        if(waitingTime < 0){
+          ignoredItems += 1;
+        }else{
+          totalWaitingTime += waitingTime;
+        }
+    }
+
+    const averageWaitingTime = items.length == 0 ? 0 :totalWaitingTime / items.length - ignoredItems;
+
+    // Convert milliseconds to a more readable format, e.g., minutes
+    return (averageWaitingTime / (1000 * 60)).toFixed(2); // average waiting time in minutes
+  }
+
+
 
   countItemsPerDay  (division_id?:string) {
     let items = this.queueService.allQueue;
@@ -458,11 +486,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     await this.queueService.getAllQueues();
     await this.queueService.getAllTodayQueues();
+    await this.queueService.geAllAttendedQueues();
     this.queueAnalytics$ = this.getMockQueueAnalytics();
     this.staffPerformance$ = this.getMockStaffPerformance();
     this.kioskStatus$ = this.getMockKioskStatus();
     this.updateOverallMetrics();
     this.updateKioskPagination();
+    this.API.setLoading(false);
     if(this.dashboardInterval){
       clearInterval(this.dashboardInterval)
     }
@@ -473,9 +503,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.staffPerformance$ = this.getMockStaffPerformance();
       this.kioskStatus$ = this.getMockKioskStatus();
       this.updateKioskPagination();
-  
-    
-
       if(this.lastOverallTransaction !== this.queueService.allQueue.length){
         this.lastOverallTransaction = this.queueService.allQueue.length;
         this.updateOverallMetrics();
@@ -483,7 +510,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       
       if(!this.dataLoaded){
         this.dataLoaded = true;
-        this.API.setLoading(false);
+       
       }
     },2000)
 

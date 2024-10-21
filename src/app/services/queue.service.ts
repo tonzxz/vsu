@@ -311,7 +311,7 @@ export class QueueService  {
         }
         if (a.type === 'priority' && b.type === 'regular') {
           if(a.status == 'bottom'){
-            return 1
+            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
           }else{
             return -1
           }

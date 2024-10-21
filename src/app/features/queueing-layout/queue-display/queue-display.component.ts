@@ -17,6 +17,18 @@ interface Counter {
   personName?: string;
 }
 
+interface AttendedQueue{
+  id:string;
+  desk_id:string;
+  queue_id:string;
+  attended_on:string;
+  finished_on?:string;
+  status:string;
+  terminal_id:string;
+  number:number;
+  type:'priority' | 'regular';
+}
+
 interface UpNextItem {
   avatar: string;
   ticketNumber: string;
@@ -73,7 +85,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   // Mock data for queue
-  @Input() counters: Counter[] = [
+  counters: Counter[] = [
     { number: 1, ticketNumber: 'P-32', personName: 'Domeng Valdez',id:'',status:'online' },
     { number : 1, ticketNumber: 'P-01', personName: 'Domeng Valdez',id:'',status:'online' },
     { number : 1, ticketNumber: 'P-02', personName: 'Domeng Valdez',id:'',status:'online' },
@@ -82,6 +94,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     { number : 1, ticketNumber: 'P-07', personName: 'Domeng Valdez',id:'',status:'online' },
     { number : 1, ticketNumber: 'P-10', personName: 'Domeng Valdez',id:'',status:'online' },
   ];
+  
 
 
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>; // Access video element
@@ -122,6 +135,8 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     { avatar: '/assets/queue-display/Female_2.png', ticketNumber: 'R-247', personName: 'Joey Bichara' },
     { avatar: '/assets/queue-display/female_1.png', ticketNumber: 'R-217', personName: 'Kenneth Felix Belga' },
   ];
+
+  attendedQueue:AttendedQueue[]=[];
 
   weatherItems: WeatherItem[] = [
     { time: '12:00 PM', temperature: 40 },
@@ -434,17 +449,22 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
 
     this.terminalInterval = setInterval(async ()=>{
       let existingTerminals:string[] = []
+      this.attendedQueue = await this.queueService.geAllAttendedQueues();
       const updatedTerminals = await this.terminalService.getAllTerminals();
       // Update existing terminals
       updatedTerminals.forEach((updatedTerminal:any) => {
         existingTerminals.push(updatedTerminal.id);
         const existingTerminal = this.counters.find(t => t.id === updatedTerminal.id);
+        const ticket = this.attendedQueue.find(t=> t.terminal_id ==  updatedTerminal.id);
+        if(ticket){
+          console.log(updatedTerminal.id,ticket.id);
+        }
         if (existingTerminal) {
           // Update properties of the existing terminal
           Object.assign(existingTerminal, {
             id: updatedTerminal.id,
             status: updatedTerminal.status,
-            ticketNumber: updatedTerminal.ticket,
+            ticketNumber: ticket ==undefined ? undefined : (ticket.type=='priority'?'P':'R') + '-'+ ticket.number.toString().padStart(3, '0'),
             personName: updatedTerminal.fullname,
             number:updatedTerminal.number
           });
@@ -453,13 +473,14 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
           this.counters.push({
             id: updatedTerminal.id,
             status: updatedTerminal.status,
-            ticketNumber: updatedTerminal.ticket,
+            ticketNumber: ticket ==undefined ? undefined : (ticket.type=='priority'?'P':'R') + '-'+ ticket.number.toString().padStart(3, '0'),
             personName: updatedTerminal.fullname,
             number:updatedTerminal.number
           });
         }
       });
       this.counters = this.counters.filter((counter)=>existingTerminals.includes(counter.id));
+    
       if(!this.dataLoaded){
         this.loading = false;
         this.dataLoaded = true;

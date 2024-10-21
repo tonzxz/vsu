@@ -89,7 +89,7 @@ async deleteTerminal(id:string){
         tables: 'terminals',
         conditions: `
           LEFT JOIN divisions ON divisions.id = terminals.division_id
-          LEFT JOIN terminal_sessions ON terminal_sessions.terminal_id = terminals.id AND terminal_sessions.status !='closed'
+          LEFT JOIN terminal_sessions ON terminal_sessions.terminal_id = terminals.id AND terminal_sessions.status !='closed' 
           LEFT JOIN desk_attendants ON terminal_sessions.attendant_id = desk_attendants.id
           WHERE terminals.division_id = '${this.divisionService.selectedDivision?.id}' 
           GROUP BY terminals.id, divisions.id, terminal_sessions.terminal_id,desk_attendants.id

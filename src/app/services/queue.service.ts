@@ -29,6 +29,9 @@ interface AttendedQueue{
   attended_on:string;
   finished_on?:string;
   status:string;
+  terminal_id:string;
+  number:number;
+  type:'priority' | 'regular';
 }
 @Injectable({
   providedIn: 'root'
@@ -329,35 +332,26 @@ export class QueueService  {
     }
   }
   
-  async getOngoingQueues(division:string){
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'queue',
-      conditions: `
-        WHERE division_id = '${division} AND status = 'waiting'
-        ORDER BY timestamp DESC
-      '`
-    });
-    if(response.success){
-      return response.output;
-    }else{
-      throw new Error('Unable to fetch queue');
-    }
-  }
+
   
-  async geAllAttendedQueues(division:string){
-    const response = await this.API.read({
-      selectors: ['queue.*,attended_queue.*'],
-      tables: 'attended_queue, queue',
-      conditions: `
-        WHERE attended_queue.queue.id = queue.id  AND queue.division_id = '${division}
-        ORDER BY timestamp DESC
-      '`
-    });
-    if(response.success){
-      return response.output;
-    }else{
-      throw new Error('Unable to fetch queue');
+  async geAllAttendedQueues(){
+    try{
+      const response = await this.API.read({
+        selectors: ['terminal_sessions.*,queue.*,attended_queue.* '],
+        tables: 'attended_queue, queue,terminal_sessions',
+        conditions: `
+          WHERE attended_queue.queue_id = queue.id  AND queue.division_id = '${this.divisionService.selectedDivision?.id}' 
+          AND attended_queue.status = 'ongoing' AND terminal_sessions.id = attended_queue.desk_id
+          ORDER BY timestamp DESC
+        `
+      });
+      if(response.success){
+        return response.output as AttendedQueue[];
+      }else{
+        throw new Error(response.output);
+      }
+    }catch(e:any){
+      throw new Error('Something went wrong.');
     }
   }
 

@@ -29,7 +29,7 @@
       <div class=" grid grid-cols-3 px-3 py-3 gap-3"> 
         <button 
         *ngFor="let terminal of terminals; let i = index" 
-        class="group transition-all hover:scale-110  {{terminal.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
+        class="group transition-all hover:scale-110  {{terminal.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white border-green-800 hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-dashed border-black/10 ">
 
           <!-- Header -->
           <div class="flex gap-4 items-center">

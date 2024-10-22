@@ -191,6 +191,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     clearInterval(this.intervalWeather);
     clearInterval(this.intervalSwitchter);
     this.subscription?.unsubscribe();
+    this.API.addSocketListener('number-calling',(data)=>{})
   }
 
   ngOnInit(): void {

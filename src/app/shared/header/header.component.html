@@ -1,17 +1,40 @@
-<header class="bg-white rounded-3xl shadow-lg px-6 py-3 mt-4 mx-8 transform hover:scale-102 transition-all duration-300">
-    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <!-- Profile Picture and Welcome Text -->
-        <div class="flex items-center space-x-4">
-            <img [src]="divisionLogo ?? 'assets/logo/vsu.png'" alt="Right Image" class="w-14 h-14 object-cover rounded-full">
-            <h2 class="text-2xl font-medium text-[#283c1c]">
-                <span class="font-normal">Welcome </span>
-                <span>{{getUserName()}}!</span>
-                <span> 👋 </span>
-            </h2>
-        </div>
-
-      
-        <!-- Image on the right -->
-        <img [src]="getUserProfile()" alt="Right Image" class="w-14 h-14 object-cover rounded-full">
+<header class="px-6 py-4 mx-8 mt-4 transition-transform duration-300 ease-in-out transform bg-white shadow-lg rounded-3xl">
+  <div class="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
+    <!-- Profile Picture and Welcome Text -->
+    <div class="flex items-center space-x-4">
+      <img [src]="divisionLogo" alt="Division Logo" class="object-cover w-16 h-16 rounded-full shadow-md">
+      <h2 class="text-2xl font-medium text-[#283c1c]">
+        <span class="font-light">Welcome </span>
+        <span>{{ getUserName() }}!</span>
+        <span class="animate-wave">👋</span>
+      </h2>
     </div>
+
+    <!-- Profile Picture with Dropdown -->
+    <div class="relative">
+      <img
+        [src]="getUserProfile()"
+        alt="Profile Image"
+        class="object-cover rounded-full cursor-pointer w-14 h-14"
+        (click)="toggleDropdown()"
+      />
+
+      <!-- Dropdown Menu -->
+      <div *ngIf="isDropdownOpen" class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg dark:bg-gray-700">
+        <a
+          href="#"
+          class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-gray-600"
+          (click)="navigateToProfile($event)"
+        >
+          Profile Overview
+        </a>
+        <a
+          href="#"
+          class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-gray-600"
+        >
+          Help
+        </a>
+      </div>
+    </div>
+  </div>
 </header>

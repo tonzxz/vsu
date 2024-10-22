@@ -59,12 +59,12 @@ export class UserManagementComponent implements OnInit {
 
 
   divisions: Divisions[] = [];
-  
+
   constructor(private API: UswagonCoreService, private auth:UswagonAuthService) {}
 
   ngOnInit() {
     this.loadData();
- 
+
 
   }
 
@@ -92,7 +92,7 @@ export class UserManagementComponent implements OnInit {
     }else{
       throw new Error('Something went wrong');
     }
-  
+
   }
 
   async fetchUsers() {
@@ -111,7 +111,7 @@ export class UserManagementComponent implements OnInit {
       tables: 'desk_attendants,divisions',
       conditions:conditions
     });
-  
+
     if (data.success && data.output.length > 0) {
       this.users = await Promise.all(data.output.map(async (user: {
         password: any;
@@ -125,19 +125,19 @@ export class UserManagementComponent implements OnInit {
       }) => {
 
         const decryptedPassword = await this.API.decrypt(user.password);
-      
+
         return {
           id: user.id,
           fullname: user.fullname,
           username: user.username,
           profile: this.getImageURL(user.profile),
-          password: decryptedPassword, 
+          password: decryptedPassword,
           division_id: user.division_id,
           division: user.division || 'Not Available',
           is_online: user.is_online
         };
       }));
-      
+
       this.filteredUsers = [...this.users];
       this.setCurrentUser(this.users[0]);
 
@@ -147,15 +147,15 @@ export class UserManagementComponent implements OnInit {
       console.error('No users found or query failed');
     }
   }
-  
-  
+
+
   getImageURL(file: string): string | undefined {
     return this.API.getFileURL(file);
   }
 
   searchUsers() {
     const query = this.searchQuery.toLowerCase().trim();
-    this.filteredUsers = this.users.filter(user => 
+    this.filteredUsers = this.users.filter(user =>
       user.username.toLowerCase().includes(query) ||
       user.fullname.toLowerCase().includes(query) ||
       user.division.toLowerCase().includes(query)
@@ -172,11 +172,11 @@ export class UserManagementComponent implements OnInit {
   }
 
   async deleteUser(user: User) {
-   
+
     const confirmed = confirm(`Are you sure you want to delete ${user.fullname}?`);
 
     if (!confirmed) {
-      return; 
+      return;
     }
 
     try {
@@ -188,7 +188,7 @@ export class UserManagementComponent implements OnInit {
 
       const response = await this.API.delete({
         tables: 'desk_attendants',
-        conditions: `WHERE id = '${user.id}'` 
+        conditions: `WHERE id = '${user.id}'`
       });
 
       if (response && response.success) {
@@ -221,7 +221,7 @@ export class UserManagementComponent implements OnInit {
         this.users[index] = { ...this.users[index], ...partialUser };
         this.API.sendFeedback('success', 'User has been updated!',5000);
       }
-      
+
     } else {
       const newUser: User = {
         ...partialUser,
@@ -233,12 +233,12 @@ export class UserManagementComponent implements OnInit {
       this.users.push(newUser);
     }
     this.closeModal();
-    await this.fetchUsers(); 
+    await this.fetchUsers();
   }
 
 editUser(user: User) {
-  this.selectedUser = user;  
-  this.showModal = true;     
+  this.selectedUser = user;
+  this.showModal = true;
 }
 
 }

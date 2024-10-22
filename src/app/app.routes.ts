@@ -1,6 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { LoginLayoutComponent } from './features/auth/login-layout/login-layout.component'; 
+import { LoginLayoutComponent } from './features/auth/login-layout/login-layout.component';
 import { LoginAsComponent } from './features/auth/login-layout/login-as/login-as.component';
 import { AdminLayoutComponent } from './features/admin-layout/admin-layout.component';
 import { DashboardComponent } from './features/admin-layout/dashboard/dashboard.component';
@@ -20,6 +20,7 @@ import { KioskLayoutComponent } from './features/kiosk-layout/kiosk-layout.compo
 import { kioskGuard } from './guards/kiosk.guard';
 import { ServiceManagementComponent } from './features/admin-layout/service-management/service-management.component';
 import { DepartmentManagementComponent } from './features/admin-layout/department-management/department-management.component';
+import { ProfileLayoutComponent } from './shared/profile/profile-layout/profile-layout.component';
 
 export const routes: Routes = [
   {
@@ -29,7 +30,7 @@ export const routes: Routes = [
   },
   {
     path: 'login', component: LoginLayoutComponent,
-  
+
   },
   {
     path: 'login-as', component: LoginAsComponent,
@@ -38,10 +39,11 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminLayoutComponent,
     canActivate: [AuthGuard],
-    data: { requiredRole: 'admin',  },
+    data: { requiredRole: 'admin' },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'profile', component: ProfileLayoutComponent },
       { path: 'content-management', component: ContentManagementComponent },
       { path: 'user-management', component: UserManagementComponent },
       { path: 'terminal', component: TerminalManagementComponent },
@@ -53,16 +55,16 @@ export const routes: Routes = [
   {
     path:'kiosk',
     component:KioskLayoutComponent,
- 
+
     children: [
       { path: '', redirectTo: 'selection', pathMatch: 'full' },
       {
-        path: 'selection', 
+        path: 'selection',
         canActivate: [kioskGuard],
         component: KioskSelectionComponent,
       },
       {
-        path: 'forms', 
+        path: 'forms',
         canActivate: [kioskGuard],
         component: KioskFormsComponent,
       },
@@ -77,7 +79,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DaDashboardComponent },
-      { path: 'terminalmgmt', component: DaTerminalmgmtComponent }
+      { path: 'profile', component: ProfileLayoutComponent },
+      { path: 'terminalmgmt', component: DaTerminalmgmtComponent },
     ]
   },
   {

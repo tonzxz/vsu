@@ -33,8 +33,8 @@ export class KioskService {
       selectors: ['divisions.name as division,kiosks.*'],
       tables: 'kiosks, divisions',
       conditions: `
-        WHERE kiosks.division_id = divisions.id 
-        AND kiosks.code = '${code}'  
+        WHERE kiosks.division_id = divisions.id
+        AND kiosks.code = '${code}'
       `
     });
     if(response.success){
@@ -77,14 +77,14 @@ export class KioskService {
        division_id: currentDivision!.id,
        code:code,
        status:'available'
-     }  
+     }
    });
- 
+
    if(!response.success){
      throw new Error('Something went wrong');
    }
  }
- 
+
  async updateKioskStatus(id:string, status: 'available'|'maintenance'){
    const response = await this.API.update({
      tables: 'kiosks',
@@ -93,7 +93,7 @@ export class KioskService {
      }  ,
      conditions: `WHERE id = '${id}'`
    });
- 
+
    if(!response.success){
      throw new Error('Unable to add terminal');
    }
@@ -113,7 +113,7 @@ export class KioskService {
   }else{
     throw new Error('Something went wrong');
   }
-  
+
 
   const response = await this.API.update({
     tables: 'kiosks',
@@ -132,14 +132,14 @@ export class KioskService {
      tables: 'kiosks',
      conditions: `WHERE id = '${id}'`
    });
- 
+
    if(!response.success){
      throw new Error('Unable to delete kiosk');
    }
  }
- 
+
   async getAllKiosks(division_id:string){
-   
+
      const response = await this.API.read({
          selectors: ['divisions.name as division, kiosks.*'],
          tables: 'kiosks,divisions',
@@ -147,12 +147,12 @@ export class KioskService {
            WHERE kiosks.division_id = '${division_id}'  AND divisions.id = kiosks.division_id
            ORDER BY number ASC`
        });
-    
+
      if(response.success){
         for(let kiosk of response.output){
-          const now = new Date(); 
+          const now = new Date();
           const lastActive = new Date(kiosk.last_online);
-          const diffInMinutes = (now.getTime() - lastActive.getTime()) / 60000; 
+          const diffInMinutes = (now.getTime() - lastActive.getTime()) / 60000;
           if(diffInMinutes < 1.5 && kiosk.status != 'maintenance'){
             kiosk.status = 'online';
           }
@@ -162,30 +162,25 @@ export class KioskService {
        throw new Error('Unable to fetch kiosks');
      }
    }
-  async getKiosks( status:'available'|'maintenance',division?:string,){
-     let division_id;
-   
-     if(!division){
-       division_id =  this.user.division_id;
-     }else{
-       division_id = division;
-     }
- 
- 
-     const response = await this.API.read({
-       selectors: ['divisions.name as division, kiosks.*'],
-       tables: 'kiosks,divisions',
-       conditions: `
-         WHERE kiosks.division_id = '${division_id}'  AND divisions.id = kiosks.division_id AND status == '${status}'
-         ORDER BY number ASC`
-     });
-     
-    
-     if(response.success){
-       return response.output;
-     }else{
-      
-       throw new Error('Unable to fetch kiosks');
-     }
-   }
+   async getKiosks(status: 'available' | 'maintenance', division?: string): Promise<Kiosk[]> {
+    try {
+      const divisionId = division || this.auth.getUser().division_id;
+      const response = await this.API.read({
+        selectors: ['divisions.name as division, kiosks.*'],
+        tables: 'kiosks, divisions',
+        conditions: `WHERE kiosks.division_id = '${divisionId}' AND divisions.id = kiosks.division_id AND status = '${status}'`
+      });
+
+      if (response.success) {
+        return response.output;
+      } else {
+        console.error('Failed to fetch kiosks:', response);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching kiosks:', error);
+      return [];
+    }
+  }
+
 }

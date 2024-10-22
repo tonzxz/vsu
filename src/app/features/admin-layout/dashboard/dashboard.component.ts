@@ -18,6 +18,9 @@ import { ContentService } from '../../../services/content.service';
 import { UswagonAuthService } from 'uswagon-auth';
 import { DivisionService } from '../../../services/division.service';
 import { QueueService } from '../../../services/queue.service';
+import { KioskService } from '../../../services/kiosk.service';
+import { TerminalService } from '../../../services/terminal.service';
+import { ServiceService } from '../../../services/service.service';
 
 interface Division{
   id:string;
@@ -87,11 +90,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   dataLoaded: boolean = false;
   dashboardInterval:any;
 
+  availableKiosks: number = 0;
+  availableTerminals: number = 0;
+  totalServices: number = 0;
+
   constructor(
     private API: UswagonCoreService,
     private divisionService: DivisionService,
     private contentService: ContentService,
     private queueService:QueueService,
+    private kioskService: KioskService,
+    private terminalService: TerminalService,
+    private serviceService: ServiceService,
     private auth: UswagonAuthService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -99,7 +109,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.currentUser = { firstName: 'User' };
     this.loadContents();
-   
+
   }
 
 
@@ -131,7 +141,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           avgWaitTime: `${this.calculateWaitingTime(item.id)} minutes`,
           status: this.getStatus()
         }
-        
+
       ]
     },[])
     return of([
@@ -162,7 +172,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       { id: 'K08', location: 'Branch G', status: 'Low Paper', ticketsIssued: 200, lastMaintenance: '2023-10-22' },
       { id: 'K09', location: 'Branch H', status: 'Operational', ticketsIssued: 550, lastMaintenance: '2023-10-25' },
       { id: 'K10', location: 'Branch I', status: 'Operational', ticketsIssued: 400, lastMaintenance: '2023-10-28' },
-      
+
     ]);
   }
 
@@ -242,30 +252,30 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const today = new Date();
     const startOfPeriod = new Date(today);
     startOfPeriod.setDate(today.getDate() - 6); // Set to 7 days before today
-  
+
     const countByDay: any = {};
-  
+
     items.forEach((item: any) => {
       const date = new Date(item.timestamp);
-  
+
       // Check if the item is within the last 8 days
       if (date >= startOfPeriod && date <= today) {
         const dayKey = date.toISOString().split('T')[0]; // Use ISO string to get YYYY-MM-DD format
-  
+
         countByDay[dayKey] = (countByDay[dayKey] || 0) + 1; // Increment the count for that day
       }
     });
-  
+
     // Create an array of days in the correct order
     const result = [];
     for (let i = 6; i >= 0; i--) { // Iterate from 7 days ago to today
       const day = new Date();
       day.setDate(today.getDate() - i);
       const dayKey = day.toISOString().split('T')[0]; // Get YYYY-MM-DD format
-  
+
       result.push(countByDay[dayKey] || 0); // Push the count or 0 if no items for that day
     }
-  
+
     return result;
   }
 
@@ -295,7 +305,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if(division_id){
       items = items.filter(item=> item.division_id == division_id);
     }
-    
+
     const countByMonth = new Array(12).fill(0); // Create an array with 12 months initialized to 0
     const now = new Date();
     // Iterate over each item to count occurrences by month
@@ -324,7 +334,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             month:this.countItemsPerMonth(item.id),
             year: this.countItemsPerYear(item.id),
           }
-          
+
         }
       ];
     },[]);
@@ -467,7 +477,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return days;
   }
 
-  
+
 
   async loadContents() {
     this.API.setLoading(true);
@@ -479,8 +489,24 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.content = this.contents.find(content => content.division_id === this.selectedDivision);
       }
     } else {
-      this.content = await this.contentService.getContentSetting();
-    }
+       // Non-super admin logic:
+       this.content = await this.contentService.getContentSetting();
+
+       // Calculate the number of available kiosks:
+       const availableKiosks = await this.kioskService.getKiosks('available');
+       this.availableKiosks = availableKiosks.length;
+
+       // Calculate the number of available terminals:
+       const terminals = await this.terminalService.getAllTerminals();
+       this.availableTerminals = terminals.filter(
+         (terminal: { status: string }) => terminal.status === 'available'
+       ).length;
+
+       // Fetch total services for the user's division:
+       const divisionId = this.auth.getUser().division_id;
+       const services = await this.serviceService.getAllServices(divisionId);
+       this.totalServices = services.length;
+     }
     await this.queueService.getAllQueues();
     await this.queueService.getAllTodayQueues();
     await this.queueService.geAllAttendedQueues();
@@ -504,10 +530,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.lastOverallTransaction = this.queueService.allQueue.length;
         this.updateOverallMetrics();
       }
-      
+
       if(!this.dataLoaded){
         this.dataLoaded = true;
-       
+
       }
     },2000)
 
@@ -532,7 +558,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onFilterChange() {
     this.updateOverallMetrics();
-    
+
   }
 
   updateKioskPagination() {

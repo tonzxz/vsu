@@ -13,7 +13,7 @@
 
    <!-- Below Image Header: Registrar and Time Info -->
    <div class="flex flex-col items-center justify-between w-full px-4 py-3 bg-white sm:flex-row sm:px-6 sm:py-4">
-    <h1 class="mb-2 text-center registrar-title sm:mb-0">REGISTRAR</h1>
+    <h1 class="mb-2 text-center registrar-title sm:mb-0">{{this.division?.name?.toUpperCase()}}</h1>
     <div class="flex items-center gap-2 text-green-800 sm:gap-4">
       <div class="flex flex-col items-end">
         <time class="text-3xl font-semibold sm:text-4xl">{{ currentTime | date:'h:mm' }}</time>
@@ -65,11 +65,11 @@
                 <label for="services" class="block mb-1 text-sm font-medium text-gray-600">Services</label>
                 <div class="relative">
                   <div
-                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer"
+                    class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md cursor-pointer"
                     (click)="toggleDropdown()"
                   >
                     <span *ngIf="selectedServices.length === 0">Select Services</span>
-                    <span *ngIf="selectedServices.length > 0">{{ selectedServices.join(', ') }}</span>
+                    <span *ngIf="selectedServices.length > 0">{{ showServiceNames()}}</span>
                     <i class="ml-2 fas fa-caret-down"></i>
                   </div>
 
@@ -87,13 +87,13 @@
                       />
                     </div>
                     <div class="p-2 overflow-y-auto max-h-48">
-                      <div *ngFor="let item of filteredChecklist">
+                      <div *ngFor="let item of filteredServiceChecklist">
                         <label class="flex items-center">
                           <input
                             type="checkbox"
                             class="form-checkbox"
                             [checked]="item.selected"
-                            (change)="toggleSelection(item.name)"
+                            (change)="toggleSelection(item.id!)"
                             name="service-{{ item.name }}"
                           />
                           <span class="ml-2">{{ item.name }}</span>
@@ -108,24 +108,23 @@
 
               <!-- Other Form Fields -->
               <div>
-                <label for="gender" class="block mb-1 text-sm font-medium text-gray-600">Gender (Optional)</label>
+                <label for="gender" class="block mb-1 text-sm font-medium text-gray-600">Gender</label>
                 <select [(ngModel)]="gender" name="gender" id="gender" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
-                  <option>Select gender</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
               <div>
                 <label for="name" class="block mb-1 text-sm font-medium text-gray-600">Name</label>
-                <input [(ngModel)]="customerName" id="name" type="text" placeholder="Type your name" name="name" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                <input maxlength="20" [(ngModel)]="customerName" id="name" type="text" placeholder="Type your name (eg. Juan Cruz)" name="name" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
               </div>
               <div>
-                <label for="department" class="block mb-1 text-sm font-medium text-gray-600">Department</label>
+                <label for="department" class="block mb-1 text-sm font-medium text-gray-600">Department (Optional)</label>
                 <select [(ngModel)]="department" name="department" id="department" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
-                  <option>College of Science</option>
-                  <option>College of Arts</option>
-                  <option>College of Engineering</option>
+                  <option value="">Select Department</option>
+                  <option *ngFor="let department of departments" [value]="department.name" >{{department.name}}</option>
                 </select>
               </div>
             </div>
@@ -136,13 +135,13 @@
 
             <!-- Priority Selection -->
             <div class="flex justify-center gap-8 p-10 mt-10">
-              <button type="button" (click)="handleButtonClick('priority')" class="flex flex-col items-center justify-center text-white transition bg-[#2F4A2C] rounded-lg priority-button hover:bg-green-600">
-                <img src="./assets/kiosk/Priority.png" alt="Priority icon" class="button-icon">
-                <span>Priority</span>
+              <button type="button" (click)="handleButtonClick('priority')" class=" border-dashed border-2 border-green-700/55 flex flex-col p-4 items-center justify-center text-white font-semibold text-lg transition {{selectedType =='priority' ? 'bg-yellow-400':'bg-[#2F4A2C]'}} bg-[#2F4A2C] rounded-lg  hover:bg-yellow-300">
+                <img src="./assets/kiosk/Priority.png" alt="Priority icon" class="object-contain w-40 h-40">
+                <span class="text-shadow">PRIORITY</span>
               </button>
-              <button type="button" (click)="handleButtonClick('regular')" class="flex flex-col items-center justify-center text-gray-800 transition bg-yellow-400 rounded-lg regular-button hover:bg-yellow-300">
-                <img src="./assets/kiosk/Regular.png" alt="Regular icon" class="button-icon">
-                <span>Regular</span>
+              <button type="button" (click)="handleButtonClick('regular')" class="border-dashed border-2 border-green-700/55 flex flex-col p-4 items-center justify-center text-white font-semibold text-lg  transition {{selectedType =='regular' ? 'bg-yellow-400':'bg-[#2F4A2C]'}} rounded-lg  hover:bg-yellow-300">
+                <img src="./assets/kiosk/Regular.png" alt="Regular icon" class="object-contain w-40 h-40">
+                <span class="text-shadow">REGULAR</span>
               </button>
             </div>
           </form>
@@ -154,25 +153,35 @@
           <div class="p-2 space-y-4">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label class="block mb-1 text-sm font-medium text-gray-600">Services</label>
-                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ selectedServices.join(', ') || 'N/A' }}</div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Services <span *ngIf="selectedServices.length<=0" class="text-red-400 font-thin">*Please select at least one service</span></label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ showServiceNames() || 'Nothing was selected.' }}</div>
               </div>
               <div>
-                <label class="block mb-1 text-sm font-medium text-gray-600">Gender</label>
-                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ gender || 'N/A' }}</div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Gender <span *ngIf="gender == ''" class="text-red-400 font-thin">*Please specify gender.</span></label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ gender || 'Not Specified' }}</div>
               </div>
               <div>
-                <label class="block mb-1 text-sm font-medium text-gray-600">Name</label>
-                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ customerName || 'N/A' }}</div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Name <span *ngIf="customerName == ''" class="text-red-400 font-thin">*Please specify your name</span></label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ customerName || 'Not Specified' }}</div>
               </div>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-600">Department</label>
-                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ department || 'N/A' }}</div>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ department || 'Not Specificied' }}</div>
               </div>
             </div>
             <div class="mt-4">
               <label class="block mb-1 text-sm font-medium text-gray-600">Student number</label>
-              <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ studentNumber || 'N/A' }}</div>
+              <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ studentNumber || 'Not Secified' }}</div>
+            </div>
+            <div class="flex justify-center gap-8 p-10 mt-10">
+              <button *ngIf="selectedType=='priority'" type="button" class=" border-dashed border-2 border-green-700/55 flex flex-col p-4 items-center justify-center text-white font-semibold text-lg transition {{selectedType =='priority' ? 'bg-yellow-400':'bg-[#2F4A2C]'}} bg-[#2F4A2C] rounded-lg  hover:bg-yellow-300">
+                <img src="./assets/kiosk/Priority.png" alt="Priority icon" class="object-contain w-40 h-40">
+                <span class="text-shadow">PRIORITY</span>
+              </button>
+              <button *ngIf="selectedType=='regular'"  type="button"  class="border-dashed border-2 border-green-700/55 flex flex-col p-4 items-center justify-center text-white font-semibold text-lg  transition {{selectedType =='regular' ? 'bg-yellow-400':'bg-[#2F4A2C]'}} rounded-lg  hover:bg-yellow-300">
+                <img src="./assets/kiosk/Regular.png" alt="Regular icon" class="object-contain w-40 h-40">
+                <span class="text-shadow">REGULAR</span>
+              </button>
             </div>
           </div>
         </section>
@@ -195,8 +204,8 @@
   </main>
 
   <!-- Modal for Queue Confirmation -->
-  <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="w-full max-w-sm bg-white rounded-lg shadow-lg sm:max-w-md">
+  <!-- <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="w-full max-w-sm bg-white animate-pop rounded-lg shadow-lg sm:max-w-md">
       <div class="relative p-6 overflow-hidden">
         <div class="absolute inset-0 flex items-center justify-center opacity-10">
           <img src="./assets/logo/vsu.png" alt="VSU Logo" class="object-contain w-full h-full">
@@ -230,6 +239,31 @@
           Close
         </button>
       </div>
+      <audio [volume]="0.4"  [src]="'assets/audio/notif.mp3'" autoplay></audio>
     </div>
+  </div> -->
+  <app-feedback
+    *ngIf="modal == 'success'"
+    title="You're in Line!"
+    [description]="successDescription"
+    details="Thank you for your patience!"
+    animation="check"
+    sound="notif.mp3"
+    (onClose)="closeFeedback()"
+  ></app-feedback>
+  <app-feedback
+    *ngIf="modal =='priority'"
+    title="You are in Line!"
+    [description]="successDescription"
+    [details]="priorityDetails"
+    animation="check"
+    sound="notif.mp3"
+    (onClose)="closeFeedback()"
+  ></app-feedback>
+
+  <app-snackbar></app-snackbar>
+  <div *ngIf="isLoading" class="h-full w-full cursor-wait bg-white overflow-hidden absolute z-10 flex flex-col justify-center items-center ">
+    <app-lottie-animation class=" w-52 h-52 animate-pop" animation="loader"></app-lottie-animation>
+    <div  class="tracking-wider text-sm animate-bounce animate-pop">Please Wait</div>
   </div>
 </section>

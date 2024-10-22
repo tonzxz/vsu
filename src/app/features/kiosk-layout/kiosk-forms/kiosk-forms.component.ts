@@ -1,5 +1,5 @@
 //kiosk-forms.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, model, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,15 +8,22 @@ import { UswagonCoreService } from 'uswagon-core';
 import { QueueService } from '../../../services/queue.service';
 import { KioskService } from '../../../services/kiosk.service';
 import { DivisionService } from '../../../services/division.service';
+import { FeedbackComponent } from '../../../shared/modals/feedback/feedback.component';
+import { ServiceService } from '../../../services/service.service';
+import { Department, Division, Service } from '../types/kiosk-layout.types';
+import { DepartmentService } from '../../../services/department.service';
+import { SnackbarComponent } from '../../../shared/snackbar/snackbar.component';
+import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
+import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
 
 @Component({
   selector: 'app-kiosk-forms',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FeedbackComponent,SnackbarComponent,ConfirmationComponent, LottieAnimationComponent],
   templateUrl: './kiosk-forms.component.html',
   styleUrls: ['./kiosk-forms.component.css']
 })
-export class KioskFormsComponent implements OnInit {
+export class KioskFormsComponent implements OnInit, OnDestroy {
   [x: string]: any;
 
   departmentName: string = '';
@@ -26,40 +33,66 @@ export class KioskFormsComponent implements OnInit {
   isChecklistVisible: boolean = false;
   isFormVisible: boolean = false;
   showModal: boolean = false;
-  checklist: { name: string, selected: boolean }[] = [
-    { name: 'Request Documents', selected: false },
-    { name: 'File Documents', selected: false },
-    { name: 'Make Payment', selected: false },
-    { name: 'Set an Appointment', selected: false },
-    { name: 'Other', selected: false },
-  ];
+
   queueNumber: string | null = null;
-  selectedServices: string[] = [];
+  selectedServices: Service[] = [];
   selectedType: 'regular' | 'priority' = 'regular';
   customerName: string = '';
   gender: string = '';
   department: string = '';
   studentNumber: string = '';
 
-  filteredChecklist = [...this.checklist];
+  services:Service[]= [];
+  filteredServiceChecklist:Service[] = [...this.services];
   searchTerm: string = '';
   isDropdownOpen: boolean = false;
+  division?:Division;
 
+  departments:Department[] = [];
+  serviceInterval:any;
+  successDescription = '';
+  priorityDetails = `<div class='flex flex-col leading-none py-2 gap-2'>
+    Please ensure that you have VALID ID to be considered as priority. <div class="text-sm px-6  text-red-900/85 ">* Without ID desk attendants are ALLOWED to put you at the bottom of queue.</div>
+  </div> `;
+
+  isLoading:boolean = false;
 
   constructor(private route: ActivatedRoute,
     private queueService: QueueService,
     private kioskService: KioskService,
     private divisionService: DivisionService,
+    private serviceService:ServiceService,
+    private departmentService:DepartmentService,
     private API: UswagonCoreService) {}
 
+ 
+  modal?:'priority'|'success';
 
+  openFeedback(type:'priority'|'success'){
+    this.modal = type;
+  }
 
-    toggleDropdown() {
-      this.isDropdownOpen = !this.isDropdownOpen;
-      if (this.isDropdownOpen) {
-        this.filterChecklist(); // Ensure all items are shown when opened
-      }
+  closeFeedback(){
+    this.modal = undefined;
+  }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+    if (this.isDropdownOpen) {
+      this.filterChecklist(); // Ensure all items are shown when opened
     }
+  }
+
+
+  showServiceNames(){
+    return this.selectedServices.map(item=>item.name).join(', ')
+  }
+
+  ngOnDestroy(): void {
+    if(this.serviceInterval){
+      clearInterval(this.serviceInterval)
+    }
+  }
 
   async ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -71,11 +104,21 @@ export class KioskFormsComponent implements OnInit {
         id: this.kioskService.kiosk.division_id,
         name: this.kioskService.kiosk.division,
       });
+      this.division = this.divisionService.selectedDivision;
       this.queueService.getTodayQueues(true);
     } else {
       throw new Error('Invalid method');
     }
 
+    this.services = await this.serviceService.getAllServices(this.divisionService.selectedDivision?.id!);
+    this.departments = await this.departmentService.getAllDepartments();
+    if(this.serviceInterval){
+      clearInterval(this.serviceInterval)
+    }
+    this.serviceInterval = setInterval(async()=>{
+      this.services = await this.serviceService.getAllServices(this.divisionService.selectedDivision?.id!);
+      this.departments = await this.departmentService.getAllDepartments();
+    },2000)
     this.resetQueueNumberIfNewDay();
   }
 
@@ -84,31 +127,31 @@ export class KioskFormsComponent implements OnInit {
     this.selectedType = type;
   }
 
-  toggleSelection(serviceName: string) {
-    const service = this.checklist.find(item => item.name === serviceName);
+  async toggleSelection(service_id: string) {
+    const service = this.services.find(item => item.id === service_id);
     if (service) {
-      service.selected = !service.selected;
-      if (service.selected) {
-        this.selectedServices.push(serviceName);
+
+      if (!this.selectedServices.find(item=>item.id == service_id)) {
+        this.selectedServices.push(service);
       } else {
-        this.selectedServices = this.selectedServices.filter(name => name !== serviceName);
+        this.selectedServices = this.selectedServices.filter(service => service.id !== service_id);
       }
     }
   }
 
   filterChecklist() {
-    this.filteredChecklist = this.checklist.filter(item =>
+    this.filteredServiceChecklist = this.services.filter(item =>
       item.name.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
+  
 
-  confirmChecklist(): void {
-    this.isChecklistVisible = true;
-    this.queueNumber = this.generateQueueNumber();
-    this.selectedServices = this.checklist
-      .filter(item => item.selected)
-      .map(item => item.name);
-    this.showModal = true;
+  async confirmChecklist() {
+    try{
+      await this.submitForm();
+    }catch(e){
+      this.API.sendFeedback('error','Something went wrong.', 5000);
+    }
   }
 
   goBack(): void {
@@ -125,20 +168,62 @@ export class KioskFormsComponent implements OnInit {
     this.showModal = false;
   }
 
+  confirmPriority(){
+    this.modal = 'priority';
+  }
+
   async submitForm() {
-    console.log(this.kioskService.kiosk);
+    if(this.isLoading){
+      return;
+    }
     if (!this.kioskService.kiosk) {
       throw new Error('Invalid method!');
     }
+  this.isLoading = true;
 
+  if(this.selectedServices.length <=0){
+    this.API.sendFeedback('error','Please select a service!', 5000);
+    this.isLoading =false;
+    throw new Error();
+  }
+
+  if(this.customerName.trim() == ''){
+    this.API.sendFeedback('error','Fullname is required!',5000);
+       this.isLoading =false;
+    throw new Error();
+  }
+  if(this.gender.trim() == ''){
+    this.API.sendFeedback('error','Gender is required!',5000);
+    this.isLoading =false;
+    throw new Error();
+  }
+   try{
     const number = await this.queueService.addToQueue({
-      fullname: this.customerName,
+      fullname: this.customerName.trim(),
       type: this.selectedType,
-      gender: this.gender as 'male' | 'female' | 'other', // Type assertion here
-      services: this.selectedServices
+      gender: this.gender.toLowerCase() as 'male' | 'female' | 'other',
+      services: this.selectedServices.map(item=>item.id!),
+      student_id: this.studentNumber.trim() == '' ? undefined : this.studentNumber.trim(),
+      department_id: this.department.trim() == '' ? undefined : this.department.trim(),
     });
+    this.selectedServices = this.services
+    .filter(item => item.selected)
+    this.isChecklistVisible = true;
+    this.isFormVisible = false;
+    this.gender = '';
+    this.customerName = '';
+    this.studentNumber = '';
+    this.successDescription = `Your current position is <span class='font-medium'>${this.selectedType === 'regular' ? 'R' : 'P'}-${number.toString().padStart(3,'0')}</span>`
+    await this.printPDF(`${this.selectedType === 'regular' ? 'R' : 'P'}-${number.toString().padStart(3,'0')}`);
+    this.isLoading =false;
+    this.openFeedback( this.selectedType === 'regular' ? 'success':'priority');
+   }catch(e){
+    this.isLoading =false;
+    this.API.sendFeedback('error','Something went wrong.',5000);
+   }
 
-    alert(`Your code is ${this.selectedType === 'regular' ? 'R' : 'P'}-${number}`);
+
+   
   }
 
 
@@ -172,7 +257,7 @@ export class KioskFormsComponent implements OnInit {
     }
   }
 
-  async printPDF(): Promise<void> {
+  async printPDF(code:string): Promise<void> {
     const ticketWidth = 483;  // 483 pixels wide
     const ticketHeight = 371; // 371 pixels tall
     const contentWidth = 80;  // Keep content width as before (in mm)
@@ -208,7 +293,7 @@ export class KioskFormsComponent implements OnInit {
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(48);
       doc.setFont('helvetica', 'bold');
-      doc.text(this.queueNumber || 'R-0001', ticketWidth / 2, margin + 35, { align: 'center' });
+      doc.text(code, ticketWidth / 2, margin + 35, { align: 'center' });
 
       // Reset text color to black for the rest of the content
       doc.setTextColor(0, 0, 0);
@@ -233,7 +318,7 @@ export class KioskFormsComponent implements OnInit {
 
       const details = [
         { label: 'Name:', value: this.customerName || 'John Doe' },
-        { label: 'Services:', value: this.selectedServices.join(', ') || 'No services selected' },
+        { label: 'Services:', value: this.showServiceNames() || 'No services selected' },
         { label: 'Time:', value: this.currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
         { label: 'Date:', value: this.currentDate.toLocaleDateString() }
       ];

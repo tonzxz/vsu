@@ -1,192 +1,235 @@
-<div class="flex flex-col h-full overflow-hidden bg-white">
+<section class="flex flex-col items-center w-full h-full max-w-full p-4 overflow-y-auto">
   <!-- Header Section -->
-  <header class="flex relative flex-col items-start self-center px-14 py-7 w-full max-w-[1007px] min-h-[206px] max-md:px-5 max-md:max-w-full">
-    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/0bb46d07dcd9c58bd7a9c1937ff0e66cfc9d2606a6a382780bf054442af5a63f?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="" class="object-contain absolute right-0 bottom-0 z-0 rounded-3xl aspect-[4.88] h-[206px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[1007px]" />
-    <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/ccfd839ba53087efc00e872150152cfd96c0e66a81732cbe707bca93735455ca?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Registrar logo" class="object-contain z-0 max-w-full aspect-[1.01] w-[150px]" />
+  <header class="relative flex flex-col items-center w-full px-4 py-3 overflow-hidden bg-white rounded-lg shadow-md sm:px-6 sm:py-4">
+    <div class="z-10 flex items-center justify-between w-full max-w-full">
+      <div class="flex items-center">
+        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d5d40612e598a7197ff912181c7a8c92a917b0af79969c52d8bc1f64c6ead623?apiKey=f35c25b17acb406083beeda46a28c843" alt="Registrar logo" class="w-16 h-16 rounded-full shadow-lg sm:w-[80px] sm:h-[80px]">
+      </div>
+    </div>
+    <div class="absolute top-0 left-0 w-full h-full rounded-lg">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/85c09607b00c21dff8197a29be4f9bd6ca70de103a8f9517fccb03f7820f1037?apiKey=f35c25b17acb406083beeda46a28c843" alt="VSU background" class="object-cover w-full h-full rounded-lg">
+    </div>
   </header>
 
-  <!-- Department Info -->
-  <section class="flex flex-col self-center mt-8 w-full max-w-[948px] max-md:max-w-full">
-    <div class="flex flex-col justify-center w-full text-neutral-800 max-md:max-w-full">
-      <div class="flex flex-col w-full max-md:max-w-full">
-        <div class="flex flex-wrap gap-10 justify-between items-start pt-1.5 pb-9 w-full min-h-[154px] max-md:max-w-full">
-          <span class="gap-2.5 self-stretch text-6xl font-extrabold whitespace-nowrap min-w-[240px] w-[408px] max-md:text-4xl">
-            {{ departmentName | titlecase }}
-          </span>
-          <div class="flex gap-3 items-center font-bold min-w-[240px] w-[361px]">
-            <div class="self-stretch my-auto text-right max-md:text-4xl max-md:leading-[66px]">
-              <span class="block text-6xl">{{ currentTime | date: 'hh:mm' }}</span>
-              <span class="block text-2xl">{{ currentTime | date: 'a' }}</span>
-            </div>
-            <div class="flex shrink-0 self-stretch my-auto w-1.5 bg-neutral-800 h-[114px]"></div>
-            <div class="self-stretch my-auto text-3xl leading-[40px] w-[349px] max-md:text-2xl max-md:leading-[35px]">
-              <span class="block">{{ currentDate | date: 'EEEE,' }}</span>
-              <span class="block">{{ currentDate | date: 'MMMM d, yyyy' }}</span>
+   <!-- Below Image Header: Registrar and Time Info -->
+   <div class="flex flex-col items-center justify-between w-full px-4 py-3 bg-white sm:flex-row sm:px-6 sm:py-4">
+    <h1 class="mb-2 text-center registrar-title sm:mb-0">REGISTRAR</h1>
+    <div class="flex items-center gap-2 text-green-800 sm:gap-4">
+      <div class="flex flex-col items-end">
+        <time class="text-3xl font-semibold sm:text-4xl">{{ currentTime | date:'h:mm' }}</time>
+        <span class="text-sm font-medium sm:text-md">{{ currentPeriod }}</span>
+      </div>
+      <div class="h-[30px] w-[2px] bg-green-800 sm:h-[40px]"></div>
+      <div class="flex flex-col text-left uppercase">
+        <span class="text-2xl font sm:text-3xl">{{ currentTime | date:'EEEE' }}</span>
+        <span class="text-sm sm:text-md">{{ currentDate | date:'MMMM d, yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Form Section -->
+  <main class="flex flex-col w-full mt-4 bg-white">
+    <div class="flex flex-col w-full px-4 py-4 sm:px-6 sm:py-6">
+      <h2 class="self-center text-center form-title">FILL UP FORM</h2>
+      <div class="w-full h-px mt-2 mb-6 bg-[#B0B0B0]"></div>
+
+      <div class="p-4 bg-[#f4f4f4] rounded-lg sm:p-6">
+        <nav class="flex mb-4">
+          <div class="flex flex-col items-center mr-8">
+            <div class="flex flex-col flex-1 mr-8">
+              <div class="flex items-center mb-1">
+                <span [class.text-green-600]="!isFormVisible" [class.text-gray-400]="isFormVisible" class="mr-2 text-xl font-bold">1</span>
+                <span [class.text-green-600]="!isFormVisible" [class.text-gray-400]="isFormVisible" class="text-xs font-medium">Basic Information</span>
+              </div>
+              <div [class.bg-green-600]="!isFormVisible" [class.bg-gray-300]="isFormVisible" class="w-[130%] h-0.5 transition-all duration-300"></div>
             </div>
           </div>
-          
-        </div>
-        <span class="gap-2.5 self-center text-6xl font-bold text-center max-md:text-4xl">
-        @if(isChecklistVisible) { 
-          How Can We Serve you?
-        } @else if(!isChecklistVisible && !isFormVisible) {
-          Select a Line
-        } 
-        </span>
-        <span class="gap-2.5 self-center text-6xl font-bold text-center max-md:text-4xl">
-         @if (isFormVisible) {
-            Queue Ticket
-          }
-          </span>
+          <div class="flex flex-col items-center">
+            <div class="flex flex-col flex-1 mr-8">
+                <div class="flex items-center mb-1">
+                  <span [class.text-green-600]="isFormVisible" [class.text-gray-400]="!isFormVisible" class="mr-2 text-xl font-bold">2</span>
+                  <span [class.text-green-600]="isFormVisible" [class.text-gray-400]="!isFormVisible" class="text-xs font-medium">Confirmation</span>
+              </div>
+              <div [class.bg-green-600]="isFormVisible" [class.bg-white]="!isFormVisible" class="w-[150%] h-0.5 transition-all duration-300"></div>
+            </div>
+          </div>
+        </nav>
+
+
+        <!-- Form Step 1: Basic Information -->
+        <section *ngIf="!isFormVisible" class="w-full p-6">
+          <h2 class="p-2 mb-4 text-lg font-semibold text-gray-800">Basic Information</h2>
+          <form class="p-2 space-y-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label for="services" class="block mb-1 text-sm font-medium text-gray-600">Services</label>
+                <div class="relative">
+                  <div
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer"
+                    (click)="toggleDropdown()"
+                  >
+                    <span *ngIf="selectedServices.length === 0">Select Services</span>
+                    <span *ngIf="selectedServices.length > 0">{{ selectedServices.join(', ') }}</span>
+                    <i class="ml-2 fas fa-caret-down"></i>
+                  </div>
+
+                  <!-- Dropdown content: visible when isDropdownOpen is true -->
+                  <div *ngIf="isDropdownOpen" class="absolute left-0 z-10 w-full mt-2 bg-white border border-gray-300 rounded-md shadow-lg">
+                    <div class="p-2">
+                      <input
+                        type="text"
+                        [(ngModel)]="searchTerm"
+                        (input)="filterChecklist()"
+                        placeholder="Type a service"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        name="searchTerm"
+                        autocomplete="off"
+                      />
+                    </div>
+                    <div class="p-2 overflow-y-auto max-h-48">
+                      <div *ngFor="let item of filteredChecklist">
+                        <label class="flex items-center">
+                          <input
+                            type="checkbox"
+                            class="form-checkbox"
+                            [checked]="item.selected"
+                            (change)="toggleSelection(item.name)"
+                            name="service-{{ item.name }}"
+                          />
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Service Dropdown -->
+
+
+              <!-- Other Form Fields -->
+              <div>
+                <label for="gender" class="block mb-1 text-sm font-medium text-gray-600">Gender (Optional)</label>
+                <select [(ngModel)]="gender" name="gender" id="gender" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                  <option>Select gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="name" class="block mb-1 text-sm font-medium text-gray-600">Name</label>
+                <input [(ngModel)]="customerName" id="name" type="text" placeholder="Type your name" name="name" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+              </div>
+              <div>
+                <label for="department" class="block mb-1 text-sm font-medium text-gray-600">Department</label>
+                <select [(ngModel)]="department" name="department" id="department" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                  <option>College of Science</option>
+                  <option>College of Arts</option>
+                  <option>College of Engineering</option>
+                </select>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label for="studentNumber" class="block mb-1 text-sm font-medium text-gray-600">Student number (optional)</label>
+              <input [(ngModel)]="studentNumber" name="studentNumber" id="studentNumber" type="text" placeholder="Ex. VSU-2020-8467-91" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+            </div>
+
+            <!-- Priority Selection -->
+            <div class="flex justify-center gap-8 p-10 mt-10">
+              <button type="button" (click)="handleButtonClick('priority')" class="flex flex-col items-center justify-center text-white transition bg-[#2F4A2C] rounded-lg priority-button hover:bg-green-600">
+                <img src="./assets/kiosk/Priority.png" alt="Priority icon" class="button-icon">
+                <span>Priority</span>
+              </button>
+              <button type="button" (click)="handleButtonClick('regular')" class="flex flex-col items-center justify-center text-gray-800 transition bg-yellow-400 rounded-lg regular-button hover:bg-yellow-300">
+                <img src="./assets/kiosk/Regular.png" alt="Regular icon" class="button-icon">
+                <span>Regular</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Form Step 2: Confirmation -->
+        <section *ngIf="isFormVisible" class="w-full p-6">
+          <h2 class="p-2 mb-4 text-lg font-semibold text-gray-800">Check Info Below</h2>
+          <div class="p-2 space-y-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Services</label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ selectedServices.join(', ') || 'N/A' }}</div>
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Gender</label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ gender || 'N/A' }}</div>
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Name</label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ customerName || 'N/A' }}</div>
+              </div>
+              <div>
+                <label class="block mb-1 text-sm font-medium text-gray-600">Department</label>
+                <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ department || 'N/A' }}</div>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label class="block mb-1 text-sm font-medium text-gray-600">Student number</label>
+              <div class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md">{{ studentNumber || 'N/A' }}</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-between mt-6">
+        <button *ngIf="isFormVisible" (click)="goBack()" class="px-4 py-2 text-sm font-bold text-gray-800 transition bg-white border border-gray-800 rounded-md sm:px-6 sm:py-3 sm:text-base hover:bg-gray-100">
+          PREVIOUS
+        </button>
+        <button *ngIf="!isFormVisible" class="invisible"></button>
+        <button *ngIf="!isFormVisible" (click)="isFormVisible = true" class="px-6 py-3 font-bold text-sm text-white transition bg-[#5F8D4E] rounded-lg sm:text-base hover:bg-green-500">
+          NEXT STEP
+        </button>
+        <button *ngIf="isFormVisible" (click)="confirmChecklist()" class="px-6 py-3 text-sm font-bold text-white transition bg-[#5F8D4E] rounded-lg sm:text-base hover:bg-green-500">
+          CONFIRM
+        </button>
       </div>
     </div>
-  </section>
+  </main>
 
-  <!-- Line Selection -->
-  <nav class="flex flex-col mt-12 w-full text-4xl font-bold text-white whitespace-nowrap max-md:mt-10 max-md:max-w-full" *ngIf="!isChecklistVisible && !isFormVisible">
-    <div class="flex flex-col w-full max-md:max-w-full">
-      <button (click)="handleButtonClick('regular')" class="flex flex-col items-center px-80 py-11 w-full text-center bg-lime-900 rounded-3xl min-h-[357px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] max-md:px-5 max-md:max-w-full" tabindex="0">
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/e3e3a3bb80a2a94db339a0a0d63ec71f16b72dd570029f86967b71921aadee84?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Regular line icon" class="object-contain max-w-full aspect-[1.36] w-[304px]" />
-        <span>Regular</span>
-      </button>
-      <button (click)="handleButtonClick('priority')" class="flex flex-col items-center px-80 py-11 mt-12 w-full text-center bg-lime-900 rounded-3xl min-h-[357px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] max-md:px-5 max-md:mt-10 max-md:max-w-full" tabindex="0">
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/bc1c56fc95781996a43feba161857f52ae1b606fb428adeaaaa2b6fc80be0949?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Priority line icon" class="object-contain max-w-full aspect-[1.07] w-[235px]" />
-        <span>Priority</span>
-      </button>
-    </div>
-  </nav>
+  <!-- Modal for Queue Confirmation -->
+  <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="w-full max-w-sm bg-white rounded-lg shadow-lg sm:max-w-md">
+      <div class="relative p-6 overflow-hidden">
+        <div class="absolute inset-0 flex items-center justify-center opacity-10">
+          <img src="./assets/logo/vsu.png" alt="VSU Logo" class="object-contain w-full h-full">
+        </div>
 
-  <!-- Checklist Section -->
-  <nav *ngIf="isChecklistVisible" class="flex flex-col justify-center items-center mt-12 w-full max-md:mt-10 max-md:max-w-full">
-    <div class="flex flex-wrap gap-4 justify-center items-start self-stretch w-full max-md:max-w-full">
-      <div class="flex flex-col grow shrink min-w-[240px] w-[903px] max-md:max-w-full">
-        <div class="flex flex-wrap gap-10 items-center w-full max-md:max-w-full">
-          <button (click)="toggleSelection('Request Documents')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
-            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
-              <div [ngClass]="{'bg-white': !checklist[0].selected, 'bg-green-600': checklist[0].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
-            </div>
-            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
-              Request Documents
-            </div>
-          </button>
-          <button (click)="toggleSelection('File Documents')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
-            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
-              <div [ngClass]="{'bg-white': !checklist[1].selected, 'bg-green-600': checklist[1].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
-            </div>
-            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
-              File Documents
-            </div>
-          </button>
-        </div>
-        <div class="flex flex-wrap gap-10 items-center mt-8 w-full max-md:max-w-full">
-          <button (click)="toggleSelection('Make Payment')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
-            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
-              <div [ngClass]="{'bg-white': !checklist[2].selected, 'bg-green-600': checklist[2].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
-            </div>
-            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
-              Make Payment
-            </div>
-          </button>
-          <button (click)="toggleSelection('Set an Appointment')" class="flex flex-col grow shrink justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[347px] max-md:max-w-full">
-            <div class="flex gap-2.5 items-center self-center max-w-full w-[398px]">
-              <div [ngClass]="{'bg-white': !checklist[3].selected, 'bg-green-600': checklist[3].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
-            </div>
-            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 leading-[60px]">
-              Set an Appointment
-            </div>
-          </button>
-        </div>
-        <div class="flex gap-10 items-center mt-8 w-full max-md:max-w-full">
-          <button (click)="toggleSelection('Other')" class="flex flex-col justify-center self-stretch px-4 py-2.5 my-auto bg-lime-900 rounded-3xl min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[434px]">
-            <div class="flex gap-2.5 items-center self-center w-full">
-              <div [ngClass]="{'bg-white': !checklist[4].selected, 'bg-green-600': checklist[4].selected}" class="flex self-stretch py-2.5 my-auto rounded-xl border border-black border-solid h-[50px] min-h-[50px] w-[50px]"></div>
-            </div>
-            <div class="gap-2.5 self-stretch mt-2.5 w-full text-4xl font-bold text-center text-gray-100 whitespace-nowrap leading-[60px]">
-              Other
-            </div>
-          </button>
+        <div class="relative z-10">
+          <div class="bg-[#5F8D4E] text-white text-center py-2 px-4 rounded-lg mb-4">
+            <h2 class="text-4xl font-bold">{{ queueNumber }}</h2>
+          </div>
+
+          <p class="pb-2 mb-4 text-center text-gray-500 border-b">Welcome, you're currently in the queue</p>
+          <div class="space-y-2 text-left">
+            <p><span class="font-semibold">Name:</span> {{ customerName || 'N/A' }}</p>
+            <p><span class="font-semibold">Services:</span> {{ selectedServices.join(', ') || 'N/A' }}</p>
+            <p><span class="font-semibold">Gender:</span> {{ gender || 'N/A' }}</p>
+            <p><span class="font-semibold">Department:</span> {{ department || 'N/A' }}</p>
+            <p><span class="font-semibold">Student Number:</span> {{ studentNumber || 'N/A' }}</p>
+            <p><span class="font-semibold">Time:</span> {{ currentTime | date:'h:mm a' }}</p>
+            <p><span class="font-semibold">Date:</span> {{ currentDate | date:'M/d/yy' }}</p>
+          </div>
+
+          <p class="mt-6 text-center text-gray-500">Your number will be called shortly.</p>
         </div>
       </div>
-      <div class="flex gap-2 items-start max-md:hidden">
-        <div class="flex shrink-0 rounded-xl bg-zinc-300 h-[924px] w-[3px]"></div>
-        <div class="flex shrink-0 rounded-xl bg-zinc-300 h-[238px] w-[15px] max-md:hidden"></div>
+
+      <div class="flex justify-end p-4 bg-gray-100 rounded-b-lg">
+        <button (click)="printPDF()" class="px-4 py-2 mr-2 text-sm font-medium text-white transition duration-300 bg-blue-500 rounded-lg hover:bg-blue-600">
+          Print Ticket
+        </button>
+        <button (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 transition duration-300 bg-gray-200 rounded-lg hover:bg-gray-300">
+          Close
+        </button>
       </div>
-    </div>
-
-    <div class="flex flex-wrap gap-7 items-center mt-12 text-4xl font-bold text-white whitespace-nowrap max-md:mt-10 max-md:max-w-full">
-      <button (click)="goBack()" class="gap-2.5 self-stretch px-28 py-1.5 my-auto rounded-3xl bg-slate-800 min-h-[70px] min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[325px] max-md:px-5">
-        Back
-      </button>
-      <button (click)="submitForm()" class="gap-2.5 self-stretch px-24 py-1.5 my-auto bg-green-700 rounded-3xl min-h-[70px] min-w-[240px] shadow-[9px_9px_9px_rgba(0,0,0,0.25)] w-[325px] max-md:px-5">
-        Confirm
-      </button>
-    </div>
-
-  </nav>
-
-<!-- Modal -->
-<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-  <div class="bg-white rounded-3xl shadow-lg p-16 max-w-xl w-full">
-    
-    <span class="text-6xl font-bold mb-6 block text-center">
-      {{ departmentName | titlecase }}
-    </span>
-
-    <span class="text-9xl font-bold mb-6 block text-center">{{ queueNumber }}</span>
-    
-    <span class="text-4xl font-bold text-green-700 mb-6 block text-center">
-      Chosen Services:
-    </span>
-    
-    <div *ngFor="let service of selectedServices" class="text-4xl mb-6 text-center">
-      {{ service }}
-    </div>
-    
-    <div class="flex justify-center gap-6 mt-10">
-      <button (click)="goBack()" class="w-48 px-8 py-4 bg-slate-800 text-white rounded-3xl text-2xl shadow-lg">
-        Back
-      </button>
-      <button (click)="printPDF()" class="w-48 px-8 py-4 bg-green-700 text-white rounded-3xl text-2xl shadow-lg">
-        Print PDF
-      </button>
     </div>
   </div>
-</div>
-
-
-  
-
-  <!-- Assistance Icon -->
-  <div class="fixed bottom-4 right-4">
-    <button class="btn-assistance flex gap-2.5 items-center">
-      <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/2b4c984902bddbe5ebdc305860c57d65fa9ddf87a57d8a89f6dd4e22c49cdf27?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="" class="object-contain shrink-0 self-stretch my-auto aspect-square shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[60px]" />
-      <span class="self-stretch my-auto text-xl font-bold">Assistance</span>
-    </button>
-  </div>
-
-  <!-- Footer Section -->
-  <footer class="flex flex-wrap gap-5 justify-between items-center mt-64 max-md:mr-2">
-    <address class="flex gap-2 self-stretch my-auto not-italic">
-      <div class="flex relative flex-col self-start aspect-[0.75] w-[15px]">
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/ac3b42470d5ba2c77c8c58a11741d6205ab32287f16e2e302ad99b858fbb9740?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Location icon" class="object-cover absolute inset-0 size-full" />
-      </div>
-      <p class="flex-auto text-base font-semibold text-neutral-800">
-        Visca, Baybay City, Leyte Philippines 6521
-      </p>
-    </address>
-    <div class="flex gap-2.5 self-stretch my-auto max-md:max-w-full">
-      <div class="flex relative flex-col my-auto w-5 aspect-square">
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/fe6fde7f88fb36959ef360c6217f92a69c9dacbbf201146ea3d08a963da18ec2?placeholderIfAbsent=true&apiKey=2a252d86bf2a48fe834ba322701d8e03" alt="Phone icon" class="object-cover absolute inset-0 size-full" />
-      </div>
-      <p class="flex-auto text-base font-semibold text-neutral-800">
-        Trunkline: +63 (53) 565 0600 Fax No: +63 53 563 7067
-      </p>
-    </div>
-    <div class="flex gap-3 self-stretch whitespace-nowrap text-neutral-800">
-      <span class="text-xl font-bold"></span>
-      <a href="mailto:information@vsu.edu.ph" class="my-auto text-base font-semibold basis-auto">
-        informationvsu.edu.ph
-      </a>
-    </div>
-  </footer>
-</div>
+</section>

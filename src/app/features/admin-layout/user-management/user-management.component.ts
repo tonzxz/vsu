@@ -8,6 +8,7 @@ import { LottieAnimationComponent } from '../../../shared/components/lottie-anim
 import { environment } from '../../../../environment/environment';
 
 interface User {
+  type: string;
   id: string;
   username: string;
   fullname: string;
@@ -21,7 +22,7 @@ interface User {
 
 interface Divisions {
   id: string;
-  name:string;
+  name: string;
 }
 
 interface PerformanceMetrics {
@@ -55,97 +56,95 @@ export class UserManagementComponent implements OnInit {
   currentUser: User | null = null;
   showModal = false;
   selectedUser: User | null = null;
-  isSuperAdmin: boolean = this.auth.accountLoggedIn() == 'superadmin';
-
+  isSuperAdmin: boolean = this.auth.accountLoggedIn() === 'superadmin';
 
   divisions: Divisions[] = [];
 
-  constructor(private API: UswagonCoreService, private auth:UswagonAuthService) {}
+  constructor(private API: UswagonCoreService, private auth: UswagonAuthService) {}
 
   ngOnInit() {
     this.loadData();
-
-
   }
 
-  async loadData(){
+  async loadData() {
     this.API.setLoading(true);
-    await this.fetchUsers();
-    await this.fetchDivisions();
+    const [users, divisions] = await Promise.all([this.fetchUsers(), this.fetchDivisions()]);
+    this.users = users;
+    this.filteredUsers = [...this.users];
     this.API.setLoading(false);
   }
 
-  async fetchDivisions(){
+  async fetchDivisions() {
     const data = await this.API.read({
-      selectors: [
-        '*'
-      ],
+      selectors: ['*'],
       tables: 'divisions',
       conditions: `WHERE id != '${environment.administrators}'`
     });
 
-    if(data.success){
-      this.divisions  = data.output as Divisions[];
-      if(!this.isSuperAdmin){
-        this.divisions = this.divisions.filter((division)=> division.id == this.auth.getUser().division_id );
+    if (data.success) {
+      this.divisions = data.output as Divisions[];
+      if (!this.isSuperAdmin) {
+        this.divisions = this.divisions.filter(
+          division => division.id === this.auth.getUser().division_id
+        );
       }
-    }else{
-      throw new Error('Something went wrong');
+    } else {
+      throw new Error('Failed to fetch divisions');
     }
 
+    return this.divisions;
   }
 
-  async fetchUsers() {
-    let conditions ='';
+  async fetchUsers(): Promise<User[]> {
+    const conditions = this.isSuperAdmin
+      ? 'WHERE divisions.id = desk_attendants.division_id'
+      : `WHERE divisions.id = desk_attendants.division_id AND divisions.id = '${this.auth.getUser().division_id}'`;
 
-    if(this.isSuperAdmin){
-      conditions =  `WHERE divisions.id = desk_attendants.division_id`;
-    }else{
-       conditions =  `WHERE divisions.id = desk_attendants.division_id AND divisions.id = '${this.auth.getUser().division_id}'`
+    // Fetch users from both desk attendants and administrators in parallel
+    const [deskAttendantData, adminData] = await Promise.all([
+      this.API.read({
+        selectors: ['desk_attendants.*, divisions.name as division'],
+        tables: 'desk_attendants, divisions',
+        conditions: conditions
+      }),
+      this.API.read({
+        selectors: ['administrators.*, divisions.name as division'],
+        tables: 'administrators, divisions',
+        conditions: conditions.replace('desk_attendants', 'administrators')
+      })
+    ]);
+
+    let users: User[] = [];
+
+    // Combine and process users concurrently using map and async functions.
+    if (deskAttendantData.success) {
+      const deskAttendants = deskAttendantData.output.map((user: any) => this.processUser(user, 'Desk attendant'));
+      users.push(...await Promise.all(deskAttendants));
     }
 
-    const data = await this.API.read({
-      selectors: [
-        'desk_attendants.*, divisions.name as division'
-      ],
-      tables: 'desk_attendants,divisions',
-      conditions:conditions
-    });
-
-    if (data.success && data.output.length > 0) {
-      this.users = await Promise.all(data.output.map(async (user: {
-        password: any;
-        fullname: any;
-        username: any;
-        id: string;
-        profile: string;
-        division_id: string;
-        division: string;
-        is_online: boolean;
-      }) => {
-
-        const decryptedPassword = await this.API.decrypt(user.password);
-
-        return {
-          id: user.id,
-          fullname: user.fullname,
-          username: user.username,
-          profile: this.getImageURL(user.profile),
-          password: decryptedPassword,
-          division_id: user.division_id,
-          division: user.division || 'Not Available',
-          is_online: user.is_online
-        };
-      }));
-
-      this.filteredUsers = [...this.users];
-      this.setCurrentUser(this.users[0]);
-
-      console.log('Users fetched:', this.users);
-    } else {
-
-      console.error('No users found or query failed');
+    if (adminData.success) {
+      const admins = adminData.output.map((user: any) => this.processUser(user, user.role || 'Administrator'));
+      users.push(...await Promise.all(admins));
     }
+
+    console.log('Users fetched:', users);
+    return users;
+  }
+
+  async processUser(user: any, type: string): Promise<User> {
+    const decryptedPassword = await this.API.decrypt(user.password);
+    return {
+      id: user.id,
+      fullname: user.fullname,
+      username: user.username,
+      profile: this.getImageURL(user.profile),
+      password: decryptedPassword,
+      division_id: user.division_id,
+      division: user.division || 'Not Available',
+      is_online: user.is_online,
+      type: type,
+      number: user.number || '' // Defaulting to an empty string if 'number' is not available.
+    };
   }
 
 
@@ -172,32 +171,21 @@ export class UserManagementComponent implements OnInit {
   }
 
   async deleteUser(user: User) {
-
     const confirmed = confirm(`Are you sure you want to delete ${user.fullname}?`);
-
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     try {
-      if (!user.id) {
-        console.error('User ID is undefined');
-        alert('Failed to delete user: User ID is undefined');
-        return;
-      }
-
       const response = await this.API.delete({
-        tables: 'desk_attendants',
+        tables: user.type === 'Desk attendant' ? 'desk_attendants' : 'administrators',
         conditions: `WHERE id = '${user.id}'`
       });
 
       if (response && response.success) {
         this.users = this.users.filter(u => u.id !== user.id);
         this.filteredUsers = this.filteredUsers.filter(u => u.id !== user.id);
-        this.API.sendFeedback('success', 'User has been deleted!',5000);
+        this.API.sendFeedback('success', 'User has been deleted!', 5000);
         console.log('User deleted successfully:', user.fullname);
       } else {
-        console.error('Failed to delete user:', response.output);
         alert(`Failed to delete user: ${response.output || 'Unknown error'}`);
       }
     } catch (error) {
@@ -219,26 +207,24 @@ export class UserManagementComponent implements OnInit {
       const index = this.users.findIndex(u => u.id === partialUser.id);
       if (index !== -1) {
         this.users[index] = { ...this.users[index], ...partialUser };
-        this.API.sendFeedback('success', 'User has been updated!',5000);
+        this.API.sendFeedback('success', 'User has been updated!', 5000);
       }
-
     } else {
       const newUser: User = {
         ...partialUser,
-        division: this.divisions.find( (division)=> division.id == partialUser.division_id)?.name,
+        division: this.divisions.find(division => division.id === partialUser.division_id)?.name,
         is_online: false,
         number: ''
       } as User;
-      this.API.sendFeedback('success', 'New user has been added!',5000);
       this.users.push(newUser);
+      this.API.sendFeedback('success', 'New user has been added!', 5000);
     }
     this.closeModal();
-    await this.fetchUsers();
+    this.filteredUsers = [...this.users];
   }
 
-editUser(user: User) {
-  this.selectedUser = user;
-  this.showModal = true;
-}
-
+  editUser(user: User) {
+    this.selectedUser = user;
+    this.showModal = true;
+  }
 }

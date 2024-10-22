@@ -1,10 +1,12 @@
-<div class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 space-y-8">
-    
+<div class="fixed inset-0 bg-gray-800 bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 space-y-8 transform transition-all duration-300 ease-out">
     <!-- Modal Header -->
     <div class="flex items-center justify-between">
-      <h2 class="text-3xl font-bold text-gray-900">{{ editingUser ? 'Edit Account' : 'Create New Account' }}</h2>
-      <button type="button" (click)="close()" class="text-gray-400 hover:text-gray-600 transition">
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+        {{ editingUser ? 'Edit Account' : 'Create New Account' }}
+      </h2>
+      <button type="button" (click)="close()" 
+              class="text-gray-400 hover:text-gray-600 transition-colors duration-300 rounded-full p-1 hover:bg-gray-100">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>
@@ -12,69 +14,161 @@
     </div>
 
     <!-- Profile Picture Upload -->
-    <div class="flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center">
       <label for="profile" class="cursor-pointer group relative">
-        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 group-hover:border-blue-600 transition">
-          <img [src]="newUser.profile ? API.getFileURL(newUser.profile) : 'assets/default.jpg'" alt="Profile Picture" class="w-full h-full object-cover">
+        <div class="w-32 h-32 rounded-full overflow-hidden border-2  transition-all duration-300 
+                    group-hover:border-purple-700 group-hover:shadow-xl group-hover:scale-125">
+          <img [src]="newUser.profile ? API.getFileURL(newUser.profile) : 'assets/default.jpg'" 
+               alt="Profile Picture" 
+               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"/>
         </div>
-        <p class="mt-3 text-sm text-gray-500 group-hover:text-blue-600 transition">{{ editingUser ? 'Change Photo' : 'Upload Photo' }}</p>
+        <div class="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+          <p class="text-transparent group-hover:text-white transition-colors duration-300 font-medium">
+            {{ editingUser ? 'Change Photo' : 'Upload Photo' }}
+          </p>
+        </div>
         <input type="file" id="profile" (change)="onFileSelected($event)" accept="image/*" class="hidden"/>
-        <div class="absolute inset-0 bg-blue-600 bg-opacity-20 opacity-0 group-hover:opacity-100 transition"></div>
       </label>
+    </div>
+
+    <!-- Role Selection Buttons -->
+    <div class="mt-4 flex space-x-4">
+      <!-- Desk Attendant Button -->
+      <button
+        type="button"
+        (click)="selectRole('deskAttendant')"
+        [class.bg-gray-900]="selectedRole === 'deskAttendant'"
+        [class.text-white]="selectedRole === 'deskAttendant'"
+        [class.scale-105]="selectedRole === 'deskAttendant'"
+        [class.bg-gray-700]="selectedRole !== 'deskAttendant'"
+        [class.text-gray-200]="selectedRole !== 'deskAttendant'"
+        [style.opacity]="selectedRole === 'deskAttendant' ? '1' : '0.4'"
+        class="flex flex-1 items-center text-sm border border-purple-400 rounded-3xl focus:outline-none 
+               transition-all duration-300 ease-in-out
+               transform hover:scale-105 hover:bg-gray-900 hover:text-white hover:opacity-100
+               hover:shadow-lg hover:border-purple-500
+               active:scale-95 active:duration-150
+               motion-safe:hover:-translate-y-1"
+      >
+        <img src="assets/images/deskattendant.png" alt="Desk Attendant Icon" 
+             class="h-10 w-10 transition-transform duration-300 group-hover:rotate-6" />
+        <span class="flex-grow text-center mr-4">Desk Attendant</span>
+      </button>
+    
+      <!-- Admin Button -->
+      <button
+        type="button"
+        (click)="selectRole('admin')"
+        [class.bg-yellow-400]="selectedRole === 'admin'"
+        [class.text-white]="selectedRole === 'admin'"
+        [class.scale-105]="selectedRole === 'admin'"
+        [class.bg-yellow-300]="selectedRole !== 'admin'"
+        [class.text-gray-50]="selectedRole !== 'admin'"
+        [style.opacity]="selectedRole === 'admin' ? '1' : '0.4'"
+        class="flex flex-1 items-center text-sm border border-yellow-400 rounded-3xl focus:outline-none 
+               transition-all duration-300 ease-in-out
+               transform hover:scale-105 hover:bg-yellow-400 hover:text-white hover:opacity-100
+               hover:shadow-lg hover:border-yellow-500
+               active:scale-95 active:duration-150
+               motion-safe:hover:-translate-y-1"
+      >
+        <img src="assets/images/admin.png" alt="Admin Icon" 
+             class="h-10 w-11 transition-transform duration-300 group-hover:rotate-6" />
+        <span class="flex-grow text-center mr-4">Admin</span>
+      </button>
+    
+      <!-- Super Admin Button -->
+      <button
+        type="button"
+        (click)="selectRole('superadmin')"
+        [class.bg-purple-500]="selectedRole === 'superadmin'"
+        [class.text-white]="selectedRole === 'superadmin'"
+        [class.scale-105]="selectedRole === 'superadmin'"
+        [class.bg-purple-300]="selectedRole !== 'superadmin'"
+        [class.text-gray-50]="selectedRole !== 'superadmin'"
+        [style.opacity]="selectedRole === 'superadmin' ? '1' : '0.7'"
+        class="flex flex-1 items-center text-sm border border-gray-400 rounded-3xl focus:outline-none 
+               transition-all duration-300 ease-in-out
+               transform hover:scale-105 hover:bg-purple-400 hover:text-white hover:opacity-100
+               hover:shadow-lg hover:border-purple-500
+               active:scale-95 active:duration-150
+               motion-safe:hover:-translate-y-1"
+      >
+        <img src="assets/images/superadmin.png" alt="Super Admin Icon" 
+             class="h-10 w-14 transition-transform duration-300 group-hover:rotate-6" />
+        <span class="flex-grow text-center mr-4">Super Admin</span>
+      </button>
     </div>
 
     <!-- User Form -->
     <form (ngSubmit)="submitForm()" class="space-y-6">
-      
-      <!-- Username Field -->   
-      <div>
-        <label for="username" class="block mb-1 text-sm font-semibold text-gray-700">Username</label>
-        <input type="text" id="username" [(ngModel)]="newUser.username" name="username"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"/>
-      </div>
-
-      <!-- Full Name Field -->
-      <div>
-        <label for="fullname" class="block mb-1 text-sm font-semibold text-gray-700">Full Name</label>
-        <input type="text" id="fullname" [(ngModel)]="newUser.fullname" name="fullname"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"/>
-      </div>
-
-      <!-- Dropdown Field -->
-      <div class="mt-4">
-        <label for="userRole" class="block mb-1 text-sm font-semibold text-gray-700">User Role</label>
-        <select id="userRole" [(ngModel)]="newUser.division_id" name="userRole"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
-          <option value="" disabled selected>Select a role</option>
-          <ng-container *ngFor="let division of divisions">
-            <option *ngIf="!isSuperAdmin" selected [value]="division.id">{{division.name}}</option>
-            <option *ngIf="isSuperAdmin" [value]="division.id">{{division.name}}</option>
-          </ng-container>
-        </select>
-      </div>
-
-      <!-- Password Field -->
-      <div>
-        <div *ngIf="editingUser && !showPasswordField" class="flex justify-end">
-          <button type="button" (click)="togglePasswordField()" class="text-blue-500 font-medium hover:text-blue-700 transition">
-            Change Password?
-          </button>
+      <div class="space-y-4">
+        <!-- Division Select -->
+        <div *ngIf="selectedRole !== 'superadmin'" class="relative">
+          <label for="division" class="block mb-1 text-sm font-semibold text-gray-700">Division</label>
+          <select id="division" 
+                  [(ngModel)]="newUser.division_id" 
+                  (change)="onDivisionSelected($event)" 
+                  name="division"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 
+                         transition-all duration-300 shadow-sm hover:border-green-400 appearance-none bg-white">
+            <option value="" disabled selected>Select a division</option>
+            <ng-container *ngFor="let division of divisions">
+              <option [value]="division.id">{{ division.name }}</option>
+            </ng-container>
+          </select>
+          <div class="absolute right-3 top-[38px] pointer-events-none text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </div>
         </div>
-        <div *ngIf="!editingUser || showPasswordField">
+
+        <!-- Full Name Input -->
+        <div>
+          <label for="fullname" class="block mb-1 text-sm font-semibold text-gray-700">Full Name</label>
+          <input type="text" 
+                 id="fullname" 
+                 [(ngModel)]="newUser.fullname" 
+                 name="fullname"
+                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 
+                        transition-all duration-300 shadow-sm hover:border-green-400"/>
+        </div>
+
+        <!-- Username Input -->
+        <div>
+          <label for="username" class="block mb-1 text-sm font-semibold text-gray-700">Username</label>
+          <input type="text" 
+                 id="username" 
+                 [(ngModel)]="newUser.username" 
+                 name="username"
+                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 
+                        transition-all duration-300 shadow-sm hover:border-green-400"/>
+        </div>
+
+        <!-- Password Input -->
+        <div>
           <label for="password" class="block mb-1 text-sm font-semibold text-gray-700">
             {{ editingUser ? 'New Password' : 'Password' }}
           </label>
           <div class="relative">
-            <input [type]="passwordVisible ? 'text' : 'password'" id="password" [(ngModel)]="newUser.password" name="password"
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"/>
-            <button type="button" (click)="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg *ngIf="!passwordVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <input [type]="passwordVisible ? 'text' : 'password'" 
+                   id="password" 
+                   [(ngModel)]="newUser.password" 
+                   name="password"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 
+                          transition-all duration-300 shadow-sm hover:border-green-400"/>
+            <button type="button" 
+                    (click)="togglePasswordVisibility()" 
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors duration-300">
+              <svg *ngIf="!passwordVisible" xmlns="http://www.w3.org/2000/svg" 
+                   class="h-5 w-5 text-gray-500 hover:text-green-600" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
               </svg>
-              <svg *ngIf="passwordVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+              <svg *ngIf="passwordVisible" xmlns="http://www.w3.org/2000/svg" 
+                   class="h-5 w-5 text-gray-500 hover:text-green-600" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
-                <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
               </svg>
             </button>
           </div>
@@ -82,20 +176,24 @@
       </div>
 
       <!-- Error Message -->
-      <div *ngIf="showError" class="text-red-500 text-sm text-center">
+      <div *ngIf="showError" class="text-red-500 text-sm text-center bg-red-50 p-3 rounded-xl">
         {{ errorMessage }}
       </div>
 
-      <!-- Submit & Cancel Buttons -->
-      <div class="flex justify-center space-x-4">
-        <button type="button" (click)="close()" class="px-5 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition">
+      <!-- Action Buttons -->
+      <div class="flex justify-center space-x-4 pt-4">
+        <button type="button" 
+                (click)="close()" 
+                class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 
+                       transition-all duration-300 hover:shadow-md active:scale-95">
           Cancel
         </button>
-        <button type="submit" class="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+        <button type="submit" 
+                class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-xl 
+                       hover:from-green-700 hover:to-green-800 transition-all duration-300 hover:shadow-md active:scale-95">
           {{ editingUser ? 'Update Account' : 'Create Account' }}
         </button>
       </div>
     </form>
   </div>
 </div>
-<audio [volume]="0.4"  [src]="'assets/audio/pop-notif.wav'" autoplay></audio>

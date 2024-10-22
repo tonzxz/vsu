@@ -6,17 +6,19 @@ import { UswagonAuthService } from 'uswagon-auth';
 
 interface PartialUser {
   id: string;
-  division_id:string;
+  division_id: string;
   username: string;
   fullname: string;
   profile?: string;
   password?: string;
+  role?: string;
 }
 
 interface Divisions {
   id: string;
-  name:string;
+  name: string;
 }
+
 @Component({
   selector: 'app-create-account-modal',
   templateUrl: './create-account-modal.component.html',
@@ -27,39 +29,38 @@ interface Divisions {
 export class CreateAccountModalComponent {
   @Input() editingUser: boolean = false;
   @Input() user: PartialUser | null = null;
-  @Input() divisions:Divisions[] = [];
+  @Input() divisions: Divisions[] = [];
   @Output() closeModal = new EventEmitter<void>();
   @Output() accountCreated = new EventEmitter<Omit<PartialUser, 'password'>>();
 
   newUser: PartialUser = {
     id: '',
-    division_id:'',
+    division_id: '',
     username: '',
     fullname: '',
+    role: '',
     profile: '',
-    password: ''
+    password: '',
   };
 
   passwordVisible: boolean = false;
   showError: boolean = false;
   errorMessage: string = '';
+  selectedRole: 'deskAttendant' | 'admin' | 'superadmin' | '' = '';
+  isSuperAdmin: boolean = this.auth.accountLoggedIn() === 'superadmin';
   showPasswordField: boolean = false;
 
-  isSuperAdmin:boolean = this.auth.accountLoggedIn() =='superadmin';
-
-  constructor(public API: UswagonCoreService, private auth:UswagonAuthService) {}
+  constructor(public API: UswagonCoreService, private auth: UswagonAuthService) {}
 
   ngOnInit() {
     if (this.editingUser && this.user) {
       this.newUser = { ...this.user, password: '' };
     }
-    if(!this.isSuperAdmin){
+    if (!this.isSuperAdmin) {
       this.newUser.division_id = this.auth.getUser().division_id;
     }
   }
 
-
-  
   async submitForm() {
     try {
       if (this.editingUser) {
@@ -80,9 +81,34 @@ export class CreateAccountModalComponent {
       this.newUser.password = await this.API.hash(this.newUser.password);
     }
 
+    if (this.selectedRole === 'superadmin') {
+      this.newUser.role = 'superadmin';
+      this.newUser.division_id = 'a1b2c3d4e5f6g7h8i9j0klmnopqrst12'; // Automatically set the division ID for superadmin
+    } else if (this.selectedRole === 'admin') {
+      switch (this.newUser.division_id) {
+        case 'b2c3d4e5f6g7h8i9j0klmnopqrstuvw3':
+          this.newUser.role = 'registrar';
+          break;
+        case 'c3d4e5f6g7h8i9j0klmnopqrstuvwxy4':
+          this.newUser.role = 'cashier';
+          break;
+        case 'd4e5f6g7h8i9j0klmnopqrstuvwxyza5':
+          this.newUser.role = 'accountant';
+          break;
+        default:
+          this.showError = true;
+          this.errorMessage = 'Please select a valid division for the admin role.';
+          return;
+      }
+    }
+
+    const targetTable = this.selectedRole === 'admin' || this.selectedRole === 'superadmin' ? 'administrators' : 'desk_attendants';
+    const values = this.selectedRole === 'admin' || this.selectedRole === 'superadmin' ? this.newUser : { ...this.newUser, role: undefined };
+    console.log('Creating user with data:', values);
+
     const data = await this.API.create({
-      tables: 'desk_attendants',
-      values: this.newUser,
+      tables: targetTable,
+      values: values,
     });
 
     if (data.success) {
@@ -95,38 +121,20 @@ export class CreateAccountModalComponent {
     }
   }
 
-  async updateUser() {
-    try {
-      const changeDeets: any = {
-        username: this.newUser.username,
-        fullname: this.newUser.fullname,
-        profile: this.newUser.profile || '' 
-      };
-  
-      if (this.showPasswordField && this.newUser.password) {
-        changeDeets.password = await this.API.hash(this.newUser.password);
-      }
-  
-      const data = await this.API.update({
-        tables: 'desk_attendants',
-        values: changeDeets, 
-        conditions: `WHERE id = '${this.newUser.id}'` 
-      });
-  
-      if (data.success) {
-        const { password, ...userWithoutPassword } = this.newUser; 
-        this.accountCreated.emit(userWithoutPassword); 
-        this.close(); 
-      } else {
-        throw new Error(data.output || 'Failed to update user');
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      this.showError = true;
-      this.errorMessage = error instanceof Error ? error.message : 'An error occurred. Please try again.';
+  selectRole(role: 'deskAttendant' | 'admin' | 'superadmin') {
+    this.selectedRole = role;
+    if (role === 'superadmin') {
+      this.newUser.division_id = 'a1b2c3d4e5f6g7h8i9j0klmnopqrst12'; // Set division ID automatically
+    } else {
+      this.newUser.division_id = ''; // Reset division ID for other roles
     }
   }
-  
+
+  onDivisionSelected(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    this.newUser.division_id = selectElement.value;
+    console.log('Selected division ID:', selectElement.value);
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -151,14 +159,39 @@ export class CreateAccountModalComponent {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  togglePasswordField() {
-    this.showPasswordField = !this.showPasswordField;
-    if (!this.showPasswordField) {
-      this.newUser.password = '';
-    }
-  }
-
   close() {
     this.closeModal.emit();
+  }
+
+  async updateUser() {
+    try {
+      const changeDeets: any = {
+        username: this.newUser.username,
+        fullname: this.newUser.fullname,
+        profile: this.newUser.profile || '',
+      };
+
+      if (this.showPasswordField && this.newUser.password) {
+        changeDeets.password = await this.API.hash(this.newUser.password);
+      }
+
+      const data = await this.API.update({
+        tables: 'desk_attendants',
+        values: changeDeets,
+        conditions: `WHERE id = '${this.newUser.id}'`,
+      });
+
+      if (data.success) {
+        const { password, ...userWithoutPassword } = this.newUser;
+        this.accountCreated.emit(userWithoutPassword);
+        this.close();
+      } else {
+        throw new Error(data.output || 'Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      this.showError = true;
+      this.errorMessage = error instanceof Error ? error.message : 'An error occurred. Please try again.';
+    }
   }
 }

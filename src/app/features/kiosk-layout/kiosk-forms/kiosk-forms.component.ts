@@ -1,5 +1,5 @@
 //kiosk-forms.component.ts
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,22 +32,6 @@ export class KioskFormsComponent implements OnInit {
     { name: 'Make Payment', selected: false },
     { name: 'Set an Appointment', selected: false },
     { name: 'Other', selected: false },
-    // Add more items for scrolling demonstration
-    { name: 'Service 6', selected: false },
-    { name: 'Service 7', selected: false },
-    { name: 'Service 8', selected: false },
-    { name: 'Service 9', selected: false },
-    { name: 'Service 10', selected: false },
-    { name: 'Service 11', selected: false },
-    { name: 'Service 12', selected: false },
-    { name: 'Service 13', selected: false },
-    { name: 'Service 14', selected: false },
-    { name: 'Service 15', selected: false },
-    { name: 'Service 16', selected: false },
-    { name: 'Service 17', selected: false },
-    { name: 'Service 18', selected: false },
-    { name: 'Service 19', selected: false },
-    { name: 'Service 20', selected: false }
   ];
   queueNumber: string | null = null;
   selectedServices: string[] = [];
@@ -77,14 +61,6 @@ export class KioskFormsComponent implements OnInit {
       }
     }
 
-    @HostListener('document:click', ['$event'])
-    onDocumentClick(event: Event): void {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.relative') && this.isDropdownOpen) {
-        this.isDropdownOpen = false;
-      }
-    }
-
   async ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.departmentName = params['department'] || 'Department Name';
@@ -104,9 +80,9 @@ export class KioskFormsComponent implements OnInit {
   }
 
   handleButtonClick(type: 'regular' | 'priority'): void {
+    this.isChecklistVisible = true;
     this.selectedType = type;
   }
-
 
   toggleSelection(serviceName: string) {
     const service = this.checklist.find(item => item.name === serviceName);
@@ -186,7 +162,7 @@ export class KioskFormsComponent implements OnInit {
     }
   }
 
- resetQueueNumberIfNewDay(): void {
+  resetQueueNumberIfNewDay(): void {
     const today = new Date().toDateString();
     const queueKey = `${this.departmentName}_${today}`;
     let departmentQueueData = JSON.parse(localStorage.getItem(queueKey) || '{}');
@@ -300,41 +276,41 @@ export class KioskFormsComponent implements OnInit {
   }
 // Helper function to convert image to base64
 
-private getBase64Image(url: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx!.drawImage(img, 0, 0);
-      resolve(canvas.toDataURL('image/png'));
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
-private makeImageTransparent(base64Image: string, opacity: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.globalAlpha = opacity;
-        ctx.drawImage(img, 0, 0);
+  private getBase64Image(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx!.drawImage(img, 0, 0);
         resolve(canvas.toDataURL('image/png'));
-      } else {
-        reject(new Error('Could not get 2D context'));
-      }
-    };
-    img.onerror = reject;
-    img.src = base64Image;
-  });
-}
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  private makeImageTransparent(base64Image: string, opacity: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.globalAlpha = opacity;
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        } else {
+          reject(new Error('Could not get 2D context'));
+        }
+      };
+      img.onerror = reject;
+      img.src = base64Image;
+    });
+  }
 }

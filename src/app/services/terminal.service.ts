@@ -123,10 +123,8 @@ async deleteTerminal(id:string){
         session.number = i;
         i +=1;
       }
-      console.log(response.output);
       return response.output;
     }else{
-      alert(response.output);
       throw new Error('Unable to fetch terminals');
     }
   }

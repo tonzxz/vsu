@@ -194,20 +194,17 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   ngOnInit(): void {
-
+    const init = speechSynthesis.getVoices()
     
     this.API.addSocketListener('number-calling', (data:any)=>{
       if(data.event == 'number-calling' && data.division == this.division?.id){
         const voices = speechSynthesis.getVoices();
           // Find a female voice (you may need to check which voices are available)
-        const femaleVoice = voices.find(voice => voice.name.includes('Female') || voice.name.includes('en-US'));
-        
+        const femaleVoice = voices.find(voice => voice.name.includes('Zira'));
         const utterance = new SpeechSynthesisUtterance(data.message);
         if (femaleVoice) {
           utterance.voice = femaleVoice;
       }
-        speechSynthesis.speak(utterance);
-        speechSynthesis.speak(utterance);
         speechSynthesis.speak(utterance);
       }
     });

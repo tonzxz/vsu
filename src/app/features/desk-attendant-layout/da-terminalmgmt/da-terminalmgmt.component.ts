@@ -344,7 +344,7 @@ export class DaTerminalmgmtComponent implements OnInit, OnDestroy {
     this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.type =='priority' ? 'P':'R'}-${this.currentTicket?.number.toString().padStart(3, '0')}`,5000)
     this.API.socketSend({
       event: 'number-calling',
-      message: `Calling queue number ${this.currentTicket?.type =='priority' ? 'P':'R'}-${this.currentTicket?.number.toString().padStart(3, '0')} on Counter ${this.selectedCounter?.number}`,
+      message: `Calling  ${this.currentTicket?.type =='priority' ? 'priority':''} number ${this.currentTicket?.number} on Counter ${this.selectedCounter?.number}`,
       division: this.division?.id
     })
   }

@@ -6,16 +6,20 @@ import { UswagonCoreService } from 'uswagon-core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { LottieAnimationComponent } from '../../shared/components/lottie-animation/lottie-animation.component';
+import { SnackbarComponent } from '../../shared/snackbar/snackbar.component';
+import { UswagonAuthService } from 'uswagon-auth';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [SidebarComponent, RouterModule, HeaderComponent, CommonModule, LottieAnimationComponent],
+  imports: [SidebarComponent, RouterModule, HeaderComponent, CommonModule,SnackbarComponent, LottieAnimationComponent],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css']
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy{
-  constructor(private route: ActivatedRoute, private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
+  constructor(private route: ActivatedRoute, 
+    private auth:UswagonAuthService,
+    private API:UswagonCoreService,private cdr: ChangeDetectorRef){}
   role = this.route.snapshot.data['requiredRole'];
   isLoading:boolean= false;
   loading$?:Subscription;
@@ -24,7 +28,15 @@ export class AdminLayoutComponent implements OnInit, OnDestroy{
       this.isLoading=loading;
       this.cdr.detectChanges();
     })
+    this.API.sendFeedback('success', `Hi, ${this.auth.getUser().fullname} 👋`,5000)
+    this.cdr.detectChanges();
   }
+
+  showUploadProgress(){
+    return this.API.uploadProgress;
+  }
+
+
 
   ngOnDestroy(): void {
     this.loading$!.unsubscribe();

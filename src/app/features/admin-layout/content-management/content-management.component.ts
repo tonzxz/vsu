@@ -8,6 +8,7 @@ import { UswagonCoreService } from 'uswagon-core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
 import { QueueDisplayComponent } from '../../queueing-layout/queue-display/queue-display.component';
+import { DivisionService } from '../../../services/division.service';
 
 interface ContentColors {
   primary_bg: string,
@@ -60,18 +61,22 @@ interface ContentSettings {
 })
 export class ContentManagementComponent implements OnInit {
 
-  constructor(private auth:UswagonAuthService, private contentService:ContentService, 
-    private dialog: MatDialog,  
+  constructor(
+    private divisionService:DivisionService,
+    private auth:UswagonAuthService, 
+    private contentService:ContentService,   
     private API:UswagonCoreService){}
 
 
   isSuperAdmin:boolean = this.auth.getUser().role == 'superadmin';
 
+  showEditSection:boolean = true;
+
   toggles:ContentToggles= {
     announcements:false,
-    time:false,
-    weather:false,
-    currency:false,
+    time:true,
+    weather:true,
+    currency:true,
     videoURL: false,
     background:false,
   }
@@ -84,12 +89,12 @@ export class ContentManagementComponent implements OnInit {
   }
 
   colors:ContentColors={
-    primary_bg: '#000000',
-    secondary_bg: '#000000',
-    tertiary_bg: '#000000',
-    primary_text: '#000000',
+    primary_bg: '#2F4A2C',
+    secondary_bg: '#FFFFFF',
+    tertiary_bg: '#FBDF30',
+    primary_text: '#FFFFFF',
     secondary_text: '#000000',
-    tertiary_text: '#000000',
+    tertiary_text: '#FBDF30',
   }
   
   files:ContentFiles= {}
@@ -137,6 +142,11 @@ export class ContentManagementComponent implements OnInit {
   getDivisionName(){
     if(!this.selectedDivision) return '';
     return this.divisions.find((division) => division.id == this.selectedDivision).name;
+  }
+
+  getDivision(){
+    if(!this.selectedDivision) return undefined;
+    return this.divisions.find((division) => division.id == this.selectedDivision);
   }
 
   selectedDivision?:string;
@@ -189,20 +199,14 @@ export class ContentManagementComponent implements OnInit {
     }
   }
 
-
-
-
-
-
-
   async loadContents(){
     this.contentLoading = true;
     this.API.setLoading(true);
     try{
       if(this.isSuperAdmin){
         if(this.divisions.length <=0){
-          this.divisions = await this.contentService.getDivisions();
-          this.selectedDivision = this.divisions[0].id;
+          this.divisions = await this.divisionService.getDivisions();
+          this.selectedDivision = this.divisionService.selectedDivision?.id;
         }
         this.contents = await this.contentService.getContentSettings();
         const content = this.contents.find((_content)=> _content.division_id ==this.selectedDivision);
@@ -251,8 +255,9 @@ export class ContentManagementComponent implements OnInit {
         this.API.setLoading(false);
         this.contentLoading = false;
       }else{
-        this.selectedDivision = this.auth.getUser().division_id;
-        this.divisions = await this.contentService.getDivision(this.selectedDivision!);
+        const userDivision = await this.divisionService.getDivision();
+        this.selectedDivision = userDivision?.id;
+        this.divisions =[ userDivision];
         const content = await this.contentService.getContentSetting();
         if(!content) {
           this.previousSettings ={
@@ -303,16 +308,20 @@ export class ContentManagementComponent implements OnInit {
       }
       this.API.setLoading(false);
       this.contentLoading = false;
-    }catch(e){
+    }catch(e:any){
       this.API.setLoading(false);
       this.contentLoading = false;
-      throw new Error(e as any);
+      this.API.sendFeedback('error',e.message,5000)
     }
   }
 
   modalType?:'publish'| 'revert';
   
   // UI Functions
+
+  toggleEditor(){
+    this.showEditSection = !this.showEditSection;
+  }
 
   toggleCollapse(key:'uploads'|'widgets'|'colors'|'announcements'){
     if(this.collapsables[key] == true) return;
@@ -352,6 +361,7 @@ export class ContentManagementComponent implements OnInit {
   }
 
   closeDialog(){
+
     this.modalType = undefined;
   }
 
@@ -360,6 +370,7 @@ export class ContentManagementComponent implements OnInit {
         this.publishChanges();
       }else{
         this.revertChanges();
+        this.API.sendFeedback('success','Changes has been reverted successfully.',5000);
       }
   }
 
@@ -378,7 +389,9 @@ export class ContentManagementComponent implements OnInit {
   checkYoutubeUrl(){
     if(!this.isValidYouTubeUrl(this.inputFields.youtubeURL!)){
       this.inputFields.youtubeURL = undefined;
-      alert('Please paste a valid youtube URL');
+      this.API.sendFeedback('error','Please enter a valid YouTube URL.',5000);
+    }else{
+      
     }
   }
 
@@ -386,30 +399,36 @@ export class ContentManagementComponent implements OnInit {
     if(this.selectedDivision == undefined) return;
     this.modalType = undefined;
     this.API.setLoading(true);
-    await this.contentService.updateContentSettings({
-      division_id: this.selectedDivision!,
-      selectedFiles: {
-        logo: this.files.logo,
-        video: this.files.video,
-        background:this.files.background
-      },
-      colors: {...this.colors},
-      widgets: {
-        time: this.toggles.time,
-        weather: this.toggles.weather,
-        currency: this.toggles.currency
-      },
-      videoOption: this.toggles.videoURL ? 'url': 'file',
-      videoUrl: this.inputFields.youtubeURL,
-      background_on: this.toggles.background,
-      announcement_on:this.toggles.announcements,
-      announcements: this.toggles.announcements ?  this.inputFields.announcements : undefined,
-
-    });
-    await this.loadContents();
-    this.API.socketSend({
-      'event': 'content-changes'
-    })
-    this.API.setLoading(false);
+    try{
+      await this.contentService.updateContentSettings({
+        division_id: this.selectedDivision!,
+        selectedFiles: {
+          logo: this.files.logo,
+          video: this.files.video,
+          background:this.files.background
+        },
+        colors: {...this.colors},
+        widgets: {
+          time: this.toggles.time,
+          weather: this.toggles.weather,
+          currency: this.toggles.currency
+        },
+        videoOption: this.toggles.videoURL ? 'url': 'file',
+        videoUrl: this.inputFields.youtubeURL,
+        background_on: this.toggles.background,
+        announcement_on:this.toggles.announcements,
+        announcements: this.toggles.announcements ?  this.inputFields.announcements : undefined,
+  
+      });
+      await this.loadContents();
+      this.API.socketSend({
+        'event': 'content-changes'
+      })
+      this.API.setLoading(false);
+      this.API.sendFeedback('success','Content has been updated successfully!', 5000)
+    }catch(e:any){
+      this.API.sendFeedback('error','Something went wrong.', 5000)
+    }
+    
   }
 }

@@ -1,77 +1,196 @@
 import { Injectable, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
+import { KioskService } from './kiosk.service';
+import { DivisionService } from './division.service';
+import { DatePipe } from '@angular/common';
+
+
+
+interface Queue{
+  id:string;
+  division_id:string;
+  number:number;
+  status:string;
+  timestamp:string;
+  type:'regular'|'priority';
+  fullname:string;
+  department_id?:string;
+  kiosk_id:string;
+  gender:'male'|'female'|'other';
+  student_id?:string;
+}
+
+interface AttendedQueue{
+  id:string;
+  desk_id:string;
+  queue_id:string;
+  attended_on:string;
+  finished_on?:string;
+  status:string;
+  terminal_id?:string;
+  queue?:Queue;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class QueueService {
+export class QueueService  {
 
-  constructor(private API:UswagonCoreService,private auth:UswagonAuthService) { 
-  }
+  constructor(private API:UswagonCoreService,private auth:UswagonAuthService, 
+    private divisionService:DivisionService,
+    private kioskService:KioskService) {}
 
 
-  public lastQueueNumber:number = 0;
-  public queue:any[]=[];
-
+  private lastRegularQueueNumber:number = 0;
+  private lastPriorityQueueNumber:number = 0;
+  public queue:Queue[]=[];
+  public allQueue:Queue[]= [];
+  public allTodayQueue:Queue[]= [];
+  public attendedQueues:AttendedQueue[]= [];
+  private takenQueue:string[]= [];
+  public attendedQueue?:AttendedQueue;
+  private queueSubject = new BehaviorSubject<Queue[]>([]);
+  public queue$ = this.queueSubject.asObservable();
 
 
   // Socket Events
-  listenToQueue(division:string){
-    this.API.addSocketListener('queue-counter-listener', (message)=>{
-      if(message.event =='live-queue-counter' && message.divison ==division){
-        this.lastQueueNumber = message.lastQueueNumber as number;
-        this.getTodayQueues(division);
+  listenToQueue(){
+    this.API.addSocketListener('live-queue-events-listener', (message)=>{
+      if(message.division!= this.divisionService.selectedDivision!.id) return;
+
+      if(message.event =='queue-counter' ){
+        this.lastRegularQueueNumber = message.lastRegularQueueNumber as number;
+        this.lastPriorityQueueNumber = message.lastPriorityQueueNumber as number;
       }
-    });
-    this.API.addSocketListener('queue-attend-listener', (message)=>{
-      if(message.event =='live-queue-attend' && message.divison ==division){
-        this.getTodayQueues(division);
+      if(message.event =='take-from-queue'){
+        this.takenQueue.push(message.queue_id);
+        this.getTodayQueues();
       }
+      if(message.event =='resolve-taken-queue'){
+        this.takenQueue  = this.takenQueue.filter(queue=>queue != message.queue_id);
+        this.getTodayQueues();
+      }
+      if(message.event =='update-queue'){
+        this.getTodayQueues();
+      }        
     });
   }
 
-  private incrementQueueNumber(division:string){
-    this.lastQueueNumber += 1;
+  private incrementQueueNumber(type:'regular'|'priority',division:string){
+    if(type == 'regular'){
+      this.lastRegularQueueNumber += 1;
+    }else{
+      this.lastPriorityQueueNumber += 1;
+    }
     this.API.socketSend({
-      event: 'live-queue-counter',
+      event: 'queue-counter',
       division:division,
-      lastQueueNumber: this.lastQueueNumber
+      lastRegularQueueNumber: this.lastRegularQueueNumber,
+      lastPriorityQueueNumber: this.lastPriorityQueueNumber
     });
   }
 
-  private takeFromQueue(queue:any){
+  private decrementQueueNumber(type:'regular'|'priority',division:string){
+    if(type == 'regular'){
+      this.lastRegularQueueNumber -= 1;
+    }else{
+      this.lastPriorityQueueNumber -= 1;
+    }
     this.API.socketSend({
-      event: 'live-queue-attend',
-      division:queue.division,
-      id:queue.id,
+      event: 'queue-counter',
+      division:division,
+      lastRegularQueueNumber: this.lastRegularQueueNumber,
+      lastPriorityQueueNumber: this.lastPriorityQueueNumber
+    });
+  }
+
+  private updateQueue(division:string){
+    this.API.socketSend({
+      event: 'update-queue',
+      division:division
+    });
+  }
+
+  private takeFromQueue(){
+    const queue = this.queue.shift()!;
+    this.takenQueue.push(queue.id);
+    this.API.socketSend({
+      event: 'take-from-queue',
+      division:queue.division_id,
+      queue_id:queue.id,
+    });
+    return queue;
+  }
+
+  private resolveTakenQueue(queue_id:any){
+    this.takenQueue = this.takenQueue.filter(id=>id != queue_id);
+    this.API.socketSend({
+      event: 'resolve-taken-queue',
+      division:this.divisionService.selectedDivision!.id,
+      queue_id:queue_id,
     });
   }
 
   // Managing queue
-  async addToQueue(division:string, info:any){
+  async addToQueue(
+    info:{department_id?:string,
+          fullname:string, 
+          type:'regular'|'priority', 
+          gender:'male'|'female'|'other'
+          student_id?:string,
+          services:string[],
+        })
+  {
     const id = this.API.createUniqueID32();
-    this.incrementQueueNumber(division);
+    const  now=  new Date();
+    this.incrementQueueNumber(info.type,this.kioskService.kiosk?.division_id!);
     const response = await this.API.create({
       tables: 'queue',
       values:{
         id: id,
-        division_id: division,
-        department_id: info.department.id,
+        division_id: this.kioskService.kiosk?.division_id,
+        kiosk_id:this.kioskService.kiosk?.id,
+        department_id: info.department_id,
         fullname: info.fullname,
-        number: this.lastQueueNumber,
+        number: info.type == 'regular' ? this.lastRegularQueueNumber: this.lastPriorityQueueNumber,
         type: info.type,
         gender: info.gender,
         status:'waiting',
+        timestamp: new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
         student_id: info.student_id
       }
     });
+   for(let service_id of info.services){
+    const intent_id = this.API.createUniqueID32();
+    // Add services
+    const servicesResponse = await this.API.create({
+      tables: 'client_intents',
+      values:{
+        id: intent_id,
+        queue_id: id,
+        service_id: service_id
+      }
+    });
+    if(!servicesResponse.success){
+      this.decrementQueueNumber(info.type,this.kioskService.kiosk?.division_id!);
+      throw new Error('Something went wrong.')
+    }
+   }
+    
+
+    
     if(!response.success){
-      throw new Error('Something went wrong. Please try again.');
+      this.decrementQueueNumber(info.type,this.kioskService.kiosk?.division_id!);
+      throw new Error('Something went wrong.');
+    }else{
+      this.updateQueue(this.kioskService.kiosk?.division_id!);
+      return info.type == 'regular' ?  this.lastRegularQueueNumber:this.lastPriorityQueueNumber;
     }
   }
 
-  async addQueueToAttended(id:string){
+  async addQueueToAttended(queue:Queue){
     const user = this.auth.getUser();
     try{
       const sessionResponse = await this.API.read({
@@ -80,150 +199,309 @@ export class QueueService {
         conditions: `WHERE attendant_id = '${user.id}'`
       });
   
-      if(!sessionResponse.success)throw new Error('Something went wrong. Please try again.');
-      if(sessionResponse.output.length == 0) throw new Error('Something went wrong. Please try again.');
+      if(!sessionResponse.success)throw new Error(sessionResponse.output);
+      if(sessionResponse.output.length == 0) throw new Error('Session not found, something is wrong.');
       const session = sessionResponse.output[0];
       const updateResponse = await this.API.update({
         tables: 'queue',
         values:{
           status: 'taken',
         },
-        conditions:`WHERE id = '${id}'`
+        conditions:`WHERE id = '${queue.id}'`
       });
-      if(!updateResponse.success) throw new Error();
-  
+      if(!updateResponse.success) throw new Error(updateResponse.output);
+      const now = new Date();
+      const attended = {
+        id:this.API.createUniqueID32(),
+        queue_id :queue.id,
+        desk_id: session.id,
+        attended_on:new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
+        finished_on: undefined,
+        status:'ongoing',
+      } as AttendedQueue;
       const createResponse = await this.API.create({
         tables:'attended_queue',
-        values:{
-          queue_id :id,
-          session_id : session.id,
-          status:'ongoing'
-        }
+        values:attended
       });
-      if(!createResponse.success) throw new Error();
-    }catch(e){
+      attended.queue = queue; 
+      this.attendedQueue = attended;
+      if(!createResponse.success) throw new Error(createResponse.output);
+    }catch(e:any){
       throw new Error('Something went wrong. Please try again');
     }
   }
+  
+  async resolveAttendedQueue(remark:'finished'|'skipped'|'bottom'|'return'){
+    const now  = new Date();
 
-  async resolveAttendedQueue(attended_queuue_id:string, remark:'finished'|'skipped'){
-    const timestamp  = new Date();
     try{
-      const updateResponse = await this.API.update({
-        tables: 'attended_queue',
-        values:{
-          finished_on: remark == 'skipped' ? null : timestamp.toISOString(),
-          status: remark,
-        },
-        conditions:`WHERE id = '${attended_queuue_id}'`
-      });
-      if(!updateResponse.success) throw new Error();
-    }catch(e){
+      if(this.attendedQueue){
+        if(remark=='bottom'){
+          const createResponse = await this.API.create({
+            tables: 'queue',
+            values:{
+              id: this.API.createUniqueID32(),
+              division_id: this.attendedQueue.queue?.division_id,
+              kiosk_id: this.attendedQueue.queue?.kiosk_id,
+              department_id:  this.attendedQueue.queue?.department_id,
+              fullname:  this.attendedQueue.queue?.fullname,
+              number:  this.attendedQueue.queue?.number,
+              type:  this.attendedQueue.queue?.type,
+              gender:  this.attendedQueue.queue?.gender,
+              status:'bottom',
+              timestamp: new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
+              student_id:  this.attendedQueue.queue?.student_id,
+            }
+          });
+          if(!createResponse.success){
+            throw new Error(createResponse.output);
+          }
+        } 
+        if(remark=='return'){
+          const updateResponse = await this.API.update({
+            tables: 'queue',
+            values:{
+              status:'waiting',
+            },
+            conditions:`WHERE id = '${this.attendedQueue.queue_id}'`
+          });
+          if(!updateResponse.success){
+            throw new Error(updateResponse.output);
+          }
+        }
+        const updateResponse = await this.API.update({
+          tables: 'attended_queue',
+          values:{
+            finished_on: remark == 'skipped' ? undefined : new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
+            status: remark,
+          },
+          conditions:`WHERE id = '${this.attendedQueue.id}'`
+        });
+   
+        if(!updateResponse.success) throw new Error(updateResponse.output);
+        this.resolveTakenQueue(this.attendedQueue.id);
+        this.attendedQueue = undefined;
+        await this.getTodayQueues();
+      }
+    }catch(e:any){
+      alert(e.message);
       throw new Error('Something went wrong. Please try again');
     }
   }
 
-  async nextQueue(attended_queuue_id?:string, remark?:'finished'|'skipped'){
-    if(this.queue.length <= 0) return;
-    if(attended_queuue_id && remark){
-      await this.resolveAttendedQueue(attended_queuue_id,remark);
+  async nextQueue(){
+    try{
+      // this.API.setLoading(true);
+      if(this.queue.length <= 0) return;
+      const queue =  this.takeFromQueue();
+      await this.addQueueToAttended(queue);
+      this.resolveTakenQueue(queue.id);
+      await this.getTodayQueues();
+      return queue;
+    }catch(e){
+      throw new Error('Something went wrong.');
     }
-    this.takeFromQueue(this.queue[0]);
-    await this.addQueueToAttended(this.queue[0].id);
   }
 
   // Fetching of QUEUES
-  async getAllQueues(division:string){
+  async getAllQueues(division?:string){
+    const divisionCondition = division? `WHERE division_id = '${division}'` :'';
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE division_id = '${division}'`
+      conditions: divisionCondition
     });
     if(response.success){
-      this.queue = response.output;
+      this.allQueue = response.output;
       return response.output;
     }else{
       throw new Error('Unable to fetch queue');
     }
   }
 
-  async getTodayQueues(division:string){
+  async getTodayQueues(all:boolean =false){
+    const filter = all ? '':`AND (status = 'waiting' OR status ='bottom')`
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE division_id = '${division}' AND timestamp::date = CURRENT_DATE`
+      conditions: `WHERE division_id = '${this.divisionService.selectedDivision!.id}' AND timestamp::date = CURRENT_DATE ${filter}` 
     });
     if(response.success){
-      this.lastQueueNumber = response.output.length;
-      return response.output;
+      const queue = response.output as Queue[];
+      this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
+      this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
+
+      const sortedQueue = queue.sort((a,b)=>{ 
+
+        if(a.status == 'bottom' && b.status =='bottom'){
+          return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+        }
+        if (a.type === 'priority' && b.type === 'regular') {
+          if(a.status == 'bottom'){
+            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+          }else{
+            return -1
+          }
+        };
+        if (a.type === 'regular' && b.type === 'priority') return 1;
+
+
+        return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      });
+      const filteredQueue = sortedQueue.filter(queue=>!this.takenQueue.includes(queue.id));
+      
+      this.queueSubject.next(filteredQueue);
+
+      this.queue = filteredQueue;
+      return this.queue;
     }else{
       throw new Error('Unable to fetch queue');
     }
   }
   
-  async getOngoingQueues(division:string){
+
+  async getAllTodayQueues(all:boolean =false){
+    const filter = all ? '':`AND (status = 'waiting' OR status ='bottom')`
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `
-        WHERE division_id = '${division} AND status = 'waiting'
-        ORDER BY timestamp DESC
-      '`
+      conditions: `WHERE timestamp::date = CURRENT_DATE ${filter}` 
     });
     if(response.success){
-      return response.output;
+      const queue = response.output as Queue[];
+      this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
+      this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
+
+      const sortedQueue = queue.sort((a,b)=>{ 
+
+        if(a.status == 'bottom' && b.status =='bottom'){
+          return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+        }
+        if (a.type === 'priority' && b.type === 'regular') {
+          if(a.status == 'bottom'){
+            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+          }else{
+            return -1
+          }
+        };
+        if (a.type === 'regular' && b.type === 'priority') return 1;
+
+
+        return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      });
+      const filteredQueue = sortedQueue.filter(queue=>!this.takenQueue.includes(queue.id));
+      this.allTodayQueue = filteredQueue;
+      return filteredQueue;
     }else{
       throw new Error('Unable to fetch queue');
     }
   }
   
-  async getAttendedQueues(division:string){
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'attended_queue, queue',
-      conditions: `
-        WHERE attended_queue.queue.id = queue.id  AND queue.division_id = '${division}
-        ORDER BY timestamp DESC
-      '`
-    });
-    if(response.success){
-      return response.output;
-    }else{
-      throw new Error('Unable to fetch queue');
+  
+  async geAllAttendedQueues(){
+    try{
+      const response = await this.API.read({
+        selectors: ['terminal_sessions.*,queue.*,attended_queue.* '],
+        tables: 'attended_queue, queue,terminal_sessions',
+        conditions: `
+          WHERE attended_queue.queue_id = queue.id
+         AND terminal_sessions.id = attended_queue.desk_id
+          ORDER BY timestamp DESC
+        `
+      });
+      if(response.success){
+        this.attendedQueues = [];
+        for(let attended of response.output){
+          this.attendedQueues.push({...attended, queue: {...attended, id: attended.queue_id}})
+        }
+        
+        return this.attendedQueues;
+      }else{
+        throw new Error(response.output);
+      }
+    }catch(e:any){
+      throw new Error('Something went wrong.');
     }
   }
 
-  async getDisposedQueues(division:string){
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'queue',
-      conditions: `
-        WHERE division_id = '${division} AND status = 'waiting'
-        ORDER BY timestamp DESC
-      '`
-    });
-    if(response.success){
-      return response.output;
-    }else{
-      throw new Error('Unable to fetch queue');
-    }
-  }
 
-  async getQueueOnDesk(division:string){
+  async getQueueOnDesk(){
     const user = this.auth.getUser();
-    const response = await this.API.read({
-      selectors: ['*'],
-      tables: 'attended_queue, queue, terminal_sessions',
-      conditions: `
-        WHERE attended_queue.queue.id = queue.id AND queue.division_id = '${division}' 
-        AND terminal_sessions.attendant.id = '${user.id}'  AND attended_queue.status = 'ongoing'
-      '`
-    });
-    if(response.success){
-      return response.output;
-    }else{
-      throw new Error('Unable to fetch queue');
+    try{
+      const response = await this.API.read({
+        selectors: ['queue.status as queue_status,queue.*, attended_queue.*'],
+        tables: 'attended_queue, queue, terminal_sessions',
+        conditions: `
+          WHERE attended_queue.queue_id = queue.id AND queue.division_id = '${this.divisionService.selectedDivision?.id}' 
+          AND terminal_sessions.attendant_id = '${user.id}'  AND attended_queue.status = 'ongoing'
+        `
+      });
+      if(response.success){
+        if(response.output.length> 0){
+          this.attendedQueue  = {
+            ...response.output[0],
+            queue:{
+              id:response.output[0].queue_id,
+              status:response.output[0].queue_status,
+              ...response.output[0]
+            }
+          }
+          response.output[0];
+          return {
+            attendedQueue:this.attendedQueue,
+            queue: {
+              id:response.output[0].queue_id,
+              status:response.output[0].queue_status,
+              ...response.output[0]
+            } as Queue
+          };
+        }else{
+          this.attendedQueue = undefined;
+          return {
+            attendedQueue:this.attendedQueue,
+            queue:undefined
+          };
+        }
+      }else{
+        throw new Error(response.output);
+      }
+    }catch(e:any){
+      alert(e.message);
+      throw new Error('Something went wrong.');
     }
   }
+
+  async getLastQueueOnDesk(){
+    const user = this.auth.getUser();
+    try{
+      const response = await this.API.read({
+        selectors: ['queue.status as queue_status,queue.*, attended_queue.*'],
+        tables: 'attended_queue, queue, terminal_sessions',
+        conditions: `
+          WHERE attended_queue.queue_id = queue.id AND queue.division_id = '${this.divisionService.selectedDivision?.id}' 
+          AND terminal_sessions.attendant_id = '${user.id}'  AND attended_queue.status != 'ongoing' 
+          ORDER BY attended_queue.finished_on DESC
+        `
+      });
+      if(response.success){
+        if(response.output.length> 0){
+          return  {
+            id:response.output[0].queue_id,
+            status:response.output[0].queue_statusm,
+            ...response.output[0]
+          } as Queue
+        }else{
+          return undefined;
+        }
+      }else{
+        throw new Error(response.output);
+      }
+    }catch(e:any){
+      alert(e.message);
+      throw new Error('Something went wrong.');
+    }
+  }
+
+  
 
 }

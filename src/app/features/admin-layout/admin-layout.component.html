@@ -5,8 +5,9 @@
   <app-sidebar [role]="role"></app-sidebar>
 
   <div *ngIf="isLoading" class="h-full w-full cursor-wait bg-white overflow-hidden absolute z-10 flex flex-col justify-center items-center ">
-    <app-lottie-animation class="w-96 h-96 animate-pop" animation="loader"></app-lottie-animation>
-    <div class="tracking-wider text-xl animate-bounce animate-pop">Please Wait</div>
+    <app-lottie-animation class=" w-72 h-72 2xl:w-96 2xl:h-96 animate-pop" animation="loader"></app-lottie-animation>
+    <div *ngIf="!showUploadProgress()" class="tracking-wider text-xl animate-bounce animate-pop">Please Wait</div>
+    <div *ngIf="showUploadProgress()" class="tracking-wider text-xl animate-bounce animate-pop">Uploading File ... ({{showUploadProgress()}})%</div>
   </div>
   <!-- Main Content -->
   <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
@@ -16,5 +17,7 @@
       <router-outlet></router-outlet>
     </div>
   </div>
+  <app-snackbar></app-snackbar>
 </div>
+
 

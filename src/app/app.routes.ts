@@ -14,8 +14,12 @@ import { UserManagementComponent } from './features/admin-layout/user-management
 import { TerminalManagementComponent } from './features/admin-layout/terminal-management/terminal-management.component';
 import { KioskManagementComponent } from './features/admin-layout/kiosk-management/kiosk-management.component';
 
-import { AuthGuard } from './shared/auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { QueueingLayoutComponent } from './features/queueing-layout/queueing-layout.component';
+import { KioskLayoutComponent } from './features/kiosk-layout/kiosk-layout.component';
+import { kioskGuard } from './guards/kiosk.guard';
+import { ServiceManagementComponent } from './features/admin-layout/service-management/service-management.component';
+import { DepartmentManagementComponent } from './features/admin-layout/department-management/department-management.component';
 
 export const routes: Routes = [
   {
@@ -42,14 +46,29 @@ export const routes: Routes = [
       { path: 'user-management', component: UserManagementComponent },
       { path: 'terminal', component: TerminalManagementComponent },
       { path: 'kiosk-management', component: KioskManagementComponent },
+      { path: 'service-management', component: ServiceManagementComponent },
+      { path: 'department-management', component: DepartmentManagementComponent },
     ]
   },
   {
-    path: 'kiosk-selection', component: KioskSelectionComponent,
+    path:'kiosk',
+    component:KioskLayoutComponent,
+ 
+    children: [
+      { path: '', redirectTo: 'selection', pathMatch: 'full' },
+      {
+        path: 'selection', 
+        canActivate: [kioskGuard],
+        component: KioskSelectionComponent,
+      },
+      {
+        path: 'forms', 
+        canActivate: [kioskGuard],
+        component: KioskFormsComponent,
+      },
+    ]
   },
-  {
-    path: 'kiosk-forms', component: KioskFormsComponent,
-  },
+
   {
     path: 'desk-attendant',
     component: DeskAttendantLayoutComponent,
@@ -63,10 +82,11 @@ export const routes: Routes = [
   },
   {
     path: 'queueing-display', component: QueueingLayoutComponent,
-    // children: [
-    //   { path: 'display/:role', component: QueueDisplayComponent }, 
-    // ]
-  }
+  },
+  {
+    path: '**', // Wildcard route
+    redirectTo: '/login',
+  },
 ];
 
 @NgModule({

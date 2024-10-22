@@ -6,11 +6,12 @@ import { UserService, User, KioskUser } from '../../../../services/user.service'
 import { UswagonAuthModule, UswagonAuthService } from 'uswagon-auth';
 import { environment } from '../../../../../environment/environment';
 import { UswagonCoreService } from 'uswagon-core';
+import { SnackbarComponent } from '../../../../shared/snackbar/snackbar.component';
 
 @Component({
   selector: 'app-login-as',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, UswagonAuthModule],
+  imports: [CommonModule, FormsModule, RouterLink, UswagonAuthModule, SnackbarComponent],
   templateUrl: './login-as.component.html',
   styleUrls: ['./login-as.component.css']
 })
@@ -37,7 +38,7 @@ export class LoginAsComponent implements OnInit {
     if(this.selectedRole ==  'desk_attendants'){
       this.auth.initialize({api:environment.api, apiKey: environment.apiKey, loginTable:['desk_attendants'],
         app:environment.app, 
-          redirect:  {'desk_attendants': '/desk-attendant/dashboard',}
+          redirect:  {'desk_attendants': '/desk-attendant',}
   
       });
     }else{
@@ -60,25 +61,5 @@ export class LoginAsComponent implements OnInit {
     return this.selectedRole.charAt(0).toUpperCase() + this.selectedRole.slice(1);
   }
 
-  async test(){
-    // INITIALIZE CORE FORM
-    this.API.initializeForm(['lastname','password'])
-    // PLACE VALUE TO FORM
-    this.API.handleFormValue('lastname', 'Belga');
-    this.API.handleFormValue('password', 'test');
-    // QUERY
-    const data = await  this.API.read({
-      selectors: ['*'],
-      tables: 'users',
-      conditions:`WHERE lastname='${this.API.coreForm['lastname']}'`
-    })
-    // SUCCESS ERROR HANDLING
-    if(data.success){
-      // OUTPUT
-      for(let row of data.output){
-          alert(JSON.stringify(`${row.firstname} ${row.lastname}`));
-      }
-    }
 
-  }
 }

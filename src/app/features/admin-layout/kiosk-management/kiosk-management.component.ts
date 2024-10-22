@@ -1,181 +1,135 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UswagonCoreService } from 'uswagon-core';
+import { ContentService } from '../../../services/content.service';
+import { UswagonAuthService } from 'uswagon-auth';
+import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
+import { ConfirmationComponent } from '../../../shared/modals/confirmation/confirmation.component';
+import { KioskService } from '../../../services/kiosk.service';
+import { CreateKioskComponent } from './modals/create-kiosk/create-kiosk.component';
+import { DivisionService } from '../../../services/division.service';
+import { Division, Kiosk } from './types/kiosks.types';
 
-interface Counter {
-  id: number;
-  name: string;
-  isActive: boolean;
-  hoverState: boolean; // Property to manage hover state
-  assignedCode?: string; // Property to store the assigned code
-}
 
 @Component({
   selector: 'app-a-kiosk-management',
   templateUrl: './kiosk-management.component.html',
   styleUrls: ['./kiosk-management.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, LottieAnimationComponent, ConfirmationComponent,CreateKioskComponent]
 })
 export class KioskManagementComponent implements OnInit {
-  counters: { [key: string]: Counter[] } = {
-    'Registrar': [],
-    'Cash Division': [],
-    'Accounting Office': []
-  };
 
-  maxCountersPerTab: { [key: string]: number } = {
-    'Registrar': 10,
-    'Cash Division': 10,
-    'Accounting Office': 10
-  };
 
-  activeTab: 'Registrar' | 'Cash Division' | 'Accounting Office' = 'Registrar';
-  tabs: ('Registrar' | 'Cash Division' | 'Accounting Office')[] = ['Registrar', 'Cash Division', 'Accounting Office'];
-  selectedCounter: Counter | null = null;
+  divisions:Division[]=[];
+  selectedDivision?:string;
 
-  // State variables for dialogs
-  showConfirmationDialog: boolean = false;
-  counterToDelete: Counter | null = null;
-  showCodeEntryDialog: boolean = false;
-  codeInput: string = '';
-  codeInputError: string = ''; // Error message for invalid code
+  kiosks: Kiosk[]=[];
+  isSuperAdmin:boolean = this.auth.accountLoggedIn() == 'superadmin';
 
-  // State for unassign confirmation
-  showUnassignCodeDialog: boolean = false;
+  selectedKiosk?:Kiosk;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  modalType?:'maintenance'|'delete';
 
+  openKioskModal:boolean = false;
+
+  // Injecting ChangeDetectorRef to trigger manual change detection
+  constructor(
+    private divisionService:DivisionService,
+    private auth:UswagonAuthService,private API:UswagonCoreService,
+    private kioskService:KioskService, private contentService:ContentService) {}
   ngOnInit(): void {
-    this.tabs.forEach(tab => {
-      this.initializeCounters(tab);
-    });
+    this.loadContent();
   }
 
-  private initializeCounters(tab: string): void {
-    this.counters[tab] = [
-      { id: 1, name: this.getCounterName(tab, 1), isActive: true, hoverState: false },
-      { id: 2, name: this.getCounterName(tab, 2), isActive: true, hoverState: false }
-    ];
+  async loadContent(){
+    this.API.setLoading(true);
+    this.selectedDivision =(await this.divisionService.getDivision())?.id;
+    this.divisions =(this.divisionService.divisions) as Division[];
+
+    this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
+    this.API.setLoading(false);    
   }
 
-  addCounter(): void {
-    const countersForTab = this.counters[this.activeTab];
-    if (countersForTab.length < this.maxCountersPerTab[this.activeTab]) {
-      const newId = countersForTab.length + 1;
-      const newCounterName = this.getCounterName(this.activeTab, newId);
-      countersForTab.push({
-        id: newId,
-        name: newCounterName,
-        isActive: true,
-        hoverState: false
-      });
-    }
+  async selectDivision(division:Division){
+    this.selectedDivision = division.id;
+    this.divisionService.setDivision(division)
+    this.API.setLoading(true);
+    this.kiosks = (await this.kioskService.getAllKiosks(division.id));
+    this.API.setLoading(false);
   }
 
-  getCounterName(tab: string, counterId: number): string {
-    return `${tab} Counter ${counterId}`;
+  statusMap:any = {
+    'available' : 'bg-green-500',
+    'maintenance' : 'bg-red-500',
+    'online' : 'bg-orange-500',
   }
 
-  shouldShowAddButton(): boolean {
-    return this.counters[this.activeTab].length < this.maxCountersPerTab[this.activeTab];
-  }
-
-  onTabClick(tab: 'Registrar' | 'Cash Division' | 'Accounting Office'): void {
-    this.activeTab = tab;
-  }
-
-  selectCounter(counter: Counter): void {
-    this.selectedCounter = this.selectedCounter === counter ? null : counter;
-  }
-
-  toggleCounterStatus(counter: Counter): void {
-    counter.isActive = !counter.isActive;
-    counter.hoverState = false;
-  }
-
-  changeButtonText(counter: Counter, isHovered: boolean): void {
-    counter.hoverState = isHovered;
-  }
-
-  confirmDeleteCounter(counter: Counter, event: MouseEvent): void {
-    event.stopPropagation();
-    this.showConfirmationDialog = true;
-    this.counterToDelete = counter;
-  }
-
-  cancelDelete(): void {
-    this.showConfirmationDialog = false;
-    this.counterToDelete = null;
-  }
-
-  deleteSelectedCounter(): void {
-    if (this.counterToDelete) {
-      const index = this.counters[this.activeTab].indexOf(this.counterToDelete);
-      if (index !== -1) {
-        this.counters[this.activeTab].splice(index, 1);
-      }
-      this.counterToDelete = null;
-    }
-    this.showConfirmationDialog = false;
-  }
-
-  openCodeEntryPopup(counter: Counter): void {
-    this.selectedCounter = counter;
-    this.codeInput = '';
-    this.codeInputError = ''; // Reset the error message when opening the dialog
-    this.showCodeEntryDialog = true;
-  }
-
-  cancelCodeEntry(): void {
-    this.showCodeEntryDialog = false;
-    this.selectedCounter = null;
-  }
-
-  // Validation for 6-digit code
-  validateCode(code: string): boolean {
-    const codeRegex = /^\d{6}$/; // Regular expression for 6-digit number
-    return codeRegex.test(code);
-  }
-
-  assignCode(): void {
-    if (this.selectedCounter) {
-      if (this.validateCode(this.codeInput)) {
-        this.selectedCounter.assignedCode = this.codeInput;
-        this.codeInputError = ''; // Clear any previous error
-        this.showCodeEntryDialog = false;
-        this.selectedCounter = null;
-      } else {
-        this.codeInputError = 'Please enter a valid 6-digit number.'; // Set error message
-      }
-    }
-  }
-
-  // New method to confirm unassigning the code
-  confirmUnassignCode(): void {
-    this.showUnassignCodeDialog = true;
-    this.showCodeEntryDialog = false; // Hide the code entry dialog while confirming
-  }
-
-  cancelUnassignCode(): void {
-    this.showUnassignCodeDialog = false;
-    this.selectedCounter = null;
-  }
-
-  // Method to unassign the code after confirmation
-  unassignCodeConfirmed(): void {
-    if (this.selectedCounter) {
-      this.selectedCounter.assignedCode = undefined; // Clear the assigned code
-    }
-    this.showUnassignCodeDialog = false;
-    this.selectedCounter = null;
-  }
-
-  getTotalCounters(): number {
-    return this.counters[this.activeTab].length;
+  capitalizeFirstLetters(input: string): string {
+    return input
+      .split(' ') // Split the string into words
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter of each word
+      .join(' '); // Join the words back into a single string
   }
   
-  getMaxCountersForActiveTab(): number {
-    return this.maxCountersPerTab[this.activeTab];
+
+  addKiosk(){
+    this.selectedKiosk = undefined;
+    this.openKioskModal = true;
   }
+
+  updateKiosk(kiosk:Kiosk){
+    this.selectedKiosk = kiosk;
+    this.openKioskModal = true;
+  }
+
+  async toggleMaintenance(item:Kiosk){
+    this.API.setLoading(true);
+    try{
+      await this.kioskService.updateKioskStatus(item.id!,item.status == 'available' ? 'maintenance' : 'available');
+      await this.closeDialog(true);
+      this.API.sendFeedback('success', 'Kiosk status has been updated!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('success', e.message,5000);
+    }
+  }
+  async deleteKiosk(item:Kiosk){
+    this.API.setLoading(true);
+    try{
+      await this.kioskService.deleteKiosk(item.id!);
+      await this.closeDialog(true);
+      this.API.sendFeedback('success', 'Kiosk has been deleted!',5000);
+    }catch(e:any){
+      this.API.sendFeedback('success', e.message,5000);
+    }
+  }
+
+  selectKiosk(item:Kiosk){
+    this.selectedKiosk = item;
+  }
+
+  
+
+  openDialog(type:'maintenance'|'delete'){
+    this.modalType = type;
+  }
+  async closeDialog(shouldRefresh:boolean){
+    const fromKiosk = this.openKioskModal;
+    this.openKioskModal = false;
+    this.modalType = undefined;
+    if(shouldRefresh){
+      this.API.setLoading(true);
+      this.kiosks = (await this.kioskService.getAllKiosks(this.selectedDivision!));
+      this.API.setLoading(false);
+    }
+    if(fromKiosk && shouldRefresh){
+      if(this.selectedKiosk){
+        this.API.sendFeedback('success', 'Kiosk has been updated!',5000);
+      }else{
+        this.API.sendFeedback('success', 'New kiosk has been added!',5000);
+      }
+    }
+  }
+
 }

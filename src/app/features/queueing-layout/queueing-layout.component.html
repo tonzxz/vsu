@@ -1,7 +1,18 @@
 
 
-<div class="w-full h-full font-thin flex justify-center items-center min-[3500px]:hidden text-4xl bg-black text-white">Set browser resolution to 3840 x 2180</div>
-<div class="w-full h-full hidden min-[3500px]:block">
+<div *ngIf="!selectedDivision" class="w-full h-full flex gap-1 items-center bg-black">
+    <div 
+    (click)="selectDivision(division.id)"
+    *ngFor="let division of divisions" class="group transition-all gap-6 h-full text-5xl flex flex-col items-center bg-green-950 hover:bg-green-800 text-white hover:tracking-wider font-thin justify-center cursor-pointer flex-1 rounded-lg"> 
+        <img [src]="contentMap[division.id]?.logo ?? 'assets/logo/vsu.png'" class="transition-all w-52 h-52 group-hover:scale-105" alt="">
+        <span>
+            {{division.name}}
+        </span>
+    </div>
+</div>
+
+<div *ngIf="selectedDivision" class="w-full h-full font-thin flex justify-center items-center min-[3500px]:hidden text-4xl  bg-black text-white">Set browser resolution to 3840 x 2180</div>
+<div *ngIf="selectedDivision" class="w-full h-full hidden min-[3500px]:block">
     <div *ngIf="isLoading" class="h-full w-full cursor-wait bg-white overflow-hidden absolute z-10 flex flex-col justify-center items-center ">
         <app-lottie-animation class="w-[800px] h-[800px] animate-pop" animation="loader"></app-lottie-animation>
         <div class="tracking-wider text-8xl animate-bounce animate-pop">Loading</div>
@@ -28,5 +39,8 @@
         secondary_text: content.secondary_text,
         tertiary_text: content.tertiary_text
     }" 
-    [title]="content.division" class="w-full h-full hidden min-[1200px]:block"></app-queue-display>
+    [division]="{
+        name:content.division,
+        id: content.division_id
+    }" class="w-full h-full hidden min-[1200px]:block"></app-queue-display>
 </div>

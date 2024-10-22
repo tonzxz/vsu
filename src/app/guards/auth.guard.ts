@@ -17,6 +17,7 @@ export class AuthGuard implements CanActivate {
     const currentUser = this.auth.accountLoggedIn();
     const requiredRole = route.data['requiredRole'] ?? 'root' ;
     
+    
     if (!currentUser) {
       this.router.navigate(['/login']);
       return false;

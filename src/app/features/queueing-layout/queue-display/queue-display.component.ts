@@ -8,6 +8,7 @@ import { QueueService } from '../../../services/queue.service';
 import { Subscription } from 'rxjs';
 import { TerminalService } from '../../../services/terminal.service';
 import { DivisionService } from '../../../services/division.service';
+import { UswagonCoreService } from 'uswagon-core';
 
 interface Counter {
   id:string;
@@ -177,6 +178,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
     private queueService:QueueService,
     private terminalService:TerminalService,
     private thirdPartyService: ThirdPartyService,
+    private API:UswagonCoreService,
     private sanitizer: DomSanitizer
   ) {}
 
@@ -192,6 +194,23 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   ngOnInit(): void {
+
+    
+    this.API.addSocketListener('number-calling', (data:any)=>{
+      if(data.event == 'number-calling' && data.division == this.division?.id){
+        const voices = speechSynthesis.getVoices();
+          // Find a female voice (you may need to check which voices are available)
+        const femaleVoice = voices.find(voice => voice.name.includes('Female') || voice.name.includes('en-US'));
+        
+        const utterance = new SpeechSynthesisUtterance(data.message);
+        if (femaleVoice) {
+          utterance.voice = femaleVoice;
+      }
+        speechSynthesis.speak(utterance);
+        speechSynthesis.speak(utterance);
+        speechSynthesis.speak(utterance);
+      }
+    });
     this.getSafeYoutubeUrl(this.videoUrl);
     this.updateTime();
     this.intervalTime = setInterval(() => this.updateTime(), 1000);

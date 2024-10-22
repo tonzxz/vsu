@@ -110,6 +110,7 @@ export class KioskFormsComponent implements OnInit, OnDestroy {
       throw new Error('Invalid method');
     }
 
+
     this.services = await this.serviceService.getAllServices(this.divisionService.selectedDivision?.id!);
     this.departments = await this.departmentService.getAllDepartments();
     if(this.serviceInterval){

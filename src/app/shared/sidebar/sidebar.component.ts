@@ -41,12 +41,19 @@ export class SidebarComponent implements OnInit {
       { title: 'Dashboard', route: '/admin/dashboard', active: true, icon: 'dashboard' },
       { title: 'Content Management', route: '/admin/content-management', active: false, icon: 'content_paste' },
       { title: 'User Management', route: '/admin/user-management', active: false, icon: 'people' },
-      { title: 'Terminal', route: '/admin/terminal', active: false, icon: 'computer' },
-      { title: 'Kiosk Management', route: '/admin/kiosk-management', active: false, icon: 'touch_app' }
+      { title: 'Terminal Management', route: '/admin/terminal', active: false, icon: 'computer' },
+      { title: 'Kiosk Management', route: '/admin/kiosk-management', active: false, icon: 'touch_app' },
+      { title: 'Service Management', route: '/admin/service-management', active: false, icon: 'description' },
     ]: [
       { title: 'Dashboard', route: '/desk-attendant/dashboard', active: true, icon: 'dashboard' },
-      { title: 'Terminal Management', route: '/desk-attendant/terminalmgmt', active: false, icon: 'computer' },
+      { title: 'Terminal', route: '/desk-attendant/terminalmgmt', active: false, icon: 'computer' },
     ];
+
+    if(this.auth.accountLoggedIn()=='superadmin'){
+      this.menuItems.push(
+         { title: 'Department Management', route: '/admin/department-management', active: false, icon: 'apartment' }
+      )
+    }
     this.checkScreenSize();
     this.updateActiveItem();
 

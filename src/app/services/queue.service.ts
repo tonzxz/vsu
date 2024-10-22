@@ -29,10 +29,10 @@ interface AttendedQueue{
   attended_on:string;
   finished_on?:string;
   status:string;
-  terminal_id:string;
-  number:number;
-  type:'priority' | 'regular';
+  terminal_id?:string;
+  queue?:Queue;
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,9 +46,12 @@ export class QueueService  {
   private lastRegularQueueNumber:number = 0;
   private lastPriorityQueueNumber:number = 0;
   public queue:Queue[]=[];
-  private queueSubject = new BehaviorSubject<Queue[]>([]);
+  public allQueue:Queue[]= [];
+  public allTodayQueue:Queue[]= [];
+  public attendedQueues:AttendedQueue[]= [];
   private takenQueue:string[]= [];
   public attendedQueue?:AttendedQueue;
+  private queueSubject = new BehaviorSubject<Queue[]>([]);
   public queue$ = this.queueSubject.asObservable();
 
 
@@ -187,7 +190,7 @@ export class QueueService  {
     }
   }
 
-  async addQueueToAttended(id:string){
+  async addQueueToAttended(queue:Queue){
     const user = this.auth.getUser();
     try{
       const sessionResponse = await this.API.read({
@@ -204,22 +207,23 @@ export class QueueService  {
         values:{
           status: 'taken',
         },
-        conditions:`WHERE id = '${id}'`
+        conditions:`WHERE id = '${queue.id}'`
       });
       if(!updateResponse.success) throw new Error(updateResponse.output);
       const now = new Date();
       const attended = {
         id:this.API.createUniqueID32(),
-        queue_id :id,
+        queue_id :queue.id,
         desk_id: session.id,
         attended_on:new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
         finished_on: undefined,
-        status:'ongoing'
+        status:'ongoing',
       } as AttendedQueue;
       const createResponse = await this.API.create({
         tables:'attended_queue',
         values:attended
       });
+      attended.queue = queue; 
       this.attendedQueue = attended;
       if(!createResponse.success) throw new Error(createResponse.output);
     }catch(e:any){
@@ -233,19 +237,25 @@ export class QueueService  {
     try{
       if(this.attendedQueue){
         if(remark=='bottom'){
-          const now = new Date();
-          const updateResponse = await this.API.update({
+          const createResponse = await this.API.create({
             tables: 'queue',
             values:{
+              id: this.API.createUniqueID32(),
+              division_id: this.attendedQueue.queue?.division_id,
+              kiosk_id: this.attendedQueue.queue?.kiosk_id,
+              department_id:  this.attendedQueue.queue?.department_id,
+              fullname:  this.attendedQueue.queue?.fullname,
+              number:  this.attendedQueue.queue?.number,
+              type:  this.attendedQueue.queue?.type,
+              gender:  this.attendedQueue.queue?.gender,
               status:'bottom',
               timestamp: new DatePipe('en-US').transform(now, 'yyyy-MM-dd HH:mm:ss.SSSSSS'),
-            },
-            conditions:`WHERE id = '${this.attendedQueue.queue_id}'`
+              student_id:  this.attendedQueue.queue?.student_id,
+            }
           });
-          if(!updateResponse.success){
-            throw new Error(updateResponse.output);
+          if(!createResponse.success){
+            throw new Error(createResponse.output);
           }
-       
         } 
         if(remark=='return'){
           const updateResponse = await this.API.update({
@@ -274,6 +284,7 @@ export class QueueService  {
         await this.getTodayQueues();
       }
     }catch(e:any){
+      alert(e.message);
       throw new Error('Something went wrong. Please try again');
     }
   }
@@ -283,7 +294,7 @@ export class QueueService  {
       // this.API.setLoading(true);
       if(this.queue.length <= 0) return;
       const queue =  this.takeFromQueue();
-      await this.addQueueToAttended(queue.id);
+      await this.addQueueToAttended(queue);
       this.resolveTakenQueue(queue.id);
       await this.getTodayQueues();
       return queue;
@@ -293,14 +304,15 @@ export class QueueService  {
   }
 
   // Fetching of QUEUES
-  async getAllQueues(division:string){
+  async getAllQueues(division?:string){
+    const divisionCondition = division? `WHERE division_id = '${division}'` :'';
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE division_id = '${division}'`
+      conditions: divisionCondition
     });
     if(response.success){
-      this.queue = response.output;
+      this.allQueue = response.output;
       return response.output;
     }else{
       throw new Error('Unable to fetch queue');
@@ -348,6 +360,43 @@ export class QueueService  {
   }
   
 
+  async getAllTodayQueues(all:boolean =false){
+    const filter = all ? '':`AND (status = 'waiting' OR status ='bottom')`
+    const response = await this.API.read({
+      selectors: ['*'],
+      tables: 'queue',
+      conditions: `WHERE timestamp::date = CURRENT_DATE ${filter}` 
+    });
+    if(response.success){
+      const queue = response.output as Queue[];
+      this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
+      this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
+
+      const sortedQueue = queue.sort((a,b)=>{ 
+
+        if(a.status == 'bottom' && b.status =='bottom'){
+          return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+        }
+        if (a.type === 'priority' && b.type === 'regular') {
+          if(a.status == 'bottom'){
+            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+          }else{
+            return -1
+          }
+        };
+        if (a.type === 'regular' && b.type === 'priority') return 1;
+
+
+        return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      });
+      const filteredQueue = sortedQueue.filter(queue=>!this.takenQueue.includes(queue.id));
+      this.allTodayQueue = filteredQueue;
+      return filteredQueue;
+    }else{
+      throw new Error('Unable to fetch queue');
+    }
+  }
+  
   
   async geAllAttendedQueues(){
     try{
@@ -355,13 +404,18 @@ export class QueueService  {
         selectors: ['terminal_sessions.*,queue.*,attended_queue.* '],
         tables: 'attended_queue, queue,terminal_sessions',
         conditions: `
-          WHERE attended_queue.queue_id = queue.id  AND queue.division_id = '${this.divisionService.selectedDivision?.id}' 
-          AND attended_queue.status = 'ongoing' AND terminal_sessions.id = attended_queue.desk_id
+          WHERE attended_queue.queue_id = queue.id
+         AND terminal_sessions.id = attended_queue.desk_id
           ORDER BY timestamp DESC
         `
       });
       if(response.success){
-        return response.output as AttendedQueue[];
+        this.attendedQueues = [];
+        for(let attended of response.output){
+          this.attendedQueues.push({...attended, queue: {...attended, id: attended.queue_id}})
+        }
+        
+        return this.attendedQueues;
       }else{
         throw new Error(response.output);
       }
@@ -384,12 +438,20 @@ export class QueueService  {
       });
       if(response.success){
         if(response.output.length> 0){
-          this.attendedQueue = response.output[0];
+          this.attendedQueue  = {
+            ...response.output[0],
+            queue:{
+              id:response.output[0].queue_id,
+              status:response.output[0].queue_status,
+              ...response.output[0]
+            }
+          }
+          response.output[0];
           return {
             attendedQueue:this.attendedQueue,
             queue: {
               id:response.output[0].queue_id,
-              status:response.output[0].queue_statusm,
+              status:response.output[0].queue_status,
               ...response.output[0]
             } as Queue
           };

@@ -24,9 +24,9 @@ interface AttendedQueue{
   attended_on:string;
   finished_on?:string;
   status:string;
-  terminal_id:string;
-  number:number;
-  type:'priority' | 'regular';
+  terminal_id?:string;
+  number?:number;
+  type?:'priority' | 'regular';
 }
 
 interface UpNextItem {
@@ -327,10 +327,10 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
    
 }
 
-
-
-
   computeFillers(midpoint:number,count:number){
+    if(count==1){
+      return [];
+    }
     if(midpoint == Math.round(count/2))
       return new Array(5-midpoint);
     return [];
@@ -462,7 +462,7 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
           Object.assign(existingTerminal, {
             id: updatedTerminal.id,
             status: updatedTerminal.status,
-            ticketNumber: ticket ==undefined ? undefined : (ticket.type=='priority'?'P':'R') + '-'+ ticket.number.toString().padStart(3, '0'),
+            ticketNumber: ticket ==undefined ? undefined : (ticket.type=='priority'?'P':'R') + '-'+ ticket.number!.toString().padStart(3, '0'),
             personName: updatedTerminal.fullname,
             number:updatedTerminal.number
           });
@@ -471,14 +471,13 @@ export class QueueDisplayComponent implements OnInit, AfterViewInit, OnChanges, 
           this.counters.push({
             id: updatedTerminal.id,
             status: updatedTerminal.status,
-            ticketNumber: ticket ==undefined ? undefined : (ticket.type=='priority'?'P':'R') + '-'+ ticket.number.toString().padStart(3, '0'),
+            ticketNumber: ticket ==undefined ? undefined : (ticket.type=='priority'?'P':'R') + '-'+ ticket.number!.toString().padStart(3, '0'),
             personName: updatedTerminal.fullname,
             number:updatedTerminal.number
           });
         }
       });
       this.counters = this.counters.filter((counter)=>existingTerminals.includes(counter.id));
-    
       if(!this.dataLoaded){
         this.loading = false;
         this.dataLoaded = true;

@@ -87,15 +87,19 @@ async deleteTerminal(id:string){
 
  async getAllTerminals(){
       const response = await this.API.read({
-        selectors: ['divisions.name as division, MAX(terminal_sessions.last_active) as last_active, desk_attendants.fullname as attendant, terminals.*'],
+        selectors: ['divisions.name as division,latest_session.last_active as last_active ,latest_session.status as session_status, desk_attendants.fullname as attendant, terminals.*'],
         tables: 'terminals',
         conditions: `
           LEFT JOIN divisions ON divisions.id = terminals.division_id
-          LEFT JOIN terminal_sessions ON terminal_sessions.terminal_id = terminals.id AND terminal_sessions.status !='closed' 
+          LEFT JOIN terminal_sessions ON terminal_sessions.terminal_id = terminals.id 
+          LEFT JOIN (
+            SELECT id, status,last_active ,ROW_NUMBER() OVER (PARTITION BY terminal_id ORDER BY last_active DESC) AS index FROM terminal_sessions
+          ) AS latest_session ON terminal_sessions.id = latest_session.id 
           LEFT JOIN desk_attendants ON terminal_sessions.attendant_id = desk_attendants.id
           WHERE terminals.division_id = '${this.divisionService.selectedDivision?.id}' 
-          GROUP BY terminals.id, divisions.id, terminal_sessions.terminal_id,desk_attendants.id
-          ORDER BY terminals.number ASC , MAX(terminal_sessions.last_active) DESC
+          AND (index =1 OR index IS NULL)
+          GROUP BY terminals.id, divisions.id, terminal_sessions.terminal_id,desk_attendants.id, latest_session.last_active, latest_session.status
+          ORDER BY terminals.number ASC ,session_status DESC
           `});
    
     if(response.success){
@@ -113,15 +117,16 @@ async deleteTerminal(id:string){
         const now = new Date(); 
         const lastActive = new Date(session.last_active);
         const diffInMinutes = (now.getTime() - lastActive.getTime()) / 60000; 
-        if(diffInMinutes < 1.5 && session.status != 'maintenance'){
+        if(diffInMinutes < 1.5 && session.status != 'maintenance' && session.session_status != 'closed'){
           session.status = 'online';
         }
         session.number = i;
         i +=1;
       }
- 
+      console.log(response.output);
       return response.output;
     }else{
+      alert(response.output);
       throw new Error('Unable to fetch terminals');
     }
   }

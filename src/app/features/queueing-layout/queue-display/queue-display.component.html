@@ -7,7 +7,7 @@
   allow="autoplay"
   loop
   frameborder="0"
-  class="video aspect-[3840/2180] animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
+  class="video aspect-[3840/2180] w-full h-full animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
   ></iframe>
   <video
   *ngIf="!safeYoutubeUrl"
@@ -99,7 +99,7 @@
                   <!-- <span class="tracking-wide text-xs 2xl:text-sm text-shadow min-[3500px]:text-5xl min-[3500px]:font-medium">{{item.personName}}</span> -->
                 </div>
               </div>
-              <div *ngFor="let filler of computeFillers(i+1,counters.length)" class="w-full h-full"></div>
+              <div *ngFor="let filler of computeFillers(i+1,countOnlineCounters())" class="w-full h-full"></div>
             </ng-container>
             
 

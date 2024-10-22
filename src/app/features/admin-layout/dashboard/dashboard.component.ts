@@ -17,6 +17,12 @@ import { UswagonCoreService } from 'uswagon-core';
 import { ContentService } from '../../../services/content.service';
 import { UswagonAuthService } from 'uswagon-auth';
 import { DivisionService } from '../../../services/division.service';
+import { QueueService } from '../../../services/queue.service';
+
+interface Division{
+  id:string;
+  name:string;
+}
 
 interface QueueAnalytics {
   office: string;
@@ -71,16 +77,21 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   currentUser!: { firstName: string };
   isSuperAdmin: boolean = this.auth.accountLoggedIn() === 'superadmin';
   contents: any[] = [];
-  divisions: any[] = [];
+  divisions: Division[] = [];
   charts: Chart[] = [];
   content: any;
   selectedDivision: string = '';
   selectedFilter: string = 'day';
 
+  lastOverallTransaction?:number;
+  dataLoaded: boolean = false;
+  dashboardInterval:any;
+
   constructor(
     private API: UswagonCoreService,
     private divisionService: DivisionService,
     private contentService: ContentService,
+    private queueService:QueueService,
     private auth: UswagonAuthService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -88,34 +99,44 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.currentUser = { firstName: 'User' };
     this.loadContents();
-    this.queueAnalytics$ = this.getMockQueueAnalytics();
-    this.staffPerformance$ = this.getMockStaffPerformance();
-    this.kioskStatus$ = this.getMockKioskStatus();
-    this.updateOverallMetrics();
-    this.updateKioskPagination();
+   
   }
+
+
 
   ngAfterViewInit() {
     this.updateOverallMetrics();
-    this.overallMetrics$.pipe(take(1)).subscribe((metrics) => {
-      if (metrics && metrics.length > 0) {
-        this.initializeCharts(metrics);
-      } else {
-        console.warn('No metrics data available to initialize charts.');
-      }
-    });
   }
 
   ngOnDestroy() {
     this.destroyCharts();
+    if(this.dashboardInterval){
+      clearInterval(this.dashboardInterval)
+    }
+  }
+
+  getStatus(){
+    const waiting = this.queueService.allTodayQueue.length;
+
+    return waiting > 20 ? 'Busy' : waiting > 15 ? 'Moderate' : 'Normal'
   }
 
   getMockQueueAnalytics(): Observable<QueueAnalytics[]> {
+    const perDivision = this.divisions.reduce((prev:any[],item)=>{
+      return [...prev,
+        {
+          office: item.name,
+          currentTicket:0,
+          waitingCount: this.queueService.allTodayQueue.filter(queue=>queue.division_id == item.id).length,
+          avgWaitTime: `${this.calculateWaitingTime(item.id)} minutes`,
+          status: this.getStatus()
+        }
+        
+      ]
+    },[])
     return of([
-      { office: 'Registrar', currentTicket: 123, waitingCount: 10, avgWaitTime: '5 minutes', status: 'Busy' },
-      { office: 'Cashier', currentTicket: 89, waitingCount: 5, avgWaitTime: '5 minutes', status: 'Moderate' },
-      { office: 'Accounting Office', currentTicket: 45, waitingCount: 10, avgWaitTime: '5 minutes', status: 'Normal' },
-      { office: 'Total', currentTicket: 257, waitingCount: 25, avgWaitTime: '5 minutes', status: 'Busy' },
+      ...perDivision,
+      { office: 'Total', currentTicket: 45, waitingCount: this.queueService.allTodayQueue.length, avgWaitTime: `${this.calculateWaitingTime()} minutes`, status: 'Busy' },
     ]);
   }
 
@@ -145,13 +166,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     ]);
   }
 
-  updateOverallMetrics() {
-    const metrics = this.getMockOverallMetrics();
+  async updateOverallMetrics() {
+
+    const metrics =  this.getMockOverallMetrics();
     const updatedMetrics = metrics.map((metric) => ({
       ...metric,
       value: this.calculateMetricValue(metric.data),
     }));
     this.overallMetrics$ = of(updatedMetrics);
+    this.overallMetrics$.pipe(take(1)).subscribe((metrics) => {
+      this.destroyCharts();
+      this.initializeCharts(metrics);
+    });
   }
 
   calculateMetricValue(data: any): number {
@@ -159,48 +185,161 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return filteredData.reduce((acc: number, val: number) => acc + val, 0);
   }
 
-  getMockOverallMetrics(): any[] {
+  calculateWaitingTime(division_id?:string){
+    let totalWaitingTime = 0;
+
+    let items = this.queueService.attendedQueues;
+
+    if(division_id){
+      items = this.queueService.attendedQueues.filter(attended=>  attended.queue!.division_id == division_id);
+    }
+
+    let ignoredItems = 0;
+
+    for (const record of items) {
+        const waitingTime = (new Date(record.attended_on)).getTime() - (new Date(record.queue!.timestamp!)).getTime();
+        if(waitingTime < 0){
+          ignoredItems += 1;
+        }else{
+          totalWaitingTime += waitingTime;
+        }
+    }
+
+    const averageWaitingTime = items.length == 0 ? 0 :totalWaitingTime / items.length - ignoredItems;
+
+    // Convert milliseconds to a more readable format, e.g., minutes
+    return (averageWaitingTime / (1000 * 60)).toFixed(2); // average waiting time in minutes
+  }
+
+
+
+  countItemsPerDay  (division_id?:string) {
+    let items = this.queueService.allQueue;
+    if(division_id){
+      items = items.filter(item=> item.division_id == division_id);
+    }
+      const now = new Date();
+      // Initialize an array with 24 zeros (for each hour)
+      const countByHour = Array(24).fill(0);
+      items.forEach(item => {
+          const date = new Date(item.timestamp);
+          const hour = date.getHours(); // Get the hour (0-23)
+          // alert(date.toDateString());
+          if(date.toDateString() == now.toDateString()){
+            countByHour[hour]++;
+          }
+      });
+
+      return countByHour;
+  };
+
+  countItemsPerWeek(division_id?:string) {
+    let items = this.queueService.allQueue;
+    if(division_id){
+      items = items.filter(item=> item.division_id == division_id);
+    }
+
+    const today = new Date();
+    const startOfPeriod = new Date(today);
+    startOfPeriod.setDate(today.getDate() - 6); // Set to 7 days before today
+  
+    const countByDay: any = {};
+  
+    items.forEach((item: any) => {
+      const date = new Date(item.timestamp);
+  
+      // Check if the item is within the last 8 days
+      if (date >= startOfPeriod && date <= today) {
+        const dayKey = date.toISOString().split('T')[0]; // Use ISO string to get YYYY-MM-DD format
+  
+        countByDay[dayKey] = (countByDay[dayKey] || 0) + 1; // Increment the count for that day
+      }
+    });
+  
+    // Create an array of days in the correct order
+    const result = [];
+    for (let i = 6; i >= 0; i--) { // Iterate from 7 days ago to today
+      const day = new Date();
+      day.setDate(today.getDate() - i);
+      const dayKey = day.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+  
+      result.push(countByDay[dayKey] || 0); // Push the count or 0 if no items for that day
+    }
+  
+    return result;
+  }
+
+  countItemsPerMonth(division_id?:string) {
+    let items = this.queueService.allQueue;
+    if(division_id){
+      items = items.filter(item=> item.division_id == division_id);
+    }
+    const countByWeek = [0, 0, 0, 0]; // Initialize an array for the 4 weeks of the month
+      const now = new Date();
+
+      items.forEach((item) => {
+        const date = new Date(item.timestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month and pad with zero
+
+        if (year === now.getFullYear() && month === String(now.getMonth() + 1).padStart(2, '0')) {
+          // Get the week number of the month (1-4)
+          const week = Math.ceil((date.getDate() + 6) / 7) - 1; // Zero-based index for array
+          countByWeek[week] += 1; // Increment the count for that week
+        }
+      });
+      return countByWeek;
+  }
+  countItemsPerYear(division_id?:string) {
+    let items = this.queueService.allQueue;
+    if(division_id){
+      items = items.filter(item=> item.division_id == division_id);
+    }
+    
+    const countByMonth = new Array(12).fill(0); // Create an array with 12 months initialized to 0
+    const now = new Date();
+    // Iterate over each item to count occurrences by month
+    items.forEach((item) => {
+      const date = new Date(item.timestamp);
+      const month = date.getMonth(); // Get month (0-11)
+      if(date.getFullYear() == now.getFullYear()){
+        countByMonth[month] += 1; // Increment the count for that month
+      }
+    });
+
+    return countByMonth;
+
+  }
+
+  getMockOverallMetrics() {
+    const perDivision = this.divisions.reduce((prev:any[],item)=>{
+      return [
+        ...prev,
+        {
+          title: item.name,
+          value:0,
+          data:{
+            day: this.countItemsPerDay(item.id),
+            week: this.countItemsPerWeek(item.id),
+            month:this.countItemsPerMonth(item.id),
+            year: this.countItemsPerYear(item.id),
+          }
+          
+        }
+      ];
+    },[]);
     return [
       {
         title: 'Total Transactions',
         value: 0,
         data: {
-          day: Array.from({ length: 24 }, () => Math.floor(Math.random() * 50)),
-          week: [520, 525, 530, 528, 531, 529, 524],
-          month: [1300, 1400, 1500, 1600],
-          year: [12000, 12500, 13000, 14000, 15000, 15500, 16000, 17000, 18000, 19000, 20000, 21000],
+          day: this.countItemsPerDay(),
+          week: this.countItemsPerWeek(),
+          month:this.countItemsPerMonth(),
+          year: this.countItemsPerYear(),
         },
       },
-      {
-        title: 'Cashier',
-        value: 0,
-        data: {
-          day: Array.from({ length: 24 }, () => Math.floor(Math.random() * 20)),
-          week: [200, 205, 210, 208, 212, 209, 204],
-          month: [500, 550, 600, 650],
-          year: [4500, 4700, 4900, 5100, 5300, 5500, 5700, 5900, 6100, 6300, 6500, 6700],
-        },
-      },
-      {
-        title: 'Registrar',
-        value: 0,
-        data: {
-          day: Array.from({ length: 24 }, () => Math.floor(Math.random() * 15)),
-          week: [300, 305, 310, 308, 312, 309, 304],
-          month: [700, 750, 800, 850],
-          year: [6000, 6200, 6400, 6600, 6800, 7000, 7200, 7400, 7600, 7800, 8000, 8200],
-        },
-      },
-      {
-        title: 'Accounting',
-        value: 0,
-        data: {
-          day: Array.from({ length: 24 }, () => Math.floor(Math.random() * 10)),
-          week: [220, 225, 230, 228, 231, 229, 224],
-          month: [550, 600, 650, 700],
-          year: [5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000, 7200],
-        },
-      },
+      ...perDivision
     ];
   }
 
@@ -217,6 +356,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   initializeCharts(metrics: any[]) {
+
     this.destroyCharts();
 
     this.canvasElements.forEach((canvasElement, index) => {
@@ -327,6 +467,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return days;
   }
 
+  
+
   async loadContents() {
     this.API.setLoading(true);
     if (this.isSuperAdmin) {
@@ -339,7 +481,36 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.content = await this.contentService.getContentSetting();
     }
+    await this.queueService.getAllQueues();
+    await this.queueService.getAllTodayQueues();
+    await this.queueService.geAllAttendedQueues();
+    this.queueAnalytics$ = this.getMockQueueAnalytics();
+    this.staffPerformance$ = this.getMockStaffPerformance();
+    this.kioskStatus$ = this.getMockKioskStatus();
+    this.updateOverallMetrics();
+    this.updateKioskPagination();
     this.API.setLoading(false);
+    if(this.dashboardInterval){
+      clearInterval(this.dashboardInterval)
+    }
+    this.dashboardInterval = setInterval( async()=>{
+      await this.queueService.getAllQueues();
+      await this.queueService.getAllTodayQueues();
+      this.queueAnalytics$ = this.getMockQueueAnalytics();
+      this.staffPerformance$ = this.getMockStaffPerformance();
+      this.kioskStatus$ = this.getMockKioskStatus();
+      this.updateKioskPagination();
+      if(this.lastOverallTransaction !== this.queueService.allQueue.length){
+        this.lastOverallTransaction = this.queueService.allQueue.length;
+        this.updateOverallMetrics();
+      }
+      
+      if(!this.dataLoaded){
+        this.dataLoaded = true;
+       
+      }
+    },2000)
+
     this.cdr.detectChanges();
   }
 
@@ -356,14 +527,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     this.charts = [];
+
   }
 
   onFilterChange() {
     this.updateOverallMetrics();
-    this.overallMetrics$.pipe(take(1)).subscribe((metrics) => {
-      this.destroyCharts();
-      this.initializeCharts(metrics);
-    });
+    
   }
 
   updateKioskPagination() {

@@ -99,9 +99,9 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
   }
 
   statusMap:any = {
-    'available' : 'bg-orange-500',
+    'available' : 'bg-green-500',
     'maintenance' : 'bg-red-500',
-    'online' : 'bg-green-500',
+    'online' : 'bg-orange-500',
   }
 
   capitalizeFirstLetters(input: string): string {

@@ -12,7 +12,7 @@
           <button 
           (click)="selectCounter(terminal)"
           *ngFor="let terminal of terminals; let i = index" 
-          class="group  {{terminal.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
+          class="group transition-all hover:scale-110  {{terminal.status == 'maintenance' ? 'bg-yellow-50 border-yellow-500' :'bg-white hover:bg-green-900 hover:text-white hover:border-green-500 '}} h-48 p-4 rounded-lg flex flex-col gap-2 shadow-md border-2 border-solid border-black/10 ">
             <!-- Header -->
             <div class="flex gap-4 items-center">
               <!-- Lottie Container -->
@@ -38,7 +38,7 @@
                 <div class="w-full flex justify-end">
 
                   <button  class="rounded-lg px-10 py-1 text-white {{statusMap[terminal.status]}}">
-                    {{terminal.status == 'online' ? 'Online': terminal.status != 'maintenance'? 'Available':'Maintenance'}}
+                    {{terminal.status == 'online' ? 'In Use': terminal.status != 'maintenance'? 'Available':'Maintenance'}}
                   </button>
                 </div>
               </div>

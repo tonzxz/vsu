@@ -75,72 +75,93 @@
           </button>
         </div>
 
-        <!-- Users Table -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl">
-          <table class="w-full">
-            <thead class="bg-gradient-to-r from-green-800 to-green-700 text-white">
-              <tr>
-                <th class="p-3 text-left text-sm font-semibold tracking-wider">Username</th>
-                <th class="p-3 text-left text-sm font-semibold tracking-wider">Full Name</th>
-                <th class="p-3 text-left text-sm font-semibold tracking-wider">Location</th>
-                <th class="p-3 text-left text-sm font-semibold tracking-wider">Type</th>
-                <th class="p-3 text-left text-sm font-semibold tracking-wider">Status</th>
-                <th class="p-3 text-left text-sm font-semibold tracking-wider">Action</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <!-- Empty State -->
-              <tr *ngIf="filteredUsers.length === 0">
-                <td colspan="6" class="p-8 text-center text-gray-500">
-                  <app-lottie-animation class="w-56 h-56 mx-auto" animation="noUsers"></app-lottie-animation>
-                  <div class="text-lg font-medium text-gray-600">No users available</div>
-                  <div class="text-base text-gray-500 mb-4">
-                    Click <span class="font-medium text-green-600">Create Account</span> to add a user
-                  </div>
-                </td>
-              </tr>
+       <!-- Users Table -->
+<div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl">
+  <table class="w-full">
+    <thead class="bg-gradient-to-r from-green-800 to-green-700 text-white">
+      <tr>
+        <th class="p-3 text-left text-sm font-semibold tracking-wider">Username</th>
+        <th class="p-3 text-left text-sm font-semibold tracking-wider">Full Name</th>
+        <th class="p-3 text-left text-sm font-semibold tracking-wider">Location</th>
+        <th class="p-3 text-left text-sm font-semibold tracking-wider">Type</th>
+        <th class="p-3 text-left text-sm font-semibold tracking-wider">Status</th>
+        <th class="p-3 text-left text-sm font-semibold tracking-wider">Action</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <!-- Empty State -->
+      <tr *ngIf="paginatedUsers.length === 0">
+        <td colspan="6" class="p-8 text-center text-gray-500">
+          <app-lottie-animation class="w-56 h-56 mx-auto" animation="noUsers"></app-lottie-animation>
+          <div class="text-lg font-medium text-gray-600">No users available</div>
+          <div class="text-base text-gray-500 mb-4">
+            Click <span class="font-medium text-green-600">Create Account</span> to add a user
+          </div>
+        </td>
+      </tr>
 
-              <!-- User Rows -->
-              <tr (click)="viewUserDetails(user)" 
-                  *ngFor="let user of filteredUsers; let even = even" 
-                  [ngClass]="{'bg-gray-50': even}"
-                  class="hover:bg-green-50 transition-colors duration-200 cursor-pointer">
-                <td class="p-3 text-sm">{{ user.username }}</td>
-                <td class="p-3 text-sm">{{ user.fullname }}</td>
-                <td class="p-3 text-sm">{{ user.division }}</td>
-                <td class="p-3 text-sm">
-                  {{ user.role === 'superadmin' ? 'Super Admin' : user.role !== 'Desk attendant' ? 'Admin' : 'Desk Attendant' }}
-                </td>
+      <!-- User Rows -->
+      <tr (click)="viewUserDetails(user)" 
+          *ngFor="let user of paginatedUsers; let even = even" 
+          [ngClass]="{'bg-gray-50': even}"
+          class="hover:bg-green-50 transition-colors duration-200 cursor-pointer">
+        <td class="p-3 text-sm">{{ user.username }}</td>
+        <td class="p-3 text-sm">{{ user.fullname }}</td>
+        <td class="p-3 text-sm">{{ user.division }}</td>
+        <td class="p-3 text-sm">
+          {{ user.role === 'superadmin' ? 'Super Admin' : user.role !== 'Desk attendant' ? 'Admin' : 'Desk Attendant' }}
+        </td>
+        <td class="p-3">
+          <span [ngClass]="{'bg-green-100 text-green-800': user.is_online, 'bg-red-100 text-red-800': !user.is_online}"
+                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full transition-all duration-300">
+            {{ user.is_online ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="p-3">
+          <div class="flex space-x-2">
+            <button (click)="editUser(user); $event.stopPropagation()" 
+                    class="text-green-600 hover:text-green-800 transition-all duration-300 p-1 rounded-full hover:bg-green-100
+                           transform hover:scale-110 active:scale-95">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-5 w-5">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536-10.607 10.607a2 2 0 01-.879.516l-4.243 1.061a1 1 0 01-1.213-1.213l1.06-4.243a2 2 0 01.517-.879l10.606-10.607zm1.414-1.414a2 2 0 012.828 0l1.414 1.414-3.536-3.536L16.646 3.818z" />
+              </svg>
+            </button>
+            
+            <button (click)="deleteUser(user); $event.stopPropagation()" 
+                    class="text-red-600 hover:text-red-800 transition-all duration-300 p-1 rounded-full hover:bg-red-100
+                           transform hover:scale-110 active:scale-95">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                <td class="p-3">
-                  <span [ngClass]="{'bg-green-100 text-green-800': user.is_online, 'bg-red-100 text-red-800': !user.is_online}"
-                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full transition-all duration-300">
-                    {{ user.is_online ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                <td class="p-3">
-                  <div class="flex space-x-2">
-                    <button (click)="editUser(user); $event.stopPropagation()" 
-                            class="text-green-600 hover:text-green-800 transition-all duration-300 p-1 rounded-full hover:bg-green-100
-                                   transform hover:scale-110 active:scale-95">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-5 w-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536-10.607 10.607a2 2 0 01-.879.516l-4.243 1.061a1 1 0 01-1.213-1.213l1.06-4.243a2 2 0 01.517-.879l10.606-10.607zm1.414-1.414a2 2 0 012.828 0l1.414 1.414a2 2 0 010 2.828l-1.414 1.414-3.536-3.536L16.646 3.818z" />
-                      </svg>
-                    </button>
-                    
-                    <button (click)="deleteUser(user); $event.stopPropagation()" 
-                            class="text-red-600 hover:text-red-800 transition-all duration-300 p-1 rounded-full hover:bg-red-100
-                                   transform hover:scale-110 active:scale-95">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+<!-- Pagination Controls -->
+<div class="flex justify-between items-center mt-4">
+  <button 
+    (click)="previousPage()"
+    [disabled]="currentPage === 1"
+    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md disabled:opacity-50"
+  >
+    Previous
+  </button>
+  
+  <span class="text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
+  
+  <button 
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages"
+    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
       </div>
     </div>
   </div>

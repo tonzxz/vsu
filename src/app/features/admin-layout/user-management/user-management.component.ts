@@ -8,7 +8,7 @@ import { LottieAnimationComponent } from '../../../shared/components/lottie-anim
 import { environment } from '../../../../environment/environment';
 
 interface User {
-  type: string;
+  role: string;
   id: string;
   username: string;
   fullname: string;
@@ -20,7 +20,7 @@ interface User {
   password?: string;
 }
 
-interface Divisions {
+interface Divisions { 
   id: string;
   name: string;
 }
@@ -131,7 +131,7 @@ export class UserManagementComponent implements OnInit {
     return users;
   }
 
-  async processUser(user: any, type: string): Promise<User> {
+  async processUser(user: any, role: string): Promise<User> {
     const decryptedPassword = await this.API.decrypt(user.password);
     return {
       id: user.id,
@@ -142,11 +142,11 @@ export class UserManagementComponent implements OnInit {
       division_id: user.division_id,
       division: user.division || 'Not Available',
       is_online: user.is_online,
-      type: type,
+      role: role,
       number: user.number || '' // Defaulting to an empty string if 'number' is not available.
     };
   }
-
+  
 
   getImageURL(file: string): string | undefined {
     return this.API.getFileURL(file);
@@ -154,7 +154,7 @@ export class UserManagementComponent implements OnInit {
 
   searchUsers() {
     const query = this.searchQuery.toLowerCase().trim();
-    this.filteredUsers = this.users.filter(user =>
+    this.filteredUsers = this.users.filter(user => 
       user.username.toLowerCase().includes(query) ||
       user.fullname.toLowerCase().includes(query) ||
       user.division.toLowerCase().includes(query)
@@ -176,7 +176,7 @@ export class UserManagementComponent implements OnInit {
 
     try {
       const response = await this.API.delete({
-        tables: user.type === 'Desk attendant' ? 'desk_attendants' : 'administrators',
+        tables: user.role === 'Desk attendant' ? 'desk_attendants' : 'administrators',
         conditions: `WHERE id = '${user.id}'`
       });
 
@@ -202,26 +202,41 @@ export class UserManagementComponent implements OnInit {
     this.selectedUser = null;
   }
 
+  // async onAccountCreated(partialUser: Partial<User>) {
+  //   if (this.selectedUser) {
+  //     const index = this.users.findIndex(u => u.id === partialUser.id);
+  //     if (index !== -1) {
+  //       this.users[index] = { ...this.users[index], ...partialUser };
+  //       this.API.sendFeedback('success', 'User has been updated!', 5000);
+  //     }
+  //   } else {
+  //     const newUser: User = {
+  //       ...partialUser,
+  //       division: this.divisions.find(division => division.id === partialUser.division_id)?.name,
+  //       is_online: false,
+  //       number: ''
+  //     } as User;
+  //     this.users.push(newUser);
+  //     this.API.sendFeedback('success', 'New user has been added!', 5000);
+  //   }
+  //   this.closeModal();
+  //   this.filteredUsers = [...this.users];
+  // }
+
   async onAccountCreated(partialUser: Partial<User>) {
-    if (this.selectedUser) {
-      const index = this.users.findIndex(u => u.id === partialUser.id);
-      if (index !== -1) {
-        this.users[index] = { ...this.users[index], ...partialUser };
-        this.API.sendFeedback('success', 'User has been updated!', 5000);
-      }
-    } else {
-      const newUser: User = {
-        ...partialUser,
-        division: this.divisions.find(division => division.id === partialUser.division_id)?.name,
-        is_online: false,
-        number: ''
-      } as User;
-      this.users.push(newUser);
-      this.API.sendFeedback('success', 'New user has been added!', 5000);
+    try {
+      // Refresh data to ensure the new or updated account displays correctly
+      await this.loadData();
+  
+      this.API.sendFeedback('success', this.selectedUser ? 'User has been updated!' : 'New user has been added!', 5000);
+    } catch (error) {
+      console.error('Error while refreshing user list:', error);
+      this.API.sendFeedback('error', 'An error occurred while refreshing the user list.', 5000);
+    } finally {
+      this.closeModal();
     }
-    this.closeModal();
-    this.filteredUsers = [...this.users];
   }
+  
 
   editUser(user: User) {
     this.selectedUser = user;

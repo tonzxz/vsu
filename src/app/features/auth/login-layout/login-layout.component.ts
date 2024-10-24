@@ -5,6 +5,7 @@ import { environment } from '../../../../environment/environment';
 import { LottieAnimationComponent } from '../../../shared/components/lottie-animation/lottie-animation.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { config } from '../../../../environment/config';
 
 @Component({
   selector: 'app-login-layout',
@@ -14,6 +15,9 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./login-layout.component.css']
 })
 export class LoginLayoutComponent implements OnInit {
+
+  config = config
+
 
   rememberMe:boolean = false;
 
@@ -130,4 +134,23 @@ export class LoginLayoutComponent implements OnInit {
       role.tabindex = role.tabindex === selectedTabIndex ? 0 : -1;
     });
   }
+
+  lightenHexColor(hex: string, percent: number): string {
+    // Remove the hash symbol if present
+    hex = hex.replace(/^#/, '');
+
+    // Convert the hex to RGB
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    // Lighten each color channel
+    r = Math.min(255, Math.floor(r + (255 - r) * (percent / 100)));
+    g = Math.min(255, Math.floor(g + (255 - g) * (percent / 100)));
+    b = Math.min(255, Math.floor(b + (255 - b) * (percent / 100)));
+
+    // Convert back to hex
+    const newHex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+    return newHex;
+}
 }

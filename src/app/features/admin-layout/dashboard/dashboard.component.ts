@@ -21,10 +21,22 @@ import { QueueService } from '../../../services/queue.service';
 import { KioskService } from '../../../services/kiosk.service';
 import { TerminalService } from '../../../services/terminal.service';
 import { ServiceService } from '../../../services/service.service';
+import { firstValueFrom } from 'rxjs';
+// Import section
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { map } from 'rxjs/operators';
 
 interface Division{
   id:string;
   name:string;
+}
+
+type MetricTitle = 'Registrar Division' | 'Cash Division' | 'Accounting Division' | 'Total Transactions';
+
+interface Metric {
+  title: MetricTitle;
+  data: any; // Adjust this based on your actual data structure
 }
 
 interface QueueAnalytics {
@@ -85,6 +97,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   content: any;
   selectedDivision: string = '';
   selectedFilter: string = 'day';
+  selectedMetric: Metric | null = null;
+  selectedMetricTitle: string | null = null;
+  autoRefreshEnabled: boolean = true;
 
   lastOverallTransaction?:number;
   dataLoaded: boolean = false;
@@ -93,6 +108,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   availableKiosks: number = 0;
   availableTerminals: number = 0;
   totalServices: number = 0;
+
+  staffCurrentPage: number = 1;
+  staffItemsPerPage: number = 5;
+  staffTotalPages: number = 1;
+
+  lastRefreshTime: number = Date.now();
+  lastUpdated: string = '';
+  refreshInterval: any;
+  updateTimeInterval: any;
+  isRefreshing: boolean = false;
 
   constructor(
     private API: UswagonCoreService,
@@ -109,7 +134,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.currentUser = { firstName: 'User' };
     this.loadContents();
+    this.staffPerformance$.subscribe(staff => {
+      if (staff) {
+        this.staffTotalPages = Math.ceil(staff.length / this.staffItemsPerPage);
+      }
+    });
 
+    this.startRealtimeUpdates();
+    this.updateLastUpdatedTime();
+    this.refreshData();
   }
 
 
@@ -122,6 +155,362 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroyCharts();
     if(this.dashboardInterval){
       clearInterval(this.dashboardInterval)
+    }
+    if (this.refreshInterval) clearInterval(this.refreshInterval);
+    if (this.updateTimeInterval) clearInterval(this.updateTimeInterval);
+  }
+
+  private startRealtimeUpdates() {
+    this.refreshInterval = setInterval(() => {
+      this.refreshData();
+    }, 30000); // 30 seconds
+  }
+
+  async refreshData() {
+    if (this.isRefreshing) return;
+
+    this.isRefreshing = true;
+    try {
+      // Refresh all data sources
+      await Promise.all([
+        this.queueService.getAllQueues(),
+        this.queueService.getAllTodayQueues(),
+        this.queueService.geAllAttendedQueues(),
+        // Add other necessary data refreshes
+      ]);
+
+      // Update all observables and states
+      this.queueAnalytics$ = this.getMockQueueAnalytics();
+      this.staffPerformance$ = this.getMockStaffPerformance();
+      this.kioskStatus$ = this.getMockKioskStatus();
+      this.updateOverallMetrics();
+      this.updateKioskPagination();
+
+      // Update non-super admin data if applicable
+      if (!this.isSuperAdmin) {
+        const availableKiosks = await this.kioskService.getKiosks('available');
+        this.availableKiosks = availableKiosks.length;
+
+        const terminals = await this.terminalService.getAllTerminals();
+        this.availableTerminals = terminals.filter(
+          (terminal: { status: string }) => terminal.status === 'available'
+        ).length;
+
+        const divisionId = this.auth.getUser().division_id;
+        const services = await this.serviceService.getAllServices(divisionId);
+        this.totalServices = services.length;
+      }
+
+      this.lastRefreshTime = Date.now();
+      this.showToast('Data refreshed successfully');
+    } catch (error) {
+      this.showToast('Failed to refresh data', 'error');
+      console.error('Refresh error:', error);
+    } finally {
+      this.isRefreshing = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async downloadReport() {
+    try {
+      const doc = new jsPDF();
+      const margins = 15;
+
+      // Header
+      doc.setFontSize(20);
+      doc.text('Queue Management System Report', margins, 20);
+
+      doc.setFontSize(10);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, margins, 30);
+
+      // Overall Metrics Section
+      doc.setFontSize(12);
+      doc.text('Overall Metrics', margins, 40);
+
+      // Get all metrics data
+      const metrics = await firstValueFrom(this.overallMetrics$);
+      const metricsData = [
+        // Division metrics
+        ...metrics.map(metric => [
+          metric.title,
+          metric.value.toString(),
+          this.selectedFilter.toUpperCase()
+        ]),
+        // Additional metrics for non-super admins
+        ...((!this.isSuperAdmin) ? [
+          ['Available Kiosks', this.availableKiosks.toString(), 'units available'],
+          ['Available Terminals', this.availableTerminals.toString(), 'units available'],
+          ['Total Services', this.totalServices.toString(), 'active services']
+        ] : [])
+      ];
+
+      (doc as any).autoTable({
+        startY: 45,
+        head: [['Metric', 'Value', 'Period']],
+        body: metricsData,
+        theme: 'striped',
+        styles: {
+          fontSize: 10,
+          cellPadding: 5,
+        },
+        headStyles: {
+          fillColor: [66, 139, 202],
+          textColor: 255,
+          fontSize: 10,
+          fontStyle: 'bold',
+        },
+        columnStyles: {
+          0: { cellWidth: 80 },
+          1: { cellWidth: 40 },
+          2: { cellWidth: 60 }
+        }
+      });
+
+      // Rest of your code remains the same...
+      // Queue Status
+      const queueData = await firstValueFrom(this.queueAnalytics$);
+      if (queueData?.length) {
+        doc.addPage();
+        doc.setFontSize(12);
+        doc.text('Queue Status', margins, 20);
+
+        (doc as any).autoTable({
+          startY: 25,
+          head: [['Office', 'Current Ticket', 'Waiting', 'Avg Wait Time', 'Status']],
+          body: queueData.map(q => [
+            q.office,
+            q.currentTicket.toString(),
+            q.waitingCount.toString(),
+            q.avgWaitTime,
+            q.status
+          ]),
+          theme: 'striped',
+          styles: {
+            fontSize: 10,
+            cellPadding: 5,
+          },
+          headStyles: {
+            fillColor: [66, 139, 202],
+            textColor: 255,
+            fontSize: 10,
+            fontStyle: 'bold',
+          }
+        });
+      }
+
+      // Staff Performance
+      const staffData = await firstValueFrom(this.staffPerformance$);
+      if (staffData?.length) {
+        doc.addPage();
+        doc.setFontSize(12);
+        doc.text('Staff Performance Metrics', margins, 20);
+
+        (doc as any).autoTable({
+          startY: 25,
+          head: [['Staff Name', 'Office', 'Tickets Served', 'Avg Service Time', 'Rating']],
+          body: staffData.map(s => [
+            s.name,
+            s.office,
+            s.ticketsServed.toString(),
+            s.avgServiceTime,
+            `${s.customerRating}/5`
+          ]),
+          theme: 'striped',
+          styles: {
+            fontSize: 10,
+            cellPadding: 5,
+          },
+          headStyles: {
+            fillColor: [66, 139, 202],
+            textColor: 255,
+            fontSize: 10,
+            fontStyle: 'bold',
+          }
+        });
+      }
+
+      // Kiosk Status
+      const kioskData = await firstValueFrom(this.kioskStatus$);
+      if (kioskData?.length) {
+        doc.addPage();
+        doc.setFontSize(12);
+        doc.text('Kiosk Status Overview', margins, 20);
+
+        (doc as any).autoTable({
+          startY: 25,
+          head: [['ID', 'Location', 'Status', 'Tickets Issued', 'Last Maintenance']],
+          body: kioskData.map(k => [
+            k.id,
+            k.location,
+            k.status,
+            k.ticketsIssued.toString(),
+            k.lastMaintenance
+          ]),
+          theme: 'striped',
+          styles: {
+            fontSize: 10,
+            cellPadding: 5,
+          },
+          headStyles: {
+            fillColor: [66, 139, 202],
+            textColor: 255,
+            fontSize: 10,
+            fontStyle: 'bold',
+          }
+        });
+      }
+
+      // Summary
+      doc.addPage();
+      doc.setFontSize(12);
+      doc.text('System Summary', margins, 20);
+
+      const summaryData = [
+        ['Report Period', this.selectedFilter.toUpperCase()],
+        ['Total Transactions', metrics.find(m => m.title === 'Total Transactions')?.value.toString() || '0'],
+        ['Registrar Division', metrics.find(m => m.title === 'Registrar Division')?.value.toString() || '0'],
+        ['Cash Division', metrics.find(m => m.title === 'Cash Division')?.value.toString() || '0'],
+        ['Accounting Division', metrics.find(m => m.title === 'Accounting Division')?.value.toString() || '0'],
+        ['Available Kiosks', this.availableKiosks.toString()],
+        ['Available Terminals', this.availableTerminals.toString()],
+        ['Total Services', this.totalServices.toString()],
+        ['System Status', 'OPERATIONAL'],
+        ['Last Updated', this.lastUpdated]
+      ];
+
+      (doc as any).autoTable({
+        startY: 25,
+        head: [['Metric', 'Value']],
+        body: summaryData,
+        theme: 'striped',
+        styles: {
+          fontSize: 10,
+          cellPadding: 5,
+        },
+        headStyles: {
+          fillColor: [66, 139, 202],
+          textColor: 255,
+          fontSize: 10,
+          fontStyle: 'bold',
+        }
+      });
+
+      // Save the PDF
+      const fileName = `queue-management-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+
+      this.showToast('Report downloaded successfully');
+    } catch (error) {
+      console.error('Error generating report:', error);
+      this.showToast('Failed to download report', 'error');
+    }
+  }
+  toggleAutoRefresh() {
+    if (this.autoRefreshEnabled) {
+      this.startRealtimeUpdates();
+    } else {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+        this.refreshInterval = null;
+      }
+    }
+  }
+
+
+  private showToast(message: string, type: 'success' | 'error' = 'success') {
+    // Implement your toast notification logic here
+    console.log(`${type}: ${message}`);
+  }
+
+
+
+
+
+
+  private updateLastUpdatedTime() {
+    this.updateTimeInterval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - this.lastRefreshTime) / 1000);
+
+      if (seconds < 60) {
+        this.lastUpdated = `${seconds} seconds ago`;
+      } else if (seconds < 3600) {
+        const minutes = Math.floor(seconds / 60);
+        this.lastUpdated = `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+      } else {
+        const hours = Math.floor(seconds / 3600);
+        this.lastUpdated = `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+      }
+    }, 1000);
+  }
+
+
+
+
+
+  onMetricCardClick(metric: any) {
+    // Toggle selection: if the metric is already selected, clear it; otherwise, set it.
+    this.selectedMetric = this.selectedMetric?.title === metric.title ? null : metric;
+    this.updateChartWithMetric();
+  }
+
+  updateChartWithMetric() {
+    if (!this.charts || this.charts.length === 0) return;
+
+    const labels = this.getFilteredLabels();
+
+    // Define colors for each dataset for consistency
+    const colors: Record<MetricTitle, string> = {
+      'Registrar Division': '#22C1C3', // Teal
+      'Cash Division': '#FFA726',      // Orange
+      'Accounting Division': '#42A5F5', // Blue
+      'Total Transactions': '#66BB6A', // Green
+    };
+
+    // Retrieve datasets based on selectedMetric
+    const datasets = this.overallMetrics$.pipe(take(1)).subscribe(metrics => {
+      const filteredMetrics = metrics.filter((metric) => {
+        // If no specific metric is selected, show all, otherwise only the selected one.
+        return this.selectedMetric ? metric.title === this.selectedMetric.title : true;
+      });
+
+
+// Use type assertion when accessing colors
+const datasets = filteredMetrics.map((metric) => {
+  const data = this.getFilteredData(metric.data);
+  const ctx = this.canvasElements.first.nativeElement.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+  gradient.addColorStop(0, 'rgba(34, 193, 195, 0.3)');
+  gradient.addColorStop(1, 'rgba(253, 187, 45, 0.1)');
+
+  return {
+    label: metric.title,
+    data: data,
+    fill: true,
+    backgroundColor: gradient,
+    borderColor: colors[metric.title as MetricTitle] || '#66BB6A', // Safe access with assertion
+    borderWidth: 3,
+    pointBackgroundColor: colors[metric.title as MetricTitle] || '#66BB6A', // Safe access with assertion
+    pointRadius: 4,
+    pointHoverRadius: 6,
+    tension: 0.4,
+  };
+});
+
+      this.charts.forEach((chart) => {
+        chart.data.labels = labels;
+        chart.data.datasets = datasets;
+        chart.update();
+      });
+    });
+  }
+
+
+  onStaffPageChange(direction: 'prev' | 'next'): void {
+    if (direction === 'prev' && this.staffCurrentPage > 1) {
+      this.staffCurrentPage--;
+    } else if (direction === 'next' && this.staffCurrentPage < this.staffTotalPages) {
+      this.staffCurrentPage++;
     }
   }
 
@@ -176,14 +565,57 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     ]);
   }
 
-  async updateOverallMetrics() {
+  // async updateOverallMetrics() {
 
-    const metrics =  this.getMockOverallMetrics();
-    const updatedMetrics = metrics.map((metric) => ({
+  //   const metrics =  this.getMockOverallMetrics();
+  //   const updatedMetrics = metrics.map((metric) => ({
+  //     ...metric,
+  //     value: this.calculateMetricValue(metric.data),
+  //   }));
+  //   this.overallMetrics$ = of(updatedMetrics);
+  //   this.overallMetrics$.pipe(take(1)).subscribe((metrics) => {
+  //     this.destroyCharts();
+  //     this.initializeCharts(metrics);
+  //   });
+  // }
+
+  async updateOverallMetrics() {
+    const perDivision = this.divisions.map((division) => ({
+      title: division.name,
+      value: 0,
+      data: {
+        day: this.countItemsPerDay(division.id),
+        week: this.countItemsPerWeek(division.id),
+        month: this.countItemsPerMonth(division.id),
+        year: this.countItemsPerYear(division.id),
+      },
+    }));
+
+
+    const totalTransactions = {
+      title: 'Total Transactions',
+      value: 0,
+      data: {
+        day: this.countItemsPerDay(),
+        week: this.countItemsPerWeek(),
+        month: this.countItemsPerMonth(),
+        year: this.countItemsPerYear(),
+      },
+    };
+
+    const combinedMetrics = [
+      ...perDivision,
+      totalTransactions,
+    ];
+
+    const updatedMetrics = combinedMetrics.map((metric) => ({
       ...metric,
       value: this.calculateMetricValue(metric.data),
     }));
+
     this.overallMetrics$ = of(updatedMetrics);
+
+    // Initialize charts with all metrics displayed
     this.overallMetrics$.pipe(take(1)).subscribe((metrics) => {
       this.destroyCharts();
       this.initializeCharts(metrics);
@@ -365,44 +797,142 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  initializeCharts(metrics: any[]) {
+  // initializeCharts(metrics: any[]) {
 
+  //   this.destroyCharts();
+
+  //   this.canvasElements.forEach((canvasElement, index) => {
+  //     const ctx = canvasElement.nativeElement.getContext('2d');
+  //     const metric = metrics[index];
+  //     const labels = this.getFilteredLabels();
+
+  //     if (!metric || !metric.data) {
+  //       console.warn('Metric data is missing:', metric);
+  //       return;
+  //     }
+
+  //     const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+  //     gradient.addColorStop(0, 'rgba(34, 193, 195, 0.3)');
+  //     gradient.addColorStop(1, 'rgba(253, 187, 45, 0.1)');
+
+  //     const chart = new Chart(ctx, {
+  //       type: 'line',
+  //       data: {
+  //         labels: labels,
+  //         datasets: [{
+  //           label: metric.title,
+  //           data: this.getFilteredData(metric.data),
+  //           fill: true,
+  //           backgroundColor: gradient,
+  //           borderColor: '#22C1C3',
+  //           borderWidth: 3,
+  //           pointBackgroundColor: '#22C1C3',
+  //           pointRadius: 4,
+  //           pointHoverRadius: 6,
+  //           tension: 0.4,
+  //         }],
+  //       },
+  //       options: {
+  //         responsive: true,
+  //         maintainAspectRatio: false,
+  //         animation: {
+  //           duration: 1000, // Smooth 1-second transition for updates
+  //         },
+  //         plugins: {
+  //           legend: {
+  //             display: true,
+  //             position: 'top',
+  //             labels: {
+  //               color: '#333',
+  //               font: {
+  //                 size: 14,
+  //               },
+  //             },
+  //           },
+  //           tooltip: {
+  //             backgroundColor: '#f5f5f5',
+  //             bodyColor: '#333',
+  //             borderColor: '#ddd',
+  //             borderWidth: 1,
+  //             titleColor: '#666',
+  //           },
+  //         },
+  //         scales: {
+  //           x: {
+  //             display: true,
+  //             ticks: {
+  //               color: '#555',
+  //               font: {
+  //                 size: 12,
+  //               },
+  //             },
+  //             grid: {
+  //               color: 'rgba(200, 200, 200, 0.2)',
+  //             },
+  //           },
+  //           y: {
+  //             display: true,
+  //             ticks: {
+  //               color: '#555',
+  //               font: {
+  //                 size: 12,
+  //               },
+  //             },
+  //             grid: {
+  //               color: 'rgba(200, 200, 200, 0.2)',
+  //             },
+  //           },
+  //         },
+  //       },
+  //     });
+
+
+  //     this.charts.push(chart);
+  //   });
+  // }
+
+  initializeCharts(metrics: any[]) {
     this.destroyCharts();
 
-    this.canvasElements.forEach((canvasElement, index) => {
+    this.canvasElements.forEach((canvasElement) => {
       const ctx = canvasElement.nativeElement.getContext('2d');
-      const metric = metrics[index];
       const labels = this.getFilteredLabels();
 
-      if (!metric || !metric.data) {
-        console.warn('Metric data is missing:', metric);
-        return;
-      }
+      // Define colors for each dataset
+      const colors = ['#22C1C3', '#FFA726', '#42A5F5', '#66BB6A'];
 
-      const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-      gradient.addColorStop(0, 'rgba(34, 193, 195, 0.3)');
-      gradient.addColorStop(1, 'rgba(253, 187, 45, 0.1)');
+      const datasets = metrics.map((metric, index) => {
+        const data = this.getFilteredData(metric.data);
+        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+        gradient.addColorStop(0, 'rgba(34, 193, 195, 0.3)');
+        gradient.addColorStop(1, 'rgba(253, 187, 45, 0.1)');
+
+        return {
+          label: metric.title,
+          data: data,
+          fill: true,
+          backgroundColor: gradient,
+          borderColor: colors[index % colors.length], // Cycle through the defined colors
+          borderWidth: 3,
+          pointBackgroundColor: colors[index % colors.length],
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.4,
+        };
+      });
 
       const chart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
-          datasets: [{
-            label: metric.title,
-            data: this.getFilteredData(metric.data),
-            fill: true,
-            backgroundColor: gradient,
-            borderColor: '#22C1C3',
-            borderWidth: 3,
-            pointBackgroundColor: '#22C1C3',
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            tension: 0.4,
-          }],
+          datasets: datasets, // Include all datasets (divisions + total)
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: {
+            duration: 1000,
+          },
           plugins: {
             legend: {
               display: true,
@@ -424,28 +954,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           },
           scales: {
             x: {
-              display: true,
-              ticks: {
-                color: '#555',
-                font: {
-                  size: 12,
-                },
-              },
-              grid: {
-                color: 'rgba(200, 200, 200, 0.2)',
-              },
+              ticks: { color: '#555', font: { size: 12 } },
+              grid: { color: 'rgba(200, 200, 200, 0.2)' },
             },
             y: {
-              display: true,
-              ticks: {
-                color: '#555',
-                font: {
-                  size: 12,
-                },
-              },
-              grid: {
-                color: 'rgba(200, 200, 200, 0.2)',
-              },
+              ticks: { color: '#555', font: { size: 12 } },
+              grid: { color: 'rgba(200, 200, 200, 0.2)' },
             },
           },
         },
@@ -454,6 +968,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.charts.push(chart);
     });
   }
+
+
+  getRandomColor(): string {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+
 
   getFilteredLabels(): string[] {
     if (this.selectedFilter === 'day') {
@@ -466,6 +992,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     }
   }
+
 
   getLast7Days(): string[] {
     const days = [];
@@ -496,7 +1023,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
        const availableKiosks = await this.kioskService.getKiosks('available');
        this.availableKiosks = availableKiosks.length;
 
-       // Calculate the number of available terminals:
+       // Calculate the number of available terminalsfme:
        const terminals = await this.terminalService.getAllTerminals();
        this.availableTerminals = terminals.filter(
          (terminal: { status: string }) => terminal.status === 'available'
@@ -563,10 +1090,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateKioskPagination() {
     this.kioskStatus$.pipe(take(1)).subscribe(kioskData => {
-      const start = (this.kioskCurrentPage - 1) * this.kioskItemsPerPage;
-      const end = start + this.kioskItemsPerPage;
+      const start = (this.kioskCurrentPage - 1) * 5;
+      const end = start + 5;
       this.paginatedKioskStatus = kioskData.slice(start, end);
-      this.totalKioskPages = Math.ceil(kioskData.length / this.kioskItemsPerPage);
+      this.totalKioskPages = Math.ceil(kioskData.length / 5);
     });
   }
 

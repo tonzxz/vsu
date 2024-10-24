@@ -1,40 +1,89 @@
-<header class="px-6 py-4 mx-8 mt-4 transition-transform duration-300 ease-in-out transform bg-white shadow-lg rounded-3xl">
-  <div class="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
-    <!-- Profile Picture and Welcome Text -->
-    <div class="flex items-center space-x-4">
-      <img [src]="divisionLogo" alt="Division Logo" class="object-cover w-16 h-16 rounded-full shadow-md">
-      <h2 class="text-2xl font-medium text-[#283c1c]">
-        <span class="font-light">Welcome </span>
-        <span>{{ getUserName() }}!</span>
-        <span class="animate-wave">👋</span>
-      </h2>
-    </div>
-
-    <!-- Profile Picture with Dropdown -->
-    <div class="relative">
-      <img
-        [src]="getUserProfile()"
-        alt="Profile Image"
-        class="object-cover rounded-full cursor-pointer w-14 h-14"
-        (click)="toggleDropdown()"
-      />
-
-      <!-- Dropdown Menu -->
-      <div *ngIf="isDropdownOpen" class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg dark:bg-gray-700">
-        <a
-          href="#"
-          class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-gray-600"
-          (click)="navigateToProfile($event)"
+<header class="z-10 px-8 py-6 mx-8 mt-4 transition-all duration-300 border shadow-xl bg-white/90 backdrop-blur-lg rounded-3xl border-white/50">
+  <div class="flex items-center justify-between">
+    <!-- Left Side -->
+    <div class="flex items-center gap-6">
+      <div class="relative group">
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full opacity-20 group-hover:opacity-40 blur transition-all duration-300"></div>
+        <img
+          [src]="divisionLogo || 'assets/logo/vsu.png'"
+          alt="Division Logo"
+          class="relative object-cover w-16 h-16 transition-all duration-300 border-2 rounded-full shadow-lg border-white/80 group-hover:scale-105"
+          onerror="this.src='assets/logo/vsu.png'"
         >
-          Profile Overview
-        </a>
-        <a
-          href="#"
-          class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-gray-600"
-        >
-          Help
-        </a>
+      </div>
+      <div class="flex flex-col">
+        <p class="text-sm font-medium text-gray-500">Welcome back,</p>
+        <div class="flex items-center gap-2">
+          <h2 class="text-2xl font-bold text-transparent bg-gradient-to-r from-green-600 via-green-700 to-emerald-600 bg-clip-text">
+            {{ getUserName() }}
+          </h2>
+          <span class="wave-emoji">👋</span>
+        </div>
       </div>
     </div>
+
+    <!-- Right Side - Profile Dropdown -->
+    <div class="relative">
+      <button
+        (click)="toggleDropdown()"
+        class="relative group focus:outline-none"
+        data-profile-button>
+        <div class="absolute -inset-0.5 rounded-full opacity-20 group-hover:opacity-40 blur transition-all duration-300"></div>
+        <img
+          [src]="getUserProfile()"
+          alt="Profile"
+          class="relative object-cover transition-all duration-300 border-2 rounded-full shadow-lg w-14 h-14 border-white/80 group-hover:scale-105"
+          onerror="this.src='assets/images/noprofile.png'"
+        />
+      </button>
+
+      <!-- Dropdown Menu -->
+      <div #dropdownMenu *ngIf="isDropdownOpen"
+        class="absolute right-0 z-10 mt-2 bg-white border border-gray-200 shadow-2xl w-72 rounded-2xl">
+        <div class="overflow-hidden rounded-2xl">
+          <div class="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-green-50 to-emerald-50">
+            <div class="flex items-center gap-3">
+              <img
+                [src]="getUserProfile()"
+                class="w-10 h-10 border-2 border-white rounded-full shadow-md"
+                alt="Profile"
+                onerror="this.src='assets/images/noprofile.png'"
+              >
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">{{ getUserName() }}</p>
+                <p class="text-xs text-gray-500 truncate">Signed in</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2 space-y-1">
+            <button
+              (click)="navigateToProfile($event)"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center justify-center w-8 h-8 text-blue-600 rounded-lg bg-blue-50">
+                <i class="fas fa-user"></i>
+              </div>
+              <span class="flex-grow text-left">Profile Overview</span>
+              <i class="text-gray-300 fas fa-chevron-right"></i>
+            </button>
+
+            <button
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center justify-center w-8 h-8 text-purple-600 rounded-lg bg-purple-50">
+                <i class="fas fa-question-circle"></i>
+              </div>
+              <span class="flex-grow text-left">Help Center</span>
+              <i class="text-gray-300 fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
   </div>
 </header>

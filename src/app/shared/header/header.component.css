@@ -1,22 +1,38 @@
-@keyframes wave {
-  0%,
+/* header.component.css */
+.wave-emoji {
+  display: inline-block;
+  animation: wave-animation 2.5s infinite;
+  transform-origin: 70% 70%;
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
   100% {
     transform: rotate(0deg);
   }
-  10%,
-  30%,
-  50%,
-  70% {
-    transform: rotate(-10deg);
-  }
-  20%,
-  40%,
-  60% {
-    transform: rotate(10deg);
-  }
 }
-.animate-wave {
-  display: inline-block;
-  animation: wave 2s infinite;
-  transform-origin: 70% 70%;
+
+:host {
+  position: relative;
+  isolation: isolate;
 }

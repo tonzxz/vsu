@@ -1,3 +1,4 @@
-src/environment/* merge=ours
+src/environment/config.ts merge=ours
+src/environment/environment.ts merge=ours
 src/variables.scss merge=ours
 src/assets/specifics/* merge=ours

@@ -114,14 +114,14 @@
           <button
             (click)="onKioskPageChange('prev')"
             [disabled]="kioskCurrentPage === 1"
-            class="px-4 py-2 text-white bg-blue-500 rounded disabled:bg-gray-300">
+            class="px-4 py-2 text-white bg-[var(--primary)] rounded disabled:bg-gray-300">
             Previous
           </button>
           <span>Page {{ kioskCurrentPage }} of {{ totalKioskPages }}</span>
           <button
             (click)="onKioskPageChange('next')"
             [disabled]="kioskCurrentPage === totalKioskPages"
-            class="px-4 py-2 text-white bg-blue-500 rounded disabled:bg-gray-300">
+            class="px-4 py-2 text-white bg-[var(--primary)] rounded disabled:bg-gray-300">
             Next
           </button>
         </div>
@@ -136,8 +136,8 @@
             (click)="changeContent(division.id)"
             class="flex-1 px-4 py-2 font-medium text-center text-white transition-colors duration-200"
             [ngClass]="{
-              'bg-green-500': division.id === selectedDivision,
-              'bg-green-600 hover:bg-green-500': division.id !== selectedDivision
+              'bg-[var(--primary-hover)]': division.id === selectedDivision,
+              'bg-[var(--primary)] hover:bg-[var(--primary-hover)]': division.id !== selectedDivision
             }">
             {{ division.name }}
           </button>

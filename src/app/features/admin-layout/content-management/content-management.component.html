@@ -11,22 +11,22 @@
                     <div *ngIf="isSuperAdmin" class="flex">
                         <button  *ngFor="let division of divisions; let i = index" 
                             (click)="selectDivision(division.id)"
-                            class="h-10 transition-all {{division.id == selectedDivision ? 'bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 text-white':'bg-white'}} px-4 flex-1 border-2 border-solid {{ i == 0 ? 'rounded-l-lg': i == 1 ? '':'rounded-r-lg' }} font-medium  hover:bg-green-600 hover:text-white">
+                            class="h-10 transition-all {{division.id == selectedDivision ? 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white':'bg-white'}} px-4 flex-1 border-2 border-solid {{ i == 0 ? 'rounded-l-lg': i == 1 ? '':'rounded-r-lg' }} font-medium  hover:bg-[var(--primary-hover)] hover:text-white">
                             {{division.name.replace('Division', '').trim().replace('Cash','Cashier')}}</button>
                     </div> 
                     <div *ngIf="!contentLoading" class=" flex flex-col  gap-1 h-full bg-white shadow-md 
                     rounded-b-lg
-                    2xl:rounded-xl border-2 border-dashed hover:border-green-500 py-3 px-3">
+                    2xl:rounded-xl border-2 border-dashed hover:border-[var(--primary-hover)] py-3 px-3">
                         <div class="text-lg px-1"> Edit Contents</div>
                         <div class="px-1 font-thin">Change queue display layout by adjusting these settings.</div>
                         <!-- Uploads Collapsable -->
                         <div class="w-full
                             border-solid border-2 border-gray-300 text-gray-500
                             transition-all 
-                            hover:text-green-700
+                            hover:text-[var(--primary-hover)]
                             rounded-lg
                         "
-                        [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.uploads}"
+                        [ngClass]="{'hover:bg-[var(--primary-light)]  hover:border-[var(--primary-hover)]':!collapsables.uploads}"
                         >
                             <div (click)="toggleCollapse('uploads')" class="text-lg  px-2 py-2 flex items-center justify-between">
                                 <span>Uploads</span>
@@ -38,7 +38,7 @@
                                     <label for="logo" class=" text-gray-800 px-1">Logo</label>
                                     <div (click)="logoInput.click()"  class="w-full h-10 rounded-md 
                                         transition-all
-                                        hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                        hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[var(--primary-light)] 
                                         text-gray-400
                                         border-gray-300 border-2 border-solid 
                                         bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
@@ -58,7 +58,7 @@
                                     </label>
                                     <div (click)="bgInput.click()"   class="w-full h-10 rounded-md 
                                         transition-all
-                                        hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                        hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[var(--primary-light)]
                                         text-gray-400
                                         border-gray-300 border-2 border-solid 
                                         bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
@@ -79,7 +79,7 @@
                                     <ng-container *ngIf="!toggles.videoURL;else videoURL">
                                         <div (click)="videoInput.click()"  class="w-full h-10 rounded-md 
                                         transition-all
-                                        hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                        hover:border-[var(--primary)] hover:text-[var(--primar)] hover:bg-[var(--primary-light)]
                                         text-gray-400
                                         border-gray-300 border-2 border-solid 
                                         bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
@@ -91,7 +91,7 @@
                                     <ng-template #videoURL>
                                         <div  class="w-full h-10 rounded-md 
                                         transition-all
-                                        hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                        hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[var(--primary-light)]
                                         text-gray-400
                                         border-gray-300 border-2 border-solid 
                                         bg-white cursor-pointer select-none flex items-center px-2 justify-between"> 
@@ -106,15 +106,15 @@
                         <div class="w-full
                             border-solid border-2 border-gray-300 text-gray-500
                             transition-all 
-                            hover:text-green-700
+                            hover:text-[var(--primary)]
                             rounded-lg
                         "
-                        [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.widgets}"
+                        [ngClass]="{'hover:bg-[var(--primary-light)] hover:border-[var(--primary-hover)]':!collapsables.widgets}"
                         >
                             <div (click)="toggleCollapse('widgets')" class="text-lg  px-2 py-2 flex items-center justify-between">
                                 <div class="flex justify-between items-center w-full">
                                         <span>Widgets</span>
-                                        <div class="ml-2 flex gap-2 text-green-600 animate-pulse">
+                                        <div class="ml-2 flex gap-2 text-[var(--primary)] animate-pulse">
                                             <span *ngIf="toggles.time" class="material-icons"> paid </span>
                                             <span *ngIf="toggles.weather" class="material-icons"> sunny </span>
                                             <span *ngIf="toggles.currency" class="material-icons"> payments </span>
@@ -124,7 +124,7 @@
                             </div>
                             <div *ngIf="collapsables.widgets" class="flex flex-col px-1 pb-2 gap-1" >             
                                 <!-- Time -->
-                                <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
+                                <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-[var(--primary-light)] rounded-md">
                                     <div class="flex flex-col">
                                         <div class="flex flex-row w-full justify-between items-center" >
                                             <label class="text-lg text-gray-800 px-1">Time/Clock</label>
@@ -135,7 +135,7 @@
                                     </div>
                                 </div>
                                 <!-- Weather -->
-                                <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
+                                <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-[var(--primary-light)] rounded-md">
                                     <div class="flex flex-col">
                                         <div class="flex flex-row w-full justify-between items-center" >
                                             <label  class="text-lg text-gray-800 px-1">Weather View</label>
@@ -146,7 +146,7 @@
                                     </div>
                                 </div>
                                 <!-- Currency -->
-                                <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-green-100 rounded-md">
+                                <div class="p-1 border-2 border-gray-300 border-dashed hover:border-green-600 hover:bg-[var(--primary-light)] rounded-md">
                                     <div class="flex flex-col">
                                         <div class="flex flex-row w-full justify-between items-center" >
                                             <label  class="text-lg text-gray-800 px-1">Currency Converter</label>
@@ -162,21 +162,21 @@
                         <div class="w-full
                             border-solid border-2 border-gray-300 text-gray-500
                             transition-all 
-                        hover:text-green-700
+                        hover:text-[var(--primary)]
                             rounded-lg
                         "
-                        [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.colors}"
+                        [ngClass]="{'hover:bg-[var(--primary-light)] hover:border-[var(--primary-hover)]':!collapsables.colors}"
                         >
                             <div (click)="toggleCollapse('colors')" class="text-lg  px-2 py-2 flex items-center justify-between">
                                 <div class="flex justify-between items-center w-full">
                                     <span>Colors</span>
                                     <div class="ml-2 flex gap-2">
-                                        <div class="border-solid border-2 hover:border-green-500 rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.primary_bg}"> </div>
-                                        <div class="border-solid border-2 hover:border-green-500 rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.secondary_bg}"> </div>
-                                        <div class="border-solid border-2 hover:border-green-500 rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.tertiary_bg}"> </div>
-                                        <div class="border-solid border-2 hover:border-green-500 rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.primary_text}"> </div>
-                                        <div class="border-solid border-2 hover:border-green-500 rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.secondary_text}"> </div>
-                                        <div class="border-solid border-2 hover:border-green-500 rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.tertiary_text}"> </div>
+                                        <div class="border-solid border-2 hover:border-[var(--primary-hover)] rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.primary_bg}"> </div>
+                                        <div class="border-solid border-2 hover:border-[var(--primary-hover)] rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.secondary_bg}"> </div>
+                                        <div class="border-solid border-2 hover:border-[var(--primary-hover)] rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.tertiary_bg}"> </div>
+                                        <div class="border-solid border-2 hover:border-[var(--primary-hover)] rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.primary_text}"> </div>
+                                        <div class="border-solid border-2 hover:border-[var(--primary-hover)] rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.secondary_text}"> </div>
+                                        <div class="border-solid border-2 hover:border-[var(--primary-hover)] rounded-full w-7 h-7" [ngStyle]="{backgroundColor: colors.tertiary_text}"> </div>
                                     </div>
                                 </div>
                                 <span *ngIf="!collapsables.colors" class="material-icons"> keyboard_arrow_down </span>
@@ -190,7 +190,7 @@
                                             <label  class="text-sm text-gray-800 px-1">Primary Background</label>
                                             <input [(ngModel)]="colors.primary_bg" class="w-full h-10 rounded-md 
                                             transition-all
-                                            hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                            hover:border-[var(--primary)] hover:text-[var(--primary-light)] hover:bg-[var(--primary-light)]
                                             text-gray-400
                                             border-gray-300 border-2 border-solid 
                                             bg-white cursor-pointer select-none" type="color">
@@ -200,7 +200,7 @@
                                             <label class=" text-sm text-gray-800 px-1">Secondary Background</label>
                                             <input [(ngModel)]="colors.secondary_bg" class="w-full h-10 rounded-md 
                                             transition-all
-                                            hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                            hover:border-[var(--primary)] hover:text-[var(--primary-light)] hover:bg-[var(--primary-light)]
                                             text-gray-400
                                             border-gray-300 border-2 border-solid 
                                             bg-white cursor-pointer select-none" type="color">
@@ -210,7 +210,7 @@
                                             <label  class="text-sm text-gray-800 px-1">Tertiary Background</label>
                                             <input [(ngModel)]="colors.tertiary_bg" class="w-full h-10 rounded-md 
                                             transition-all
-                                            hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                            hover:border-[var(--primary)] hover:text-[var(--primary-light)] hover:bg-[var(--primary-light)]
                                             text-gray-400
                                             border-gray-300 border-2 border-solid 
                                             bg-white cursor-pointer select-none" type="color">
@@ -223,7 +223,7 @@
                                             <label  class="text-sm text-gray-800 px-1">Primary Text</label>
                                             <input [(ngModel)]="colors.primary_text" class="w-full h-10 rounded-md 
                                             transition-all
-                                            hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                            hover:border-[var(--primary)] hover:text-[var(--primary-light)] hover:bg-[var(--primary-light)]
                                             text-gray-400
                                             border-gray-300 border-2 border-solid 
                                             bg-white cursor-pointer select-none" type="color">
@@ -233,7 +233,7 @@
                                             <label class="text-sm text-gray-800 px-1">Secondary Text</label>
                                             <input [(ngModel)]="colors.secondary_text" class="w-full h-10 rounded-md 
                                             transition-all
-                                            hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                            hover:border-[var(--primary)] hover:text-[var(--primary-light)] hover:bg-[var(--primary-light)]
                                             text-gray-400
                                             border-gray-300 border-2 border-solid 
                                             bg-white cursor-pointer select-none" type="color">
@@ -243,7 +243,7 @@
                                             <label  class="text-sm text-gray-800 px-1">Tertiary Text</label>
                                             <input [(ngModel)]="colors.tertiary_text" class="w-full h-10 rounded-md 
                                             transition-all
-                                            hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                            hover:border-[var(--primary)] hover:text-[var(--primary-light)] hover:bg-[var(--primary-light)]
                                             text-gray-400
                                             border-gray-300 border-2 border-solid 
                                             bg-white cursor-pointer select-none" type="color">
@@ -256,10 +256,10 @@
                         <div class="w-full
                             border-solid border-2 border-gray-300 text-gray-500
                             transition-all 
-                            hover:border-green-600   hover:text-green-700
+                            hover:border-[var(--primary)] hover:text-[var(--primary)]
                             rounded-lg
                         "
-                        [ngClass]="{'hover:bg-green-100 hover:border-green-600':!collapsables.announcements}"
+                        [ngClass]="{'hover:bg-[var(--primary-light)]   hover:border-[var(--primary-hover)]':!collapsables.announcements}"
                         >
                             <div (click)="toggleCollapse('announcements')" class="text-lg  px-2 py-2 flex items-center justify-between">
                                 <div class="flex flex-row justify-between w-full gap-2 items-center" >
@@ -278,7 +278,7 @@
                                 class="w-full h-24 rounded-md
                                 py-1 
                                 transition-all
-                                hover:border-green-600 hover:text-green-700 hover:bg-green-100
+                                hover:border-[var(--primary)] hover:text-[var(--primary)] hover:bg-[var(--primary-light)]
                                 text-gray-400
                                 border-gray-300 border-2 border-solid 
                                 bg-white cursor-pointer select-none flex items-center px-2 justify-between"
@@ -288,8 +288,8 @@
                         <div class="flex-1"></div>
                         <!-- ACTION BUTTONS -->
                         <div class="flex gap-2 justify-end mt-2">
-                            <button (click)="confirmDialog('revert')" class="bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 w-40 h-10 rounded-lg text-white font-medium">Revert Changes</button>
-                            <button (click)="confirmDialog('publish')" class="bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 w-40 rounded-lg text-white font-medium">Publish Changes</button>
+                            <button (click)="confirmDialog('revert')" class="bg-red-800 hover:bg-red-700 w-40 h-10 rounded-lg text-white font-medium">Revert Changes</button>
+                            <button (click)="confirmDialog('publish')" class="bg-[var(--primary)] hover:bg-[var(--primary-hover)] w-40 rounded-lg text-white font-medium">Publish Changes</button>
                         </div>
                     </div>
                 </div>

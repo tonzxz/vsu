@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { UswagonAuthModule, UswagonAuthService } from 'uswagon-auth';
 import { ConfirmationComponent } from '../modals/confirmation/confirmation.component';
 import { TerminalService } from '../../services/terminal.service';
+import { config } from '../../../environment/config';
 
 interface MenuItem {
   title: string;
@@ -21,11 +22,13 @@ interface MenuItem {
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  appTitle = 'Visayas State University';
+  appTitle =  config.texts.title;
   appDescription = 'Queue Management System';
   isExpanded = true;
   logoutOpen = false;
   isMobile = false;
+
+
   @Input() role: string = 'admin';
   
   private router = inject(Router);

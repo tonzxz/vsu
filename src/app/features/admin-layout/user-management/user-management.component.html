@@ -65,7 +65,7 @@
           </div>
           
           <button (click)="createNewAccount()" 
-                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white 
+                  class="bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] hover:from-[var(--primary-hover)] hover:to-[var(--primary-hover)] text-white 
                          px-6 py-2 rounded-xl transition-all duration-300 flex items-center shadow-md hover:shadow-lg
                          transform hover:scale-105 active:scale-95">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor">
@@ -78,7 +78,7 @@
        <!-- Users Table -->
 <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl">
   <table class="w-full">
-    <thead class="bg-gradient-to-r from-green-800 to-green-700 text-white">
+    <thead class="bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] text-white">
       <tr>
         <th class="p-3 text-left text-sm font-semibold tracking-wider">Username</th>
         <th class="p-3 text-left text-sm font-semibold tracking-wider">Full Name</th>
@@ -146,7 +146,7 @@
   <button 
     (click)="previousPage()"
     [disabled]="currentPage === 1"
-    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md disabled:opacity-50"
+    class="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white px-4 py-2 rounded-md disabled:opacity-50"
   >
     Previous
   </button>
@@ -156,7 +156,7 @@
   <button 
     (click)="nextPage()"
     [disabled]="currentPage === totalPages"
-    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md disabled:opacity-50"
+    class="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white px-4 py-2 rounded-md disabled:opacity-50"
   >
     Next
   </button>

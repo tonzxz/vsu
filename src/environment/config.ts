@@ -1,3 +1,3 @@
 export const config = {
-    primary_colors : '#000000',
+    primary_color : '#230000',
 }

@@ -9,3 +9,4 @@ export const config = {
     // secondary_bg: '#4caf50',
     // accent_bg: '#3f51b5',
 };
+// asdasd

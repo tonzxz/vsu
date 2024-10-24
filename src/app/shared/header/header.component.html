@@ -3,7 +3,7 @@
     <!-- Left Side -->
     <div class="flex items-center gap-6">
       <div class="relative group">
-        <div class="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full opacity-20 group-hover:opacity-40 blur transition-all duration-300"></div>
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] rounded-full opacity-20 group-hover:opacity-40 blur transition-all duration-300"></div>
         <img
           [src]="divisionLogo || 'assets/logo/vsu.png'"
           alt="Division Logo"
@@ -14,7 +14,7 @@
       <div class="flex flex-col">
         <p class="text-sm font-medium text-gray-500">Welcome back,</p>
         <div class="flex items-center gap-2">
-          <h2 class="text-2xl font-bold text-transparent bg-gradient-to-r from-green-600 via-green-700 to-emerald-600 bg-clip-text">
+          <h2 class="text-2xl font-bold text-transparent bg-gradient-to-r from-[var(--primary)]  to-[var(--primary-hover)] bg-clip-text">
             {{ getUserName() }}
           </h2>
           <span class="wave-emoji">👋</span>

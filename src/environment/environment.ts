@@ -9,5 +9,8 @@ export const environment = {
     // nodeserver: 'http://192.168.10.2:3000',
     // server: 'http://192.168.10.2/public',
     app: 'vsu',
-    administrators: 'a1b2c3d4e5f6g7h8i9j0klmnopqrst12'
+    administrators: 'a1b2c3d4e5f6g7h8i9j0klmnopqrst12',
+    registrar: 'b2c3d4e5f6g7h8i9j0klmnopqrstuvw3',
+    cashier: 'c3d4e5f6g7h8i9j0klmnopqrstuvwxy4',
+    accountant: 'd4e5f6g7h8i9j0klmnopqrstuvwxyza5',
 }

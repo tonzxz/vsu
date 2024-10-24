@@ -8,7 +8,7 @@ import { LottieAnimationComponent } from '../../../shared/components/lottie-anim
 import { environment } from '../../../../environment/environment';
 
 interface User {
-  type: string;
+  role: string;
   id: string;
   username: string;
   fullname: string;
@@ -20,7 +20,7 @@ interface User {
   password?: string;
 }
 
-interface Divisions {
+interface Divisions { 
   id: string;
   name: string;
 }
@@ -44,8 +44,12 @@ interface PerformanceMetrics {
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
   filteredUsers: User[] = [];
+  paginatedUsers: User[] = [];
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 1;
   searchQuery = '';
-  performanceMetrics: PerformanceMetrics = {
+    performanceMetrics: PerformanceMetrics = {
     totalCheckIns: 43212,
     averageCheckInTime: 43212,
     totalCheckInsToday: 1345,
@@ -71,7 +75,41 @@ export class UserManagementComponent implements OnInit {
     const [users, divisions] = await Promise.all([this.fetchUsers(), this.fetchDivisions()]);
     this.users = users;
     this.filteredUsers = [...this.users];
+    this.updatePagination();
     this.API.setLoading(false);
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
+    this.paginatedUsers = this.filteredUsers.slice(
+      (this.currentPage - 1) * this.pageSize,
+      this.currentPage * this.pageSize
+    );
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  searchUsers() {
+    const query = this.searchQuery.toLowerCase().trim();
+    this.filteredUsers = this.users.filter(user => 
+      user.username.toLowerCase().includes(query) ||
+      user.fullname.toLowerCase().includes(query) ||
+      user.division.toLowerCase().includes(query)
+    );
+    this.currentPage = 1; // Reset to the first page after searching
+    this.updatePagination();
   }
 
   async fetchDivisions() {
@@ -131,7 +169,7 @@ export class UserManagementComponent implements OnInit {
     return users;
   }
 
-  async processUser(user: any, type: string): Promise<User> {
+  async processUser(user: any, role: string): Promise<User> {
     const decryptedPassword = await this.API.decrypt(user.password);
     return {
       id: user.id,
@@ -142,24 +180,17 @@ export class UserManagementComponent implements OnInit {
       division_id: user.division_id,
       division: user.division || 'Not Available',
       is_online: user.is_online,
-      type: type,
+      role: role,
       number: user.number || '' // Defaulting to an empty string if 'number' is not available.
     };
   }
-
+  
 
   getImageURL(file: string): string | undefined {
     return this.API.getFileURL(file);
   }
 
-  searchUsers() {
-    const query = this.searchQuery.toLowerCase().trim();
-    this.filteredUsers = this.users.filter(user =>
-      user.username.toLowerCase().includes(query) ||
-      user.fullname.toLowerCase().includes(query) ||
-      user.division.toLowerCase().includes(query)
-    );
-  }
+ 
 
   setCurrentUser(user: User) {
     this.currentUser = user;
@@ -176,7 +207,7 @@ export class UserManagementComponent implements OnInit {
 
     try {
       const response = await this.API.delete({
-        tables: user.type === 'Desk attendant' ? 'desk_attendants' : 'administrators',
+        tables: user.role === 'Desk attendant' ? 'desk_attendants' : 'administrators',
         conditions: `WHERE id = '${user.id}'`
       });
 
@@ -203,25 +234,18 @@ export class UserManagementComponent implements OnInit {
   }
 
   async onAccountCreated(partialUser: Partial<User>) {
-    if (this.selectedUser) {
-      const index = this.users.findIndex(u => u.id === partialUser.id);
-      if (index !== -1) {
-        this.users[index] = { ...this.users[index], ...partialUser };
-        this.API.sendFeedback('success', 'User has been updated!', 5000);
-      }
-    } else {
-      const newUser: User = {
-        ...partialUser,
-        division: this.divisions.find(division => division.id === partialUser.division_id)?.name,
-        is_online: false,
-        number: ''
-      } as User;
-      this.users.push(newUser);
-      this.API.sendFeedback('success', 'New user has been added!', 5000);
+    try {
+      await this.loadData();
+  
+      this.API.sendFeedback('success', this.selectedUser ? 'User has been updated!' : 'New user has been added!', 5000);
+    } catch (error) {
+      console.error('Error while refreshing user list:', error);
+      this.API.sendFeedback('error', 'An error occurred while refreshing the user list.', 5000);
+    } finally {
+      this.closeModal();
     }
-    this.closeModal();
-    this.filteredUsers = [...this.users];
   }
+  
 
   editUser(user: User) {
     this.selectedUser = user;

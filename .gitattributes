@@ -1,3 +1,7 @@
 src/environment/* merge=ours
 src/variables.scss merge=ours
+<<<<<<< HEAD
 src/assets/specifics/* merge=ours
+=======
+src/assets/specifics/* merge=ours
+>>>>>>> pcso

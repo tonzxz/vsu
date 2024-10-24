@@ -1,7 +1,7 @@
 export const config = {
     texts:{
-        title: 'Visayas State University',
-        location: 'Visca, Baybay City, Leyte',
+        title: 'PCSO',
+        location: 'Pacific Mall, Landco Business Center, F. Imperial St',
     },
     assets:{
         logo:'./assets/specifics/logo/vsu.png'

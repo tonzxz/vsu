@@ -1,11 +1,34 @@
+/* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-fadeIn {
@@ -16,21 +39,58 @@
   animation: fadeInUp 0.5s ease-out;
 }
 
+.bg-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+/* Backgrounds */
 .bg-primary {
-  background-color: #1F2E4D;
+  background-color: #1f2e4d;
 }
 
 .bg-primary-dark {
-  background-color: #22381F;
-}
-
-.text-primary {
-  color: #1F2E4D;
+  background-color: #22381f;
 }
 
 .bg-gray-50 {
   background-color: #f9fafb;
 }
+
+.bg-gray-200 {
+  background-color: #e5e7eb; /* Light gray */
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6; /* Blue for progress */
+}
+
+/* Text Colors */
+.text-primary {
+  color: #1f2e4d;
+}
+
+.text-gray-800 {
+  color: #1f2937; /* Darker gray for main text */
+}
+
+.text-gray-600 {
+  color: #4b5563; /* Medium gray for subtext */
+}
+
+.text-gray-400 {
+  color: #9ca3af; /* Lighter gray for secondary info */
+}
+
+.text-gray-300 {
+  color: #d1d5db; /* Softer gray for unfilled stars */
+}
+
+.text-yellow-400 {
+  color: #fbbf24; /* Warm yellow for filled stars */
+}
+
+/* Containers */
 .chart-container {
   position: relative;
   height: 300px; /* Adjust height as needed */
@@ -38,4 +98,112 @@
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 16px;
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Cards & Hover Effects */
+.metric-card:hover {
+  transform: translateY(-4px);
+}
+
+.queue-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.hover\:shadow-md:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Interactive Elements */
+.hover\:scale-125:hover {
+  transform: scale(1.25);
+}
+
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-background {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Sizing */
+.w-24 {
+  max-width: 6rem;
+}
+
+.h-2 {
+  height: 0.5rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* Base styles for the star container */
+.star-rating {
+  display: flex;
+  gap: 4px;
+}
+
+/* Base styles for all stars */
+.star {
+  font-size: 1.4rem;
+  color: #d1d5db; /* Default color for unfilled stars */
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+/* Filled star styles */
+.star.filled {
+  color: #ffd700; /* Use a gold color for a minimal yet elegant look */
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect to slightly enlarge the stars */
+.star:hover {
+  transform: scale(1.05);
+}
+
+/* Optional glow effect for a slight pop on hover */
+.star.filled:hover {
+  color: #ffc300; /* Slightly brighter gold for hover state */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .star {
+    font-size: 1.2rem; /* Adjust star size for smaller screens */
+  }
 }

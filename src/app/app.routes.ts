@@ -1,7 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { LoginLayoutComponent } from './features/auth/login-layout/login-layout.component';
-import { LoginAsComponent } from './features/auth/login-layout/login-as/login-as.component';
 import { AdminLayoutComponent } from './features/admin-layout/admin-layout.component';
 import { DashboardComponent } from './features/admin-layout/dashboard/dashboard.component';
 import { DeskAttendantLayoutComponent } from './features/desk-attendant-layout/desk-attendant-layout.component';
@@ -31,9 +30,6 @@ export const routes: Routes = [
   {
     path: 'login', component: LoginLayoutComponent,
 
-  },
-  {
-    path: 'login-as', component: LoginAsComponent,
   },
   {
     path: 'admin',

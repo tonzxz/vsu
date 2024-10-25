@@ -101,8 +101,8 @@ export class KioskFormsComponent implements OnInit, OnDestroy {
 
     if (this.kioskService.kiosk != undefined) {
       this.divisionService.setDivision({
-        id: this.kioskService.kiosk.division_id,
-        name: this.kioskService.kiosk.division,
+        id: this.kioskService.kiosk.division_id!,
+        name: this.kioskService.kiosk.division!,
       });
       this.division = this.divisionService.selectedDivision;
       this.queueService.getTodayQueues(true);
@@ -261,7 +261,7 @@ export class KioskFormsComponent implements OnInit, OnDestroy {
 
   async printImage(code: string) {
     const ticketWidth = 500;  // 483 pixels wide
-    const ticketHeight = 675; // 371 pixels tall
+    const ticketHeight = 690; // 371 pixels tall
     const margin = 20; // Add margin in pixels
 
     // Create a temporary container for the content
@@ -374,7 +374,7 @@ export class KioskFormsComponent implements OnInit, OnDestroy {
         // Convert canvas to Base64
         const base64Image = canvas.toDataURL('image/png');
         const base64String = base64Image.split(',')[1];
-        this.kioskService.thermalPrint((Date.now().toString()+code+'.png'),base64String,'192.168.68.113')
+        this.kioskService.thermalPrint((Date.now().toString()+code+'.png'),base64String)
     } catch (error) {
         console.error('Error generating image:', error);
     } finally {

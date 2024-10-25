@@ -1,4 +1,4 @@
-<div *ngIf="!loading && ((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0) && !isPreview" class="main-container flex flex-col justify-center items-center aspect-[3840/2180] relative">
+<div *ngIf="!loading && ((upNextItems.length <= 0 && countOnlineCounters() <= 0)||countOnlineCounters()<=0) && !isPreview" class="main-container flex flex-col justify-center items-center w-full h-full relative">
   <iframe
   #iframePlayer
   [ngStyle]="{'border-color': colors.primary_text + '80',}"
@@ -7,7 +7,7 @@
   allow="autoplay"
   loop
   frameborder="0"
-  class="video aspect-[3840/2180] w-full h-full animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
+  class="video  w-full h-full animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"
   ></iframe>
   <video
   *ngIf="!safeYoutubeUrl"
@@ -15,7 +15,7 @@
   autoplay
   loop
   [muted]="mute"
-  #videoPlayer width="100%" height="100%" class="aspect-[3840/2180] video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
+  #videoPlayer width="100%" height="100%" class=" video animate-pop  object-cover rounded-lg shadow-lg overflow-hidden border-dashed border-2 min-[3500px]:border-8 min-[3500px]:rounded-3xl min-[3500px]:shadow-2xl"  controls="false">
     <source [src]="videoUrl ?? 'assets/queue-display/vsu.mp4'" type="video/mp4">
     Your browser does not support the video tag.
   </video> 
@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<div *ngIf="loading" class="main-container flex flex-col justify-center items-center relative aspect-[3840/2180]">
+<div *ngIf="loading" class="main-container flex flex-col justify-center items-center relative w-full h-full">
   <app-lottie-animation class="animate-pop loader" animation="loader"></app-lottie-animation>
   <div 
   class="animate-pop loader-text">Loading...</div>
@@ -99,7 +99,7 @@
                   <!-- <span class="tracking-wide text-xs 2xl:text-sm text-shadow min-[3500px]:text-5xl min-[3500px]:font-medium">{{item.personName}}</span> -->
                 </div>
               </div>
-              <div *ngFor="let filler of computeFillers(i+1,countOnlineCounters())" class="w-full h-full"></div>
+              <div *ngFor="let filler of computeFillers(i,countOnlineCounters())" class="w-full h-full"></div>
             </ng-container>
             
 

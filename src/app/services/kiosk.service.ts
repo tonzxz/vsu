@@ -7,15 +7,16 @@ import { environment } from '../../environment/environment';
 import { firstValueFrom } from 'rxjs';
 
 
-interface Kiosk{
-  id:string;
-  division_id:string;
-  division:string;
-  number:number;
-  status:string;
-  last_online:string;
+export interface Kiosk{
+  id?:string;
+  number?:number;
+  division_id?:string;
+  printer_ip:string;
+  code:string;
+  division?:string;
+  last_online?:string;
+  status?:string;
 }
-
 @Injectable({
   providedIn: 'root'
 })
@@ -33,12 +34,12 @@ export class KioskService {
   isSuperAdmin:boolean = this.auth.accountLoggedIn() == 'superadmin';
 
 
-  thermalPrint(filename:string, base64String:string, printer_ip:string ){
+  thermalPrint(filename:string, base64String:string){
    firstValueFrom( this.http
     .post(environment.printserver + '/print', {
       key: environment.apiKey,
       app: environment.app,
-      printer_ip: printer_ip,
+      printer_ip: this.kiosk?.printer_ip,
       chunk: base64String,
       fileName:  filename,
     }))
@@ -53,7 +54,9 @@ export class KioskService {
         AND kiosks.code = '${code}'
       `
     });
+    alert('?');
     if(response.success){
+     
       if(response.output.length > 0){
         this.kiosk = response.output[0];
         if(this.kiosk!.status == 'maintenance'){
@@ -70,11 +73,11 @@ export class KioskService {
   }
 
 
- async addKiosk(code:string){
+ async addKiosk(kiosk:Kiosk){
   const checkResponse = await this.API.read({
     selectors:['*'],
     tables:'kiosks',
-    conditions:`WHERE code = '${code}'`
+    conditions:`WHERE code = '${kiosk.code}'`
   })
 
   if(checkResponse.success){
@@ -91,7 +94,8 @@ export class KioskService {
      values:{
        id:id,
        division_id: currentDivision!.id,
-       code:code,
+       code:kiosk.code,
+       printer_ip: kiosk.printer_ip,
        status:'available'
      }
    });
@@ -115,28 +119,31 @@ export class KioskService {
    }
  }
 
- async updateKiosk(id:string, code:string){
-  const checkResponse = await this.API.read({
-    selectors:['*'],
-    tables:'kiosks',
-    conditions:`WHERE code = '${code}'`
-  })
-
-  if(checkResponse.success){
-    if(checkResponse.output.length>0){
-      throw new Error('This code is already in use!');
+ async updateKiosk(kiosk:Kiosk, touched:boolean){
+  if(touched){
+    const checkResponse = await this.API.read({
+      selectors:['*'],
+      tables:'kiosks',
+      conditions:`WHERE code = '${kiosk.code}'`
+    })
+  
+    if(checkResponse.success){
+      if(checkResponse.output.length>0){
+        throw new Error('This code is already in use!');
+      }
+    }else{
+      throw new Error('Something went wrong');
     }
-  }else{
-    throw new Error('Something went wrong');
   }
 
 
   const response = await this.API.update({
     tables: 'kiosks',
     values:{
-      code:code
+      code:kiosk.code,
+      printer_ip: kiosk.printer_ip,
     }  ,
-    conditions: `WHERE id = '${id}'`
+    conditions: `WHERE id = '${kiosk.id}'`
   });
 
   if(!response.success){

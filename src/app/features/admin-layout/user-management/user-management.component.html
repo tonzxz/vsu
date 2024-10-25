@@ -3,10 +3,10 @@
 
 <!--
 <td class="px-6 py-4">
-  <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-inner">
+  <div class="w-16 h-16 overflow-hidden border-4 border-white rounded-full shadow-inner">
     <img [src]="user.profile || 'assets/images/noprofile.png'"
          alt="{{ user.fullname }}"
-         class="w-full h-full object-cover transform transition-all duration-300 group-hover:scale-110">
+         class="object-cover w-full h-full transition-all duration-300 transform group-hover:scale-110">
   </div>
 </td> -->
 
@@ -16,33 +16,33 @@
 
 
 <main class="min-h-screen py-4">
-  <div class="mx-auto space-y-8 w-full">
+  <div class="w-full mx-auto space-y-8">
 
     <div class="flex space-x-8">
       <!-- Performance Metrics Card -->
-      <div class="w-1/3 h-full bg-white rounded-3xl shadow-lg">
+      <div class="w-1/3 h-full bg-white shadow-lg rounded-3xl">
         <!-- Header -->
-       <h2 class="text-xl font-bold text-center text-green-800 uppercase tracking-wider mt-6 mb-2">
+       <h2 class="mt-6 mb-2 text-xl font-bold tracking-wider text-center text-green-800 uppercase">
             Performance Metrics
           </h2>
-          <div class="h-1 w-20 bg-gradient-to-r from-green-800 to-green-900 mx-auto mb-2 rounded-full"></div>
+          <div class="w-20 h-1 mx-auto mb-2 rounded-full bg-gradient-to-r from-green-800 to-green-900"></div>
 
         <!-- User Profile Section -->
         <div *ngIf="currentUser" class="px-6 pt-6 pb-4">
           <div class="flex flex-col items-center">
             <div class="relative">
-              <div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-green-50 shadow-lg">
+              <div class="w-24 h-24 overflow-hidden rounded-full shadow-lg ring-4 ring-green-50">
                 <img [src]="currentUser.profile || 'assets/images/noprofile.png'"
                      alt="{{ currentUser.fullname }}"
-                     class="w-full h-full object-cover">
+                     class="object-cover w-full h-full">
               </div>
               <div class="absolute -bottom-1 -right-1">
                 <div [ngClass]="{'bg-green-500': currentUser.is_online, 'bg-red-500': !currentUser.is_online}"
                      class="w-4 h-4 rounded-full ring-3 ring-white"></div>
               </div>
             </div>
-            <h3 class="text-xl font-medium text-gray-800 mt-3">{{ currentUser.fullname }}</h3>
-            <div class="px-3 py-1 bg-yellow-500 rounded-full mt-1">
+            <h3 class="mt-3 text-xl font-medium text-gray-800">{{ currentUser.fullname }}</h3>
+            <div class="px-3 py-1 mt-1 bg-yellow-500 rounded-full">
               <span class="text-sm text-white">{{ currentUser.role }}</span>
             </div>
           </div>
@@ -54,11 +54,11 @@
   <!-- Stats Grid 2x2 -->
   <div class="grid grid-cols-2 gap-4">
 
-    <div class="bg-gradient-to-br from-white to-sky-50 rounded-3xl px-2 py-4 border border-transparent shadow-lg">
+    <div class="px-2 py-4 border border-transparent shadow-lg bg-gradient-to-br from-white to-sky-50 rounded-3xl">
       <div class="flex items-start justify-between">
         <div>
           <span class="text-sm font-medium text-sky-600">Today's Check-ins</span>
-          <p class="text-2xl font-semibold text-gray-800 mt-1">{{ performanceMetrics.totalCheckInsToday }}</p>
+          <p class="mt-1 text-2xl font-semibold text-gray-800">{{ performanceMetrics.totalCheckInsToday }}</p>
         </div>
           <app-lottie-animation class="w-12 h-12 " animation="4"></app-lottie-animation>
 
@@ -66,44 +66,44 @@
       </div>
     </div>
 
-    <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl px-2 py-4 border border-transparent shadow-lg">
+    <div class="px-2 py-4 border border-transparent shadow-lg bg-gradient-to-br from-white to-blue-50 rounded-3xl">
       <div class="flex items-start justify-between">
         <div>
           <span class="text-sm font-medium text-blue-600">Average Service</span>
-          <p class="text-2xl font-semibold text-gray-800 mt-1">{{ performanceMetrics.averageTimeService }}</p>
+          <p class="mt-1 text-2xl font-semibold text-gray-800">{{ performanceMetrics.averageTimeService }}</p>
         </div>
         <app-lottie-animation class="w-12 h-12 " animation="time2"></app-lottie-animation>
 
       </div>
     </div>
 
-    <div class="bg-gradient-to-br from-white to-violet-50 rounded-3xl px-2 py-4 border border-transparent shadow-lg">
+    <div class="px-2 py-4 border border-transparent shadow-lg bg-gradient-to-br from-white to-violet-50 rounded-3xl">
       <div class="flex items-start justify-between">
         <div>
           <span class="text-sm font-medium text-violet-600">Weekly Check-ins</span>
-          <p class="text-2xl font-semibold text-gray-800 mt-1">{{ performanceMetrics.totalCheckInsThisWeek }}</p>
+          <p class="mt-1 text-2xl font-semibold text-gray-800">{{ performanceMetrics.totalCheckInsThisWeek }}</p>
         </div>
         <app-lottie-animation class="w-12 h-12 " animation="3"></app-lottie-animation>
 
       </div>
     </div>
 
-    <div class="bg-gradient-to-br from-white to-pink-50 rounded-3xl px-2 py-4 border border-transparent shadow-lg">
+    <div class="px-2 py-4 border border-transparent shadow-lg bg-gradient-to-br from-white to-pink-50 rounded-3xl">
       <div class="flex items-start justify-between">
         <div>
           <span class="text-sm font-medium text-pink-400">Average Check-in</span>
-          <p class="text-2xl font-semibold text-gray-800 mt-1">{{ formatTime(performanceMetrics.averageCheckInTime) }}</p>
+          <p class="mt-1 text-2xl font-semibold text-gray-800">{{ formatTime(performanceMetrics.averageCheckInTime) }}</p>
         </div>
         <app-lottie-animation class="w-12 h-12 " animation="time1"></app-lottie-animation>
 
       </div>
     </div>
 
-    <div class="bg-gradient-to-br from-white to-yellow-50 rounded-3xl px-2 py-4 border border-transparent shadow-lg">
+    <div class="px-2 py-4 border border-transparent shadow-lg bg-gradient-to-br from-white to-yellow-50 rounded-3xl">
       <div class="flex items-start justify-between">
         <div>
           <span class="text-sm font-medium text-yellow-600">Total Check-ins</span>
-          <p class="text-2xl font-semibold text-gray-800 mt-1">{{ performanceMetrics.totalCheckIns }}</p>
+          <p class="mt-1 text-2xl font-semibold text-gray-800">{{ performanceMetrics.totalCheckIns }}</p>
         </div>
         <app-lottie-animation class="w-12 h-12 " animation="average"></app-lottie-animation>
 
@@ -128,27 +128,27 @@
       </div>
 
       <!-- Users List Card -->
-      <div class="w-2/3 bg-white rounded-3xl shadow-md p-6 border border-gray-100 transform transition-all duration-500 hover:shadow-2xl">
+      <div class="w-2/3 p-6 transition-all duration-500 transform bg-white border border-gray-100 shadow-md rounded-3xl hover:shadow-2xl">
         <!-- Search and Create Section -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center justify-between mb-6">
           <div class="relative w-64">
             <input
               type="text"
               [(ngModel)]="searchQuery"
               (input)="searchUsers()"
               placeholder="Search a user..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 shadow-sm"
+              class="w-full py-2 pl-10 pr-4 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400"
             >
             <svg xmlns="http://www.w3.org/2000/svg"
-                 class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                 class="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2"
                  viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
             </svg>
           </div>
 
           <button (click)="createNewAccount()"
-                  class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl flex items-center shadow-md hover:shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  class="flex items-center px-6 py-2 text-white bg-green-500 shadow-md hover:bg-green-600 rounded-xl hover:shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
             Create Account
@@ -156,16 +156,16 @@
         </div>
 
         <div >
-          <div class="overflow-hidden rounded-xl border border-gray-200">
+          <div class="overflow-hidden border border-gray-200 rounded-xl">
             <table class="w-full">
               <thead>
                 <tr class="bg-gray-50">
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Name</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600">Name</th>
 
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Location</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Type</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
-                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Action</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600">Location</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600">Type</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600">Status</th>
+                  <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600">Action</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
@@ -224,7 +224,7 @@
           </div>
 
           <!-- Pagination -->
-          <div class="flex justify-between items-center mt-6">
+          <div class="flex items-center justify-between mt-6">
             <button (click)="previousPage()"
                     [disabled]="currentPage === 1"
                     class="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50">
@@ -259,9 +259,9 @@
 
 <!--
 <td class="px-6 py-4">
-  <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-inner">
+  <div class="w-16 h-16 overflow-hidden border-4 border-white rounded-full shadow-inner">
     <img [src]="user.profile || 'assets/images/noprofile.png'"
          alt="{{ user.fullname }}"
-         class="w-full h-full object-cover transform transition-all duration-300 group-hover:scale-110">
+         class="object-cover w-full h-full transition-all duration-300 transform group-hover:scale-110">
   </div>
 </td> -->

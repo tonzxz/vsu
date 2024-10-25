@@ -54,7 +54,6 @@ export class KioskService {
         AND kiosks.code = '${code}'
       `
     });
-    alert('?');
     if(response.success){
      
       if(response.output.length > 0){

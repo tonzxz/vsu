@@ -193,16 +193,21 @@ export class UserManagementComponent implements OnInit {
     return this.API.getFileURL(file);
   }
 
- 
+  metricsLoading: boolean = false;
 
   setCurrentUser(user: User) {
-    this.currentUser = user;
+    this.metricsLoading = true;
+    setTimeout(() => {
+      this.currentUser = user;
+      this.metricsLoading = false;
+    }, 300); // Adjust the timeout to match the animation duration
     if (user) {
       this.fetchTerminalSessions(user.id);
     } else {
       this.resetMetrics();
     }
   }
+  
   
 
   createNewAccount() {

@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { UswagonAuthService } from 'uswagon-auth';
 import { UswagonCoreService } from 'uswagon-core';
 import { DivisionService } from './division.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environment/environment';
+import { firstValueFrom } from 'rxjs';
 
 
 interface Kiosk{
@@ -19,6 +22,7 @@ interface Kiosk{
 export class KioskService {
 
   constructor(
+    private http:HttpClient,
     private divisionService: DivisionService,
     private API:UswagonCoreService, private auth:UswagonAuthService) { }
 
@@ -27,6 +31,18 @@ export class KioskService {
   public kiosk?:Kiosk;
   user:any = this.auth.getUser();
   isSuperAdmin:boolean = this.auth.accountLoggedIn() == 'superadmin';
+
+
+  thermalPrint(filename:string, base64String:string, printer_ip:string ){
+   firstValueFrom( this.http
+    .post(environment.printserver + '/print', {
+      key: environment.apiKey,
+      app: environment.app,
+      printer_ip: printer_ip,
+      chunk: base64String,
+      fileName:  filename,
+    }))
+  }
 
   async kioskLogin(code:string){
     const response = await this.API.read({

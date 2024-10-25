@@ -361,7 +361,7 @@ export class UserManagementComponent implements OnInit {
       averageCheckInTime: 0,
       totalCheckInsToday: 0,
       totalCheckInsThisWeek: 0,
-      averageTimeService: '0 mins',
+      averageTimeService: '0',
       rating: 0,
     };
   }

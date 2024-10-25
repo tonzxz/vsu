@@ -469,6 +469,12 @@ timerProgress: any;
   callNumber(): void {
     console.log(`Calling number ${this.currentTicket?.number}`);
     this.API.sendFeedback('neutral', `Calling number ${this.currentTicket?.type =='priority' ? 'P':'R'}-${this.currentTicket?.number.toString().padStart(3, '0')}`,5000)
+    
+    this.API.socketSend({
+      event: 'number-calling',
+      division: this.division?.id,
+      message: `Calling ${this.currentTicket?.type =='priority' ? 'Priority':''} number ${this.currentTicket?.number} at counter ${this.selectedCounter?.number}`
+    })
     // this.isCallNumberActive = false;
   }
 

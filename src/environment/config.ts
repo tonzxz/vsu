@@ -4,6 +4,7 @@ export const config = {
         location: 'Visca, Baybay City, Leyte',
     },
     assets:{
+        banner: './assets/specifics/vsu/vsuHeader.png',
         logo:'./assets/specifics/vsu/vsu.png',
         test:'sdasd'
     },

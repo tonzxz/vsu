@@ -68,6 +68,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
     this.selectedDivision = (await this.divisionService.getDivision())?.id;
     this.divisions = this.divisionService.divisions;
     await this.updateTerminalData();
+    this.API.setLoading(false);
     this.API.addSocketListener('terminal-events', async(data)=>{
       if(data.event =='terminal-events'){
         await this.updateTerminalData();
@@ -95,10 +96,7 @@ export class TerminalManagementComponent implements OnInit, OnDestroy {
       } else {
         this.terminals.push(updatedTerminal);
       }
-      if(!this.dataLoaded){
-        this.API.setLoading(false);
-        this.dataLoaded = true;
-      }
+
     });
     this.terminals = this.terminals.filter(terminal=> exisitingTerminals.includes(terminal.id))
   }

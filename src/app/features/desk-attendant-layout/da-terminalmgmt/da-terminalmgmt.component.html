@@ -151,7 +151,7 @@
     </section>
 
     <!-- Queue Table Section -->
-    <section class="bg-white p-4 rounded-lg shadow-md">
+    <section class="bg-white p-4 rounded-lg shadow-md relative z-0">
       <div class="overflow-hidden">
         <div class="overflow-y-auto" style="max-height: 400px;">
           <table class="w-full table-auto border-collapse">
@@ -223,9 +223,9 @@
         [disabled]="actionLoading"
         class="bg-green-600 text-white py-2 rounded-md font-medium shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed w-full flex items-center justify-center gap-2">
         <span class="material-icons text-sm">
-          {{ currentTicket ? 'check_circle' : 'arrow_forward' }}
+          {{currentTicket?.type == 'regular' ? 'check_circle' : 'arrow_forward' }}
         </span>
-        {{ currentTicket ? 'Done & Next' : 'Next Client' }}
+        {{ currentTicket?.type == 'regular' ? 'Done' : 'Next Client' }}
       </button>
       <button 
         (click)="priorityClient()" 
@@ -234,7 +234,7 @@
         <span class="material-icons text-sm">
           {{ currentTicket?.type === 'priority' ? 'check_circle' : 'stars' }}
         </span>
-        {{ currentTicket?.type === 'priority' ? 'Done & Priority' : 'Priority Client' }}
+        {{ currentTicket?.type === 'priority' ?  'Done' : 'Priority Client' }}
       </button>
       <button 
         (click)="noShow()" 

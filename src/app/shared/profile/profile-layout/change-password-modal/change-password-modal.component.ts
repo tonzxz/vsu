@@ -1,5 +1,4 @@
-// change-password-modal.component.ts
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -10,6 +9,9 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './change-password-modal.component.html'
 })
 export class ChangePasswordModalComponent {
+  @Input() userId!: string;
+  @Input() userRole!: string; 
+
   @Output() closeModal = new EventEmitter<void>();
   @Output() passwordChanged = new EventEmitter<{currentPassword: string, newPassword: string}>();
 
@@ -17,10 +19,13 @@ export class ChangePasswordModalComponent {
   newPassword = '';
   confirmPassword = '';
   errorMessage = '';
-
   showCurrentPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
+
+  ngOnInit() {
+    console.log('True na baUser ID for password change:', this.userId, this.userRole); 
+  }
 
   close() {
     this.closeModal.emit();
@@ -41,10 +46,8 @@ export class ChangePasswordModalComponent {
   }
 
   submitForm() {
-    // Reset error message
     this.errorMessage = '';
 
-    // Validation
     if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
       this.errorMessage = 'All fields are required';
       return;
@@ -66,13 +69,11 @@ export class ChangePasswordModalComponent {
       return;
     }
 
-    // Emit password change event
     this.passwordChanged.emit({
       currentPassword: this.currentPassword,
       newPassword: this.newPassword
     });
 
-    // Clear form
     this.currentPassword = '';
     this.newPassword = '';
     this.confirmPassword = '';

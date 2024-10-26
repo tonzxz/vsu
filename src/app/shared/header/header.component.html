@@ -1,16 +1,16 @@
-<header class="z-10 px-8 py-2.5 mx-8 mt-4 transition-all duration-300 border shadow-xl bg-white/90 backdrop-blur-lg rounded-3xl border-white/50">
+<header class="z-10 px-8 py-2.5 mx-8 mt-4 transition-all duration-300 border shadow-lg shadow-gray-300/50 bg-white/90 backdrop-blur-lg rounded-3xl border-white/50">
   <div class="flex items-center justify-between">
     <!-- Left Side -->
     <div class="flex items-center gap-6">
-      <div class="relative group">
-        <div class="absolute -inset-0.5 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] rounded-full opacity-20 group-hover:opacity-40 blur transition-all duration-300"></div>
+      <!-- <div class="relative group">
+        <div class="absolute -inset-0.5  rounded-full opacity-20 group-hover:opacity-40 blur transition-all duration-300"></div>
         <img
           [src]="divisionLogo || 'assets/logo/vsu.png'"
           alt="Division Logo"
-          class="relative object-cover w-16 h-16 transition-all duration-300 border-2 rounded-full shadow-lg border-white/80 group-hover:scale-105"
+          class="relative object-cover w-16 h-16 transition-all duration-300 border-2 rounded-full  border-white/80 group-hover:scale-105"
           onerror="this.src='assets/logo/vsu.png'"
         >
-      </div>
+      </div> -->
       <div class="flex flex-col">
         <p class="text-sm font-medium text-gray-500">Welcome back,</p>
         <div class="flex items-center gap-2">
@@ -32,7 +32,7 @@
         <img
           [src]="getUserProfile()"
           alt="Profile"
-          class="relative object-cover transition-all duration-300 border-2 rounded-full shadow-lg w-14 h-14 border-white/80 group-hover:scale-105"
+          class="relative object-cover transition-all duration-300 border-2 rounded-full shadow-lg w-16 h-16 border-white/80 group-hover:scale-105"
           onerror="this.src='assets/images/noprofile.png'"
         />
       </button>

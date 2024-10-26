@@ -189,6 +189,7 @@ export class QueueService  {
       this.updateQueue(this.kioskService.kiosk?.division_id!);
       return info.type == 'regular' ?  this.lastRegularQueueNumber:this.lastPriorityQueueNumber;
     }
+    
   }
 
   async addQueueToAttended(queue:Queue){
@@ -283,6 +284,7 @@ export class QueueService  {
         this.resolveTakenQueue(this.attendedQueue.id);
         this.attendedQueue = undefined;
         await this.getTodayQueues();
+
       }
     }catch(e:any){
       alert(e.message);
@@ -305,7 +307,7 @@ export class QueueService  {
         nextPriorityTicket,
         ...this.queue.filter(t => t.id !== nextPriorityTicket.id)
       ];
-
+      
       return this.nextQueue();
     } catch (error) {
       console.error('Error getting priority queue:', error);
@@ -383,31 +385,31 @@ export class QueueService  {
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE division_id = '${this.divisionService.selectedDivision!.id}' AND timestamp::date = CURRENT_DATE ${filter}` 
+      conditions: `WHERE division_id = '${this.divisionService.selectedDivision!.id}' AND timestamp::date = CURRENT_DATE ${filter} ORDER BY timestamp ASC` 
     });
     if(response.success){
       const queue = response.output as Queue[];
       this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
       this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
 
-      const sortedQueue = queue.sort((a,b)=>{ 
+      // const sortedQueue = queue.sort((a,b)=>{ 
 
-        if(a.status == 'bottom' && b.status =='bottom'){
-          return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
-        }
-        if (a.type === 'priority' && b.type === 'regular') {
-          if(a.status == 'bottom'){
-            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
-          }else{
-            return -1
-          }
-        };
-        if (a.type === 'regular' && b.type === 'priority') return 1;
+      //   if(a.status == 'bottom' && b.status =='bottom'){
+      //     return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      //   }
+      //   if (a.type === 'priority' && b.type === 'regular') {
+      //     if(a.status == 'bottom'){
+      //       return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      //     }else{
+      //       return -1
+      //     }
+      //   };
+      //   if (a.type === 'regular' && b.type === 'priority') return 1;
 
 
-        return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
-      });
-      const filteredQueue = sortedQueue.filter(queue=>!this.takenQueue.includes(queue.id));
+      //   return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      // });
+      const filteredQueue = queue.filter(queue=>!this.takenQueue.includes(queue.id));
       
       this.queueSubject.next(filteredQueue);
 
@@ -424,31 +426,31 @@ export class QueueService  {
     const response = await this.API.read({
       selectors: ['*'],
       tables: 'queue',
-      conditions: `WHERE timestamp::date = CURRENT_DATE ${filter}` 
+      conditions: `WHERE timestamp::date = CURRENT_DATE ${filter} ORDER BY timestamp ASC` 
     });
     if(response.success){
       const queue = response.output as Queue[];
       this.lastPriorityQueueNumber =queue.filter(queue=> queue.type == 'priority').length;
       this.lastRegularQueueNumber =queue.filter(queue=> queue.type == 'regular').length;
 
-      const sortedQueue = queue.sort((a,b)=>{ 
+      // const sortedQueue = queue.sort((a,b)=>{ 
 
-        if(a.status == 'bottom' && b.status =='bottom'){
-          return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
-        }
-        if (a.type === 'priority' && b.type === 'regular') {
-          if(a.status == 'bottom'){
-            return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
-          }else{
-            return -1
-          }
-        };
-        if (a.type === 'regular' && b.type === 'priority') return 1;
+      //   if(a.status == 'bottom' && b.status =='bottom'){
+      //     return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      //   }
+        // if (a.type === 'priority' && b.type === 'regular') {
+        //   if(a.status == 'bottom'){
+        //     return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+        //   }else{
+        //     return -1
+        //   }
+        // };
+        // if (a.type === 'regular' && b.type === 'priority') return 1;
 
 
-        return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
-      });
-      const filteredQueue = sortedQueue.filter(queue=>!this.takenQueue.includes(queue.id));
+        // return new Date( a.timestamp).getTime() - new Date( b.timestamp).getTime();
+      // });
+      const filteredQueue = queue.filter(queue=>!this.takenQueue.includes(queue.id));
       this.allTodayQueue = filteredQueue;
       return filteredQueue;
     }else{
@@ -464,7 +466,7 @@ export class QueueService  {
         tables: 'attended_queue, queue,terminal_sessions',
         conditions: `
           WHERE attended_queue.queue_id = queue.id
-         AND terminal_sessions.id = attended_queue.desk_id
+          AND terminal_sessions.id = attended_queue.desk_id
           ORDER BY timestamp DESC
         `
       });
@@ -474,6 +476,32 @@ export class QueueService  {
           this.attendedQueues.push({...attended, queue: {...attended, id: attended.queue_id}})
         }
         
+        return this.attendedQueues;
+      }else{
+        throw new Error(response.output);
+      }
+    }catch(e:any){
+      throw new Error('Something went wrong.');
+    }
+  }
+
+  async getActiveAttendedQueues(){
+    try{
+      const response = await this.API.read({
+        selectors: ['terminal_sessions.*,queue.*,attended_queue.* '],
+        tables: 'attended_queue, queue,terminal_sessions',
+        conditions: `
+          WHERE attended_queue.queue_id = queue.id
+          AND terminal_sessions.id = attended_queue.desk_id
+          AND attended_queue.status = 'ongoing'
+          ORDER BY timestamp DESC
+        `
+      });
+      if(response.success){
+        this.attendedQueues = [];
+        for(let attended of response.output){
+          this.attendedQueues.push({...attended, queue: {...attended, id: attended.queue_id}})
+        }
         return this.attendedQueues;
       }else{
         throw new Error(response.output);

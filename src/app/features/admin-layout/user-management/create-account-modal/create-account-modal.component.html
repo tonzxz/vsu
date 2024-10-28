@@ -32,7 +32,7 @@
     </div>
 
     <!-- Role Selection Buttons -->
-    <div class="mt-4 flex space-x-4">
+    <div  class="mt-4 flex space-x-4">
       <!-- Desk Attendant Button -->
       <button
         type="button"
@@ -43,7 +43,7 @@
         [class.bg-gray-700]="selectedRole !== 'deskAttendant'"
         [class.text-gray-200]="selectedRole !== 'deskAttendant'"
         [style.opacity]="selectedRole === 'deskAttendant' ? '1' : '0.4'"
-        class="flex flex-1 items-center text-sm border border-purple-400 rounded-3xl focus:outline-none 
+        class="flex flex-1 items-center text-sm border border-purple-400 rounded-xl focus:outline-none 
                transition-all duration-300 ease-in-out
                transform hover:scale-105 hover:bg-gray-900 hover:text-white hover:opacity-100
                hover:shadow-lg hover:border-purple-500
@@ -65,7 +65,7 @@
         [class.bg-yellow-300]="selectedRole !== 'admin'"
         [class.text-gray-50]="selectedRole !== 'admin'"
         [style.opacity]="selectedRole === 'admin' ? '1' : '0.4'"
-        class="flex flex-1 items-center text-sm border border-yellow-400 rounded-3xl focus:outline-none 
+        class="flex flex-1 items-center text-sm border border-yellow-400 rounded-xl focus:outline-none 
                transition-all duration-300 ease-in-out
                transform hover:scale-105 hover:bg-yellow-400 hover:text-white hover:opacity-100
                hover:shadow-lg hover:border-yellow-500
@@ -73,7 +73,7 @@
                motion-safe:hover:-translate-y-1"
       >
         <img src="assets/images/admin.png" alt="Admin Icon" 
-             class="h-10 w-11 transition-transform duration-300 group-hover:rotate-6" />
+             class="h-10 w-10 transition-transform duration-300 group-hover:rotate-6" />
         <span class="flex-grow text-center mr-4">Admin</span>
       </button>
     
@@ -87,7 +87,7 @@
         [class.bg-purple-300]="selectedRole !== 'superadmin'"
         [class.text-gray-50]="selectedRole !== 'superadmin'"
         [style.opacity]="selectedRole === 'superadmin' ? '1' : '0.7'"
-        class="flex flex-1 items-center text-sm border border-gray-400 rounded-3xl focus:outline-none 
+        class="flex flex-1 items-center text-sm border border-gray-400 rounded-xl focus:outline-none 
                transition-all duration-300 ease-in-out
                transform hover:scale-105 hover:bg-purple-400 hover:text-white hover:opacity-100
                hover:shadow-lg hover:border-purple-500
@@ -95,7 +95,7 @@
                motion-safe:hover:-translate-y-1"
       >
         <img src="assets/images/superadmin.png" alt="Super Admin Icon" 
-             class="h-10 w-14 transition-transform duration-300 group-hover:rotate-6" />
+             class="h-10 w-13 transition-transform duration-300 group-hover:rotate-6" />
         <span class="flex-grow text-center mr-4">Super Admin</span>
       </button>
     </div>

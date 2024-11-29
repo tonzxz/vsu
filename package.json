@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postinstall": "git clone https://$GITHUB_PAT@github.com/ryukkn/uswagon-core-lib.git ./uswagon-core-lib"
   },
   "scarfSettings": {
     "enabled": false
